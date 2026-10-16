@@ -3,6 +3,8 @@
 **Status:** Preproduction baseline. Confirmed rules are separated from decisions still requiring design or balance work.
 
 **Product:** A compact, turn-based fantasy 4X strategy game for Android, Windows, macOS, Linux, and Web.
+
+This is the canonical gameplay baseline. The [product vision](../product/vision-and-scope.md), [world and civilizations](world-and-civilizations.md), and [open decisions register](open-decisions.md) provide complementary detail; do not treat a proposal or TBD as an accepted rule.
 **Design goal:** Keep the approachable readability of small-map strategy games while adding meaningful city development, production queues, and asymmetric civilizations without growing into a Civilization-scale simulation.
 
 ## 1. Product pillars
@@ -15,7 +17,7 @@
 
 ## 2. Player experience and match setup
 
-The initial game is local single-player against one AI: exactly two civilizations participate. The player selects their civilization; the AI civilization is selected randomly. Difficulty is selected before the match and stays fixed. Easy, Intermediate, and Hard primarily change the AI's starting resources; Easy begins on the same resources as the player, with higher levels receiving larger advantages. Exact bonuses are TBD.
+The initial game is local single-player against one AI: exactly two civilizations participate. The player selects their civilization; the AI civilization is selected randomly. Difficulty is selected before the match and stays fixed. Easy, Intermediate, and Hard primarily change the AI's starting resources; Easy begins on the same resources as the player, with higher levels receiving larger advantages. Exact bonuses are TBD. Future map sizes may support more participants, with an earlier long-term concept of up to six; this is not part of the initial two-player scope.
 
 At setup, the player selects a match type, map type/size, and difficulty. The map is generated from a seed selected automatically. The game should retain the seed with the save so a map can be reproduced. Starting regions are not mirror images, but should have minimum separation and broadly comparable opportunities. Exact map families, dimensions, and fairness metrics are TBD. Future expansion may allow more participants according to map size; it is not part of the initial two-player scope.
 

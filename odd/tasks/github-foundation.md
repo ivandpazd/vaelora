@@ -45,8 +45,8 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 - [x] T2 — S2: Add GitHub issue/PR forms and contribution guidance — inline — complete — commit: `a13f246`; Ruby YAML parsing and `git diff --cached --check` passed.
 - [x] T3 — S3: Add technical, production, and branch/commit guidance — inline — complete — commits: `4428367`, `aa6cbb9`; Markdown links passed.
 - [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: `b3387a9`; local Markdown links validated.
-- [x] T5 — S5: Add proprietary rights notice — inline — complete — commit: `9e26a33`; holder/contact and `git diff --check` verified.
-- [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`.
+- [x] T5 — S5: Add proprietary rights notice — inline — complete — commit: `9e26a33`; holder/contact and `git diff --check` verified; assessment: medium, under budget.
+- [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`; assessment: medium, under budget.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
@@ -54,6 +54,7 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 - L14: The remote repository is public; active `Protect main` and `Protect dev` rulesets were verified as IDs `25234621` and `25234622`. `dev` is not yet present on the remote. A proprietary rights notice is the remaining local work; exact holder identity is now confirmed.
 - L15: Added a proprietary rights notice naming Iván de Paz Delgado and the supplied email. It reserves reuse rights in original Vaelora materials while explicitly preserving applicable law, GitHub's public-repository terms, and third-party licenses. Updated the README and readiness/workflow guides to reflect verified remote settings. An independent legal review remains advisable because the repository is public and the notice is not legal advice.
 - L16: Local links passed for all three changed Markdown files; focused holder/contact/GitHub-terms assertions and `git diff --check` passed. Commit `9e26a33` assessed as medium risk, `under_budget`; no native review was due. The candidate excludes unrelated pre-existing untracked editor configuration files.
+- L17: Task-record commit `ea25263` assessed as passive, no review due.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

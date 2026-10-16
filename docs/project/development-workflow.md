@@ -23,8 +23,10 @@ Examples: `feature/42-city-growth`, `fix/58-road-movement`, `docs/31-combat-rule
 4. Open a PR to `dev`; link the issue, describe player-visible behavior, and provide tests/screenshots/platform evidence as relevant.
 5. Address review feedback and verify the final candidate.
 6. Merge approved feature PRs into `dev`.
-7. When `dev` is release-ready, open one release/integration PR to `main`, run the release checklist, and tag the resulting release.
-8. Back-merge urgent hotfixes from `main` to `dev` so the fix is not lost in ongoing work.
+7. After each feature PR is merged, review the integrated `dev` state for technical correctness and documentation quality before promoting it. Use the [integration review gate](#integration-review-gate).
+8. Only when that review passes, open a separate release/integration PR from `dev` to `main`; review the complete promotion diff and release checklist before merging it.
+9. If the integration review finds a problem, keep `main` unchanged. Create a corrective branch from `dev`, send its PR to `dev`, merge it after review, and repeat the integration review.
+10. Back-merge urgent hotfixes from `main` to `dev` so the fix is not lost in ongoing work.
 
 GitHub Issue Forms and PR templates are stored in `.github/`. GitHub only displays these templates after they are committed to the repository's default branch; use the initial bootstrap release path in the [GitHub readiness checklist](github-readiness.md).
 
@@ -91,6 +93,17 @@ Do not use issues to silently approve TBD game rules. A design proposal remains 
 - Keep each PR reviewable. Split independent work by behavior or system rather than by file type.
 - Resolve review conversations and ensure required checks pass before merge.
 - Use the repository's configured merge method; until it is set, do not assume squash/rebase/merge policy.
+
+## Integration review gate
+
+Every feature/fix/docs PR is reviewed and merged into `dev` first. Then evaluate the resulting integrated `dev` branch before opening a `dev` → `main` PR:
+
+- **Technical review:** check the change against the intended architecture and game rules; run the focused tests and the applicable project checks/builds; inspect platform impact and any known limitations.
+- **Documentation review:** confirm the README and relevant design/technical docs match the behavior, links work, unresolved decisions remain explicit, and the PR provides enough context to maintain the change.
+- **Decision:** record the outcome. If either review finds a blocker, fix it through another PR to `dev` and repeat the gate. Do not promote a known-bad integration state.
+- **Promotion PR:** after both reviews pass, create a distinct PR from `dev` to `main`. Include the promoted change range, review outcome, test/build evidence, and release notes or a concise change summary. Merge only after this PR's checks and final diff review pass.
+
+This gate is a required human review step; it does not imply that technical checks or branch rulesets have already been configured on GitHub.
 
 ## Initial solo-maintainer policy
 

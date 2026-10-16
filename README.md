@@ -55,7 +55,7 @@ Start with the [documentation index](docs/README.md) for the complete map of pro
 - `main` is the stable line.
 - `dev` is the integration line.
 - Short-lived `feature/<issue>-<slug>`, `fix/<issue>-<slug>`, and `docs/<issue>-<slug>` branches start from `dev` and merge back into `dev` by pull request.
-- Reviewed, tested work moves from `dev` to `main` through a release/integration pull request.
+- After feature PRs merge into `dev`, review the integrated branch for technical correctness and documentation quality; only then open a separate `dev` → `main` promotion PR.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 The current GitHub setup is prepared in the local repository. Issue forms and pull-request templates become active on GitHub only after their files reach the repository's default branch. See the [readiness checklist](docs/project/github-readiness.md) for the initial bootstrap and settings still to apply.

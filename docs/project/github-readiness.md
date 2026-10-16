@@ -26,6 +26,7 @@ If the initial foundation is first merged into `dev`, the forms will not be avai
 - [ ] Create/publish `dev` from the approved foundation baseline.
 - [ ] Add a ruleset for `main`: require PRs, block force pushes and deletion, require resolved review conversations, and require passing CI once a stable CI check exists.
 - [ ] Add a ruleset for `dev`: require PRs from feature branches and block force pushes/deletion; require CI once available.
+- [ ] Preserve the two-stage review flow: feature PRs merge into `dev`; after technical and documentation review, promote `dev` to `main` with a separate PR.
 - [ ] Initially require zero outside approvals while this is a solo-maintainer project. Revisit when collaborators can independently review.
 - [ ] Do not configure required status check names until the matching workflow has completed successfully; then select the exact job name.
 - [ ] Allow only narrowly justified bypass actors. Avoid blanket administrator bypass for ordinary changes.

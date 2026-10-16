@@ -31,12 +31,13 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 ## Tasks
 - [x] T1 — S1: Complete product and game design documentation — inline — complete — commit: `2356f96`.
 - [x] T2 — S2: Add GitHub issue/PR forms and contribution guidance — inline — complete — commit: `a13f246`; Ruby YAML parsing and `git diff --cached --check` passed.
-- [ ] T3 — S3: Add technical, production, and branch/commit guidance — inline — reopened for workflow clarification — commit: pending.
+- [x] T3 — S3: Add technical, production, and branch/commit guidance — inline — complete — commits: `4428367`, `aa6cbb9`; Markdown links passed.
 - [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: `b3387a9`; local Markdown links validated.
 
 ## Log
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
+- L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.
 - L8: T4 completed in `b3387a9`; the root README now acts as project overview and navigation hub. Final RDD assessment: passive, no review due. No GitHub remote settings, issues, branches, or PRs were changed.
 - L7: T3 completed in `4428367`, documenting the Godot architecture proposal, production phases, local branch/PR workflow, Conventional Commits, and GitHub settings checklist. Assessment: medium risk, `under_budget`, no review due.
 - L6: T1 and T2 completed locally. T2 commit `a13f246` adds three issue forms, chooser configuration, PR template, and contributor guidance; YAML parsing passed. RDD assessment for T2: medium risk, `under_budget`, no review due.

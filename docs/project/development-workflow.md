@@ -103,7 +103,7 @@ Every feature/fix/docs PR is reviewed and merged into `dev` first. Then evaluate
 - **Decision:** record the outcome. If either review finds a blocker, fix it through another PR to `dev` and repeat the gate. Do not promote a known-bad integration state.
 - **Promotion PR:** after both reviews pass, create a distinct PR from `dev` to `main`. Include the promoted change range, review outcome, test/build evidence, and release notes or a concise change summary. Merge only after this PR's checks and final diff review pass.
 
-This gate is a required human review step; it does not imply that technical checks or branch rulesets have already been configured on GitHub.
+This gate is a required human review step. The remote repository currently has active `main` and `dev` rulesets that require PRs, block force-pushes and deletion, and require resolved review conversations. No CI checks are required yet because the Godot project and its test workflow are not in place.
 
 ## Initial solo-maintainer policy
 

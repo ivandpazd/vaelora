@@ -19,7 +19,7 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 ### S3 — Technical, production, and repository workflow guidance
 - Authorized scope: document the proposed Godot architecture and production phases, plus Conventional Commits and the requested `main` → `dev` → feature-branch model, including branch naming, base branch, PR targets, a required technical/documentation review of integrated `dev` before a separate promotion PR to `main`, and the bootstrap caveat for enabling templates on GitHub's default branch.
 - User request (verbatim): “Quiero utilizar conventional-commits para git, y me gustaría tener un esquema main - dev (rama previa) - features”
-- Acceptance: technical recommendations are distinct from approved game rules; workflow treats `main` as stable, `dev` as integration, and feature branches as short-lived branches based on `dev`; feature PRs target `dev`, the integrated `dev` state receives a technical and documentation review, and only a passing review leads to a separate `dev` → `main` PR; commit message examples follow Conventional Commits; GitHub-only branch rules are presented as a setup checklist, not falsely claimed as configured.
+- Acceptance: technical recommendations are distinct from approved game rules; workflow treats `main` as stable, `dev` as integration, and feature branches as short-lived branches based on `dev`; feature PRs target `dev`, the integrated `dev` state receives a technical and documentation review, and only a passing review leads to a separate `dev` → `main` PR; commit message examples follow Conventional Commits; remote ruleset status is documented accurately.
 - Checks: verify examples and current local branch names; distinguish local setup from remote settings.
 
 ### S4 — General project README
@@ -28,13 +28,31 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 - Acceptance: the README makes the project understandable without duplicating the full specifications and all local links resolve.
 - Checks: heading and link readback against the documentation tree.
 
+### S5 — Proprietary rights notice
+- Authorized scope: add a root `LICENSE` notice identifying the sole developer and reserving all rights to original Vaelora content, without claiming rights over third-party materials or overriding GitHub's Terms of Service.
+- User request (verbatim): “Vale, lo primero es agregar licencia (no se puede utilizar por terceros)” and “El juego se va a llamar Vaelora, y el desarrollador único soy yo: Iván de Paz Delgado con email: ivandpazd@gmail.com”
+- Acceptance: the notice states that no license is granted for third-party use of original project materials without written permission; identifies Iván de Paz Delgado and the supplied contact email; explicitly scopes third-party materials to their own licenses and acknowledges GitHub hosting terms.
+- Checks: verify rights-holder spelling/email, plain-text readback, and `git diff --check`; do not present the text as legal advice.
+
+### S6 — GitHub visibility and branch rulesets
+- Authorized scope: configure the remote repository visibility and protective rules for the established `main` → `dev` workflow, then document the verified remote state in the repository readiness guide.
+- User request (verbatim): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
+- Acceptance: repository visibility and active `main`/`dev` rulesets are verified from GitHub; each ruleset requires pull requests, blocks deletion and force-pushes, and requires review-thread resolution without requiring unavailable CI checks or an additional reviewer.
+- Checks: read back repository visibility and each ruleset by ID; document that `dev` does not yet exist remotely.
+
 ## Tasks
 - [x] T1 — S1: Complete product and game design documentation — inline — complete — commit: `2356f96`.
 - [x] T2 — S2: Add GitHub issue/PR forms and contribution guidance — inline — complete — commit: `a13f246`; Ruby YAML parsing and `git diff --cached --check` passed.
 - [x] T3 — S3: Add technical, production, and branch/commit guidance — inline — complete — commits: `4428367`, `aa6cbb9`; Markdown links passed.
 - [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: `b3387a9`; local Markdown links validated.
+- [x] T5 — S5: Add proprietary rights notice — inline — complete — `LICENSE`; exact holder/contact confirmed by user.
+- [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`.
 
 ## Log
+- L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
+- L13 (2026-10-16): “El juego se va a llamar Vaelora, y el desarrollador único soy yo: Iván de Paz Delgado con email: ivandpazd@gmail.com”
+- L14: The remote repository is public; active `Protect main` and `Protect dev` rulesets were verified as IDs `25234621` and `25234622`. `dev` is not yet present on the remote. A proprietary rights notice is the remaining local work; exact holder identity is now confirmed.
+- L15: Added a proprietary rights notice naming Iván de Paz Delgado and the supplied email. It reserves reuse rights in original Vaelora materials while explicitly preserving applicable law, GitHub's public-repository terms, and third-party licenses. Updated the README and readiness/workflow guides to reflect verified remote settings. An independent legal review remains advisable because the repository is public and the notice is not legal advice.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

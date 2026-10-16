@@ -6,6 +6,8 @@ The game takes place on the continent of Vaelora, where generations of political
 
 > **Project status:** preproduction. The design and collaboration foundation is being documented before gameplay implementation. The initial complete prototype targets the human **Liga de Auren** and orc **Clanes de Brasal**. It must use final-quality visual assets; placeholder art is out of scope.
 
+> **Rights:** Vaelora's original materials are proprietary; all rights are reserved by Iván de Paz Delgado. See [LICENSE](LICENSE). Because this repository is public, GitHub's Terms of Service still permit viewing and forking through GitHub; the notice does not grant broader reuse rights.
+
 ## At a glance
 
 | Area | Current direction |
@@ -58,7 +60,7 @@ Start with the [documentation index](docs/README.md) for the complete map of pro
 - After feature PRs merge into `dev`, review the integrated branch for technical correctness and documentation quality; only then open a separate `dev` → `main` promotion PR.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-The current GitHub setup is prepared in the local repository. Issue forms and pull-request templates become active on GitHub only after their files reach the repository's default branch. See the [readiness checklist](docs/project/github-readiness.md) for the initial bootstrap and settings still to apply.
+The repository is public, with active pull-request rulesets on `main` and `dev`; the `dev` branch itself has not yet been published. Issue forms and pull-request templates become active on GitHub only after their files reach the repository's default branch. See the [readiness checklist](docs/project/github-readiness.md) for the initial bootstrap and remaining settings.
 
 ## First prototype boundary
 

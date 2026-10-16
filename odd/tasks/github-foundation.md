@@ -32,9 +32,10 @@ Branch: `feature/github-foundation` | Delivery: `feature-branch-chain` (feature 
 - [x] T1 — S1: Complete product and game design documentation — inline — complete — commit: `2356f96`.
 - [x] T2 — S2: Add GitHub issue/PR forms and contribution guidance — inline — complete — commit: `a13f246`; Ruby YAML parsing and `git diff --cached --check` passed.
 - [x] T3 — S3: Add technical, production, and branch/commit guidance — inline — complete — commit: `4428367`; Markdown link check passed.
-- [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: pending.
+- [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: `b3387a9`; local Markdown links validated.
 
 ## Log
+- L8: T4 completed in `b3387a9`; the root README now acts as project overview and navigation hub. Final RDD assessment: passive, no review due. No GitHub remote settings, issues, branches, or PRs were changed.
 - L7: T3 completed in `4428367`, documenting the Godot architecture proposal, production phases, local branch/PR workflow, Conventional Commits, and GitHub settings checklist. Assessment: medium risk, `under_budget`, no review due.
 - L6: T1 and T2 completed locally. T2 commit `a13f246` adds three issue forms, chooser configuration, PR template, and contributor guidance; YAML parsing passed. RDD assessment for T2: medium risk, `under_budget`, no review due.
 - L1 (2026-10-16): “Si, deberíamos preparar de forma muy profesional primero Github, para tener un sistema de issues, PRs, etc. La idea es tener el entorno preparado antes de empezar a desplegar. Además, tenemos que tener una documentación super completa de absolutamente todo y debe de estar también en el repositorio ya sea en una carpeta de docs o similar. Y todo asociado y bien explicado a nivel proyecto y videojuego en el README.md general. Quiero utilizar conventional-commits para git, y me gustaría tener un esquema main - dev (rama previa) - features”

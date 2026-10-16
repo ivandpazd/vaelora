@@ -1,0 +1,52 @@
+name: Design decision
+description: Record one unresolved product, gameplay, or technical design question.
+title: "[Decision]: "
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Use this form for a decision that needs evidence or explicit approval. Keep the
+        issue focused; do not treat an unreviewed proposal as an accepted rule.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Decision area
+      options:
+        - Game rules
+        - Economy or balance
+        - Map generation
+        - Civilization or world
+        - User interface or accessibility
+        - Godot architecture
+        - Art or audio
+        - Repository workflow
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Decision needed
+      description: State one question that requires an explicit choice.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and constraints
+      description: Link the relevant documentation and summarize constraints or evidence.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options and trade-offs
+      description: Explain the viable choices and the consequences of each.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Resulting acceptance criteria
+      description: Describe what will be testable after the decision is made.
+    validations:
+      required: true

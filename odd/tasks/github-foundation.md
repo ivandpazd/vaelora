@@ -49,6 +49,7 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`; assessment: medium, under budget.
 - [x] T7 — S2: Add a dedicated project-foundation YAML issue form — inline — complete — commit: `986c6b8`; YAML structure and chooser config parsed, whitespace check passed; assessment: medium, under budget.
 - [ ] T8 — S2, S6: Resolve the protected-main bootstrap path to publish the new form — inline — pending — commit/PR pending.
+- [x] T9 — S6: Publish the integration and foundation branches to GitHub — inline — complete — branch heads pushed after `5ce9170`; remote readback pending.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
@@ -60,6 +61,7 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - L18 (2026-10-18): “Si, perfecto” — confirmation to prepare a dedicated YAML form for project-foundation issues and resolve its publication to `main`.
 - L19: Current GitHub `main` has no `.github/ISSUE_TEMPLATE` directory while two active rulesets require PRs; the form must first be added to a feature branch, then published through an authorized bootstrap path. No bypass of `main` protection is assumed.
 - L20: Added `.github/ISSUE_TEMPLATE/project_foundation.yml` with required context, scope, and acceptance criteria plus optional dependencies/references. YAML parsing and `git diff --check` passed. Commit `986c6b8` assessed medium, `under_budget`; native review was not due. The Engram mirror remains pending because the runtime did not register a session identity; no agent-attributed memory write was attempted.
+- L21: Pushed `dev` and `docs/github-foundation` to `origin`; both remote branch creations succeeded. The new issue form is on `docs/github-foundation` but is not yet available on GitHub's default branch. PR creation remains blocked until a valid approved issue can be created and the form is published to `main`.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

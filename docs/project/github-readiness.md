@@ -25,7 +25,7 @@ If the initial foundation is first merged into `dev`, the forms will not be avai
 - Visibility: **public**.
 - Default branch: `main`.
 - `Protect main` ruleset (ID `25234621`): active; pull requests required; branch deletion and force-push blocked; review conversations must be resolved; zero outside approvals; no required CI checks yet.
-- `Protect dev` ruleset (ID `25234622`): active with the same protections; the `dev` branch is not yet present on the remote.
+- `Protect dev` ruleset (ID `25234622`): active with the same protections; the `dev` branch is published.
 - Bypass actors: none configured.
 
 GitHub's Terms of Service allow users to view and fork a public repository through GitHub's functionality. The proprietary notice reserves broader reuse rights but does not make public content private or remove GitHub's platform permissions. See [GitHub's licensing guidance](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository).
@@ -35,7 +35,7 @@ GitHub's Terms of Service allow users to view and fork a public repository throu
 ### Branches and rulesets
 
 - [x] Keep `main` as the default/stable branch.
-- [ ] Create/publish `dev` from the approved foundation baseline.
+- [x] Create/publish `dev` from the approved foundation baseline.
 - [x] Add a ruleset for `main`: require PRs, block force pushes and deletion, and require resolved review conversations.
 - [x] Add a ruleset for `dev`: require PRs, block force pushes and deletion, and require resolved review conversations.
 - [ ] Preserve the two-stage review flow: feature PRs merge into `dev`; after technical and documentation review, promote `dev` to `main` with a separate PR.
@@ -47,7 +47,7 @@ GitHub branch protections and rulesets are repository settings, not files in thi
 
 ### Issues and project tracking
 
-- [ ] Confirm the default branch contains `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md`.
+- [x] Confirm the default branch contains `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md`.
 - [ ] Create agreed labels before any form is configured to apply labels automatically.
 - [ ] Suggested minimal label groups: `type:bug`, `type:feature`, `type:design`, `type:docs`; `area:gameplay`, `area:tech`, `area:art`, `area:repo`; `priority:high`, `priority:normal`, `priority:low`; `status:needs-decision`, `status:blocked`.
 - [ ] Consider a single GitHub Project board with `Backlog`, `Ready`, `In progress`, `Review`, and `Done` only after the issue backlog exists.
@@ -68,4 +68,4 @@ The issue forms currently do not assign labels because the remote label catalog 
 
 ## Not performed yet
 
-The local feature branch has not been pushed; no issue or PR has been created; and `dev`, labels, project board, merge method, and CI checks remain unpublished or undecided. The active remote rulesets apply as soon as matching branches exist.
+The `docs/github-foundation` feature branch and `dev` are published. The project-foundation form is available on `main`, and issue [#1](https://github.com/ivandpazd/vaelora/issues/1) is open. No PR has been created yet. Custom labels, project board, merge method, and CI checks remain undecided or unconfigured; the two active rulesets apply to their matching branches.

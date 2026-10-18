@@ -46,11 +46,11 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - [x] T3 — S3: Add technical, production, and branch/commit guidance — inline — complete — commits: `4428367`, `aa6cbb9`; Markdown links passed.
 - [x] T4 — S4: Complete general README and cross-document navigation — inline — complete — commit: `b3387a9`; local Markdown links validated.
 - [x] T5 — S5: Add proprietary rights notice — inline — complete — commit: `9e26a33`; holder/contact and `git diff --check` verified; assessment: medium, under budget.
-- [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`; assessment: medium, under budget.
+- [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; `main` and `dev` are published; assessment: medium, under budget.
 - [x] T7 — S2: Add a dedicated project-foundation YAML issue form — inline — complete — commit: `986c6b8`; YAML structure and chooser config parsed, whitespace check passed; assessment: medium, under budget.
 - [x] T8 — S2, S6: Publish the project-foundation form on protected `main` through a one-commit, user-scoped bootstrap bypass, then remove that bypass — inline — complete — remote commit `3d32821`; ruleset restored active with zero bypass actors; independent verification pending.
 - [x] T9 — S6: Publish the integration and foundation branches to GitHub — inline — complete — remote refs `dev` and `docs/github-foundation` verified at their pushed commits; task record: `6d226ef`.
-- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — in progress — issue `#1` created and read back; PR remains gated on exact protected-label/linkage authority and required labels.
+- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — in progress — issue `#1` created and read back; PR remains gated on exact protected-label authorization, human-selected linkage intent, and required type/size labels.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
@@ -69,6 +69,7 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - L25: Published `.github/ISSUE_TEMPLATE/project_foundation.yml` to `main` in one commit (`3d32821`) using a temporary bypass restricted to the authenticated user; the bypass was removed immediately. Read-back confirmed the file blob and `Protect main` active with zero bypass actors. GitHub's REST ruleset API supports user-scoped bypass actors and audited `always` mode (see GitHub REST ruleset documentation). Independent verification pending.
 - L26: Created `https://github.com/ivandpazd/vaelora/issues/1` from the now-active Project foundation task form after an open-and-closed duplicate search returned no matches. Target-host read-back confirmed title, body, open state, and no labels (`confirmed`).
 - L27: The user authorized autonomous creation of project issues, branches, PR association, and merge. Issue `#1` still needs the protected `status:approved` action and the exact `Closes` versus `Refs` choice required by the PR workflow before a PR can be created; no labels or PRs have been added yet.
+- L28 (2026-10-18): Independent verification passed the published bootstrap. Corrected stale current-state statements: `dev` exists, the foundation form is on `main`, and issue `#1` is open; PR creation and merge remain unfinished.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

@@ -48,8 +48,9 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - [x] T5 — S5: Add proprietary rights notice — inline — complete — commit: `9e26a33`; holder/contact and `git diff --check` verified; assessment: medium, under budget.
 - [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`; assessment: medium, under budget.
 - [x] T7 — S2: Add a dedicated project-foundation YAML issue form — inline — complete — commit: `986c6b8`; YAML structure and chooser config parsed, whitespace check passed; assessment: medium, under budget.
-- [ ] T8 — S2, S6: Resolve the protected-main bootstrap path to publish the new form — inline — pending — commit/PR pending.
+- [ ] T8 — S2, S6: Publish the project-foundation form on protected `main` through a one-commit, user-scoped bootstrap bypass, then remove that bypass — inline — in progress — commit pending.
 - [x] T9 — S6: Publish the integration and foundation branches to GitHub — inline — complete — remote refs `dev` and `docs/github-foundation` verified at their pushed commits; task record: `6d226ef`.
+- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — pending — issue/PR identities pending.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
@@ -63,6 +64,8 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - L20: Added `.github/ISSUE_TEMPLATE/project_foundation.yml` with required context, scope, and acceptance criteria plus optional dependencies/references. YAML parsing and `git diff --check` passed. Commit `986c6b8` assessed medium, `under_budget`; native review was not due. The Engram mirror remains pending because the runtime did not register a session identity; no agent-attributed memory write was attempted.
 - L21: Pushed `dev` and `docs/github-foundation` to `origin`; both remote branch creations succeeded. The new issue form is on `docs/github-foundation` but is not yet available on GitHub's default branch. PR creation remains blocked until a valid approved issue can be created and the form is published to `main`.
 - L22: `git ls-remote` confirmed remote `dev` at `37324d6f62d1f24b7d2ce946a73e370d345fdc5e` and `docs/github-foundation` at `6d226efbfb5d34ece14110bac0f863cc50ad6ab3`; task-record commit `6d226ef` assessed passive, no review due.
+- L23 (2026-10-18): “ok pues haz el trabajo, la idea es que tu puedas crear un listado grande de issues sin mi autorización, crear ramas, asociar Prs a issues.. y hacer merge”. The user delegates issue creation, branch creation, PR association, and merging for this project without per-operation confirmation.
+- L24 (2026-10-18): “permito crear un desarrollo de más de 400 líneas para este caso ya que es un comienzo de proyecto”. The initial foundation PR may exceed the 400-line review budget under this explicit project-start exception; document the rationale and apply the required exception label.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

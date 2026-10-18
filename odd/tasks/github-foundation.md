@@ -50,7 +50,7 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - [x] T7 — S2: Add a dedicated project-foundation YAML issue form — inline — complete — commit: `986c6b8`; YAML structure and chooser config parsed, whitespace check passed; assessment: medium, under budget.
 - [x] T8 — S2, S6: Publish the project-foundation form on protected `main` through a one-commit, user-scoped bootstrap bypass, then remove that bypass — inline — complete — remote commit `3d32821`; ruleset restored active with zero bypass actors; independent verification pending.
 - [x] T9 — S6: Publish the integration and foundation branches to GitHub — inline — complete — remote refs `dev` and `docs/github-foundation` verified at their pushed commits; task record: `6d226ef`.
-- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — in progress — issue `#1` created and read back; PR remains gated on exact protected-label authorization, human-selected linkage intent, and required type/size labels.
+- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — in progress — issue `#1` is open; `status:approved` now exists in the repository but the GitHub integration denied applying it (403), and read-back confirmed no issue labels; no PR has been created.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”
@@ -70,6 +70,7 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - L26: Created `https://github.com/ivandpazd/vaelora/issues/1` from the now-active Project foundation task form after an open-and-closed duplicate search returned no matches. Target-host read-back confirmed title, body, open state, and no labels (`confirmed`).
 - L27: The user authorized autonomous creation of project issues, branches, PR association, and merge. Issue `#1` still needs the protected `status:approved` action and the exact `Closes` versus `Refs` choice required by the PR workflow before a PR can be created; no labels or PRs have been added yet.
 - L28 (2026-10-18): Independent verification passed the published bootstrap. Corrected stale current-state statements: `dev` exists, the foundation form is on `main`, and issue `#1` is open; PR creation and merge remain unfinished.
+- L29 (2026-10-18): The user explicitly authorized creating and applying `status:approved` to issue `#1`. Created the repository label (`0e8a16`); the single issue-label attempt was rejected by GitHub with `403 Resource not accessible by integration`. Target-host read-back confirmed issue `#1` remains open with no labels. No retry was made; integration write access is required before continuing.
 - L9 (2026-10-16): “Vale, la idea es crear siempre PR de la feature a dev, después ir a la rama dev, hacer una valoración técnica y de documentación, y si todo está correcto se debe crear otra PR de dev a main”
 - L10: Reopened only T3 to make the post-merge `dev` technical/documentation review and the separate `dev` → `main` promotion PR explicit; no other task or game rule changed.
 - L11: Verified the local Markdown links and whitespace check; 14 Markdown files scanned with zero broken local links. T3 follow-up assessment: medium risk, `under_budget`, no review due.

@@ -48,9 +48,9 @@ Branch: `docs/github-foundation` | Delivery: `feature-branch-chain` (feature PRs
 - [x] T5 — S5: Add proprietary rights notice — inline — complete — commit: `9e26a33`; holder/contact and `git diff --check` verified; assessment: medium, under budget.
 - [x] T6 — S3, S6: Configure and document public GitHub repository and main/dev rulesets — inline — complete — commit: `9e26a33`; rulesets `25234621` and `25234622` verified and documented; remote currently has only `main`; assessment: medium, under budget.
 - [x] T7 — S2: Add a dedicated project-foundation YAML issue form — inline — complete — commit: `986c6b8`; YAML structure and chooser config parsed, whitespace check passed; assessment: medium, under budget.
-- [ ] T8 — S2, S6: Publish the project-foundation form on protected `main` through a one-commit, user-scoped bootstrap bypass, then remove that bypass — inline — in progress — commit pending.
+- [ ] T8 — S2, S6: Publish the project-foundation form on protected `main` through a one-commit, user-scoped bootstrap bypass, then remove that bypass — inline — in progress — pending.
 - [x] T9 — S6: Publish the integration and foundation branches to GitHub — inline — complete — remote refs `dev` and `docs/github-foundation` verified at their pushed commits; task record: `6d226ef`.
-- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — pending — issue/PR identities pending.
+- [ ] T10 — S2, S6: Create the foundation issue and complete the linked PR/merge path — inline — pending — issue/PR identities pending; use the user's project-level delegation for issue/branch/PR/merge work, subject to required issue/label workflow gates.
 
 ## Log
 - L12 (2026-10-16): “Vale, pues si es así, mejor lo dejamos público y remarcamos en la licencia el uso para poder aplicar las reglas”

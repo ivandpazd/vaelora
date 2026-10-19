@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for music, sound effects, ambience, feedback audio, mixing, audio assets, or audio accessibility.
 
+## Stage Scope
+Primary: stages 2–4; supports stage 5. Audio cues must be specified before integration and verified in gameplay context.
+
 ## Hard Rules
 - Tie important audio cues to observable game states, not hidden implementation details.
 - Track provenance, licensing, format, looping, loudness, and platform constraints.

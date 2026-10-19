@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for opponent planning, difficulty, AI behavior, evaluation heuristics, or AI performance work.
 
+## Stage Scope
+Primary: stages 3–4; supports stage 1. AI scope and fairness assumptions are designed in stage 1 and proven in the test battery.
+
 ## Hard Rules
 - Give AI only the information and legal actions available to the human.
 - Route AI actions through the same validation and transition path.

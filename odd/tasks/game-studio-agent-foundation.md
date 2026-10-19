@@ -6,12 +6,12 @@ Test runner: structural shell checks and skill-registry refresh
 ## Specs
 
 ### S1 — Agent operating contract
-Create a root `AGENTS.md` that makes the existing Vaelora documentation, architecture boundaries, branch workflow, quality gates, and final-quality-art constraint executable for AI contributors.
+Create a root `AGENTS.md` that makes the existing Vaelora documentation, architecture boundaries, branch workflow, production stages, quality gates, and final-quality-art constraint executable for AI contributors.
 
 Acceptance: contributors can identify canonical sources, required checks, prohibited shortcuts, and the expected handoff for design, code, content, art, QA, and release work.
 
 ### S2 — Professional game-development skills
-Create project skills covering the professional disciplines needed from preproduction through final delivery, with concise LLM-first activation, rules, decision gates, execution, output, and local references.
+Create project skills covering the professional disciplines needed from preproduction through final delivery, with concise LLM-first activation, explicit stage applicability, rules, decision gates, execution, output, and local references.
 
 Acceptance: every skill has valid frontmatter, the required sections, and points to current local project documentation.
 
@@ -36,3 +36,6 @@ Initial inspection found no project `AGENTS.md`, no project `SKILL.md`, and no r
 
 ### L3
 Created `AGENTS.md` plus 12 role skills. Refreshed `.atl/skill-registry.md` successfully; structural validation passed for all project skills. The registry remains local runtime metadata because `.atl/` is ignored by the repository.
+
+### L4
+Review found that role routing was clear but lifecycle-stage routing was implicit. The accepted correction is to add an explicit six-stage production model to `AGENTS.md` and a stage scope/gate to every skill, while retaining ODD only as the execution workflow underneath those product stages.

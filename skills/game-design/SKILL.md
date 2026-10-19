@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load when defining or changing gameplay rules, systems, content contracts, or player-facing interaction outcomes.
 
+## Stage Scope
+Primary: stage 1; supports stages 2–4. Stage 1 locks observable rules before dependent implementation.
+
 ## Hard Rules
 - Read the GDD and open decisions before proposing a rule.
 - Specify timing, inputs, validation, state transition, output, persistence, and edge cases.

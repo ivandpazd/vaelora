@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for product scope, milestones, production sequencing, feature intake, issue readiness, or release planning.
 
+## Stage Scope
+Primary: stages 0–5. Own the transition between stages and never mark a gate complete without its evidence.
+
 ## Hard Rules
 - Treat the README, production plan, GDD, and open-decisions register as authoritative in their domains.
 - Do not approve an unresolved design decision by implication.

@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for project bootstrap, exports, CI, packaging, signing, release readiness, platform validation, or delivery incidents.
 
+## Stage Scope
+Primary: stages 0 and 5; supports stages 2–4. Platform assumptions must be identified at foundation and proven before release claims.
+
 ## Hard Rules
 - Confirm engine/export behavior from current official documentation before locking configuration.
 - Keep credentials and signing material out of the repository and logs.

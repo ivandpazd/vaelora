@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for economy formulas, map fairness, progression, difficulty, combat tuning, or balance investigations.
 
+## Stage Scope
+Primary: stage 1; gates stages 2, 3, and 4. Balance evidence is provisional until the named scenario catalog and tolerances pass.
+
 ## Hard Rules
 - Use fixed seeds, named scenarios, metrics, tolerances, and rerun rules.
 - Keep tunable values in content data and formulas in testable simulation code.

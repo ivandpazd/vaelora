@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for test strategy, bug reproduction, playtests, regression, acceptance, balance evidence, or release gates.
 
+## Stage Scope
+Primary: stages 2–5; gates every transition. Define evidence during stage 1 and execute it at the applicable stage gate.
+
 ## Hard Rules
 - Reproduce reported failures before deciding they already work.
 - Prefer fixed seeds and named scenarios; record exact inputs, build, platform, and outcome.

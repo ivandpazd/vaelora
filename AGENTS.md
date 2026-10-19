@@ -12,6 +12,21 @@ Vaelora is a 2D, turn-based fantasy strategy game in preproduction. Treat the re
 
 If sources conflict, stop and report the conflict. Never silently turn an open decision into an implementation rule.
 
+## Production stages
+
+ODD may organize the work underneath this lifecycle, but it must not replace it. Every task, issue, PR, and skill invocation declares one primary stage and its gate:
+
+| Stage | Purpose | Exit gate |
+|---|---|---|
+| 0. Foundation | Repository, documentation, workflow, and ownership | Canonical docs and delivery workflow are usable. |
+| 1. Design lock | Rules, content contracts, balance scenarios, UX, and technical decisions | Blocking decisions have acceptance criteria and owners. |
+| 2. Vertical slice | Godot foundation and one reproducible end-to-end scenario | Seeded scenario is playable on the intended target families. |
+| 3. Complete prototype | Both initial civilizations and all agreed baseline systems | Full agreed match is playable with final-quality assets. |
+| 4. Test battery | Regression, fairness, saves, AI, UX, visual, and platform validation | Blocking defects are resolved and evidence is recorded. |
+| 5. Expansion and release | New civilizations, optimization, packaging, store/release preparation | Release evidence and promotion gate are complete. |
+
+Do not skip a stage gate because an artifact exists. A later-stage request must identify which earlier-stage assumptions it depends on and whether they are locked.
+
 ## Product and architecture guardrails
 
 - Preserve deterministic, seed-driven simulation and reproducible saves, combat, turns, and tests.
@@ -53,3 +68,5 @@ Load the narrowest project skill that matches the work. Skills are runtime contr
 ## Handoff contract
 
 Every substantial change must state: objective, canonical sources, affected role(s), dependencies, changed files, checks run and their observed result, manual/platform evidence where applicable, open decisions, and risk. Do not claim completion when a required check is unavailable or skipped.
+
+It must also state: `Stage`, `Gate`, `Primary skill`, `Supporting skills`, and whether the work advances or merely prepares that gate.

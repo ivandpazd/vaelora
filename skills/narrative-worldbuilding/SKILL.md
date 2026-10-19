@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for lore, faction identity, naming, narrative content, world references, or in-game text.
 
+## Stage Scope
+Primary: stages 0–1; supports stages 2–5. Canon and terminology must be locked before dependent content production.
+
 ## Hard Rules
 - Preserve the Trama, Vaelora, Auren League, and Brasal clans as established canon.
 - Do not stereotype cultures or use real-world references without a documented rationale.

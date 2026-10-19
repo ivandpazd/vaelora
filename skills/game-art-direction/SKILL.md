@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for visual identity, concepts, sprites, environments, UI assets, animation, import settings, or art acceptance.
 
+## Stage Scope
+Primary: stages 0–3; gates stage 3 and supports stages 4–5. Final-quality assets are required in the prototype, not deferred behind placeholders.
+
 ## Hard Rules
 - Use the supplied key art and documented visual direction as references, not as implemented UI.
 - Prototype assets must be final-quality; label drafts as drafts and never present placeholders as complete.

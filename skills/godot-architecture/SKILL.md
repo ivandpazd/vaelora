@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for Godot project structure, engine decisions, scene organization, GDScript conventions, resources, and platform adapters.
 
+## Stage Scope
+Primary: stage 2; supports stages 0–5. Architecture decisions must be locked before they become dependencies of the vertical slice.
+
 ## Hard Rules
 - Keep simulation independent from scenes, rendering, input hardware, and platform APIs.
 - Use one canonical coordinate model for hex rules; project to isometric coordinates only in presentation.

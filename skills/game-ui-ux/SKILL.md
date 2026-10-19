@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for screens, HUD, menus, feedback, input mapping, accessibility, focus, or interaction flows.
 
+## Stage Scope
+Primary: stages 1–4; supports stage 5. Interaction contracts are defined before vertical-slice implementation and rechecked per target family.
+
 ## Hard Rules
 - Keep presentation and input adapters from owning authoritative game rules.
 - Emit the same player intent vocabulary from touch, mouse, keyboard, and controller.

@@ -10,6 +10,9 @@ metadata:
 ## Activation Contract
 Load for simulation, commands, entities, map generation, turns, combat, cities, persistence models, or deterministic tests.
 
+## Stage Scope
+Primary: stages 2–3; supports stage 4. Implement only rules whose stage-1 contract and persistence impact are understood.
+
 ## Hard Rules
 - Receive intent, validate against authoritative state, apply one deterministic transition, and emit a result.
 - Rejected commands must leave state unchanged.

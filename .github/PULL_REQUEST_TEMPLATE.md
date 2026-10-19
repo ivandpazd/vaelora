@@ -28,7 +28,7 @@
 
 ## Review checklist
 
-- [ ] The PR targets `dev` (or `main` for an explicitly approved release/hotfix path).
+- [ ] The PR is either a feature PR targeting `dev` or the single promotion PR from `dev` to `main`.
 - [ ] Acceptance criteria are observable and linked to the issue or design decision.
 - [ ] Tests and documentation accompany the behavior/content changes.
 - [ ] No unapproved game rule, balance value, license, or placeholder asset was added.

@@ -1,0 +1,37 @@
+name: Project foundation task
+description: Track foundational project, repository, or production setup work.
+title: "[Foundation]: "
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Use this form for foundational work that enables Vaelora development,
+        such as project structure, documentation, repository workflow, or production setup.
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and motivation
+      description: Explain the need for this foundation work and the current state.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Describe what is included and identify relevant constraints or exclusions.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable results that show the foundation work is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and references
+      description: Link related documentation or name external dependencies, if any.
+    validations:
+      required: false

@@ -1,0 +1,19 @@
+# Godot-generated editor and import data
+.godot/
+.import/
+*.translation
+*.tmp
+
+# Export configuration may contain credentials on older Godot versions.
+export.cfg
+export_credentials.cfg
+
+# Local export output
+/builds/
+/exports/
+
+# Operating system and editor swap files
+.DS_Store
+Thumbs.db
+*.swp
+*~

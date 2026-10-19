@@ -34,7 +34,7 @@ This register prevents missing detail from being mistaken for approval. A questi
 | Area | Question | Priority |
 |---|---|---|
 | Vision | Resolved in GDD §4: unit radius 2, city radius 3, terrain line-of-sight rules, and no improvement-based vision changes | Keep visibility tests aligned with the canonical rules | Resolved |
-| Civilizations | Brasal clans identity, later balance refinements, and future civilization content; Auren League identity resolved in issue #11 | High |
+| Civilizations | Later balance refinements and future civilization content; Auren League and Brasal clans identities resolved in issues #11 and #12 | High |
 | Cities | Resolved in GDD §9: no city garrison in the initial prototype; military units defend city tiles | Keep city-capture tests aligned with the canonical rules | Resolved |
 | Improvements | Resolved in GDD §7: one worker action per turn, no cancellation after start, replacement semantics, and transfer on city capture | Keep worker-action and ownership tests aligned with the canonical rules | Resolved |
 | Balance | Values should begin as tuning data and be iterated through seeded scenarios | High |
@@ -54,6 +54,15 @@ This register prevents missing detail from being mistaken for approval. A questi
 When resolving an item, capture: question, evidence or playtest context, selected rule, rejected alternatives and trade-offs, acceptance checks, and affected document sections. Then update this table and the canonical GDD in the same change. Do not duplicate a long design debate here after it has been recorded in the relevant issue or accepted decision document.
 
 ## Resolved decisions
+
+### Brasal clans identity — initial prototype
+
+- **Selected rule:** The Brasal clans are the adaptive frontier and resourcefulness baseline. They have no innate unit or building-stat modifier. **Warband Tradition** requires Military Training and Metallurgy, costs 35 RP, and reduces Basic soldier production cost from 12 to 9 production points. **Foraging Doctrine** requires Agriculture and Medicine, costs 50 RP, and grants +1 food to every assigned Forest and Plains tile owned by Brasal before city growth is calculated. The initial city-name pool, heraldry, palette, silhouettes, and naming rules are defined in [World and Civilizations](world-and-civilizations.md#brasal-clans--orcs). The first balance fixtures are `BRASAL-01-FORGE-AND-FIELD` (seed 1201), `BRASAL-02-BROKEN-GATE` (seed 1202), and `BRASAL-03-WARBAND-PRESSURE` (seed 1203).
+- **Trade-off:** Brasal's advantage is conditional and visible: it needs the right assigned terrain or a deliberate research path, and its military tempo changes production cost rather than combat statistics. This preserves common ports, lumber facilities, roads, and peaceful development while giving Auren counterplay through land contests, road disruption, defense, and research choices.
+- **Rejected alternatives:** A flat combat bonus was rejected because it would reduce city development and make the conquest route too automatic. A second resource or conversion economy was rejected because it would add a separate rules engine and obscure the relationship between terrain and city growth. A universal food bonus was rejected because it would be invisible to map context and too strong on every start. A free starting unit was rejected because it would violate the equal starting package and distort early scouting or settlement decisions.
+- **Counterplay and balance risks:** Foraging Doctrine may overvalue Forest/Plains-heavy starts; Warband Tradition may create a production snowball after Metallurgy; an Archipelago map may make the military path too slow; and the fixed city-name pool may be exhausted in long matches. Counterplay must remain available through contested territory, road disruption, Walls, defensive positioning, and competing research priorities. Balance tests must track time to first improved tile, food gained from Foraging Doctrine, Basic soldier production timing, city count, research completion, and conquest outcomes.
+- **Acceptance checks:** The three named scenario fixtures use the standard equal starting package and fairness constraints; Brasal has viable peaceful, infrastructure, and conquest routes without hidden information or a second economy engine; unique technology prerequisites, costs, and formulas match GDD §8; city names and visual rules match the world document; and rejected alternatives, counterplay, and balance risks remain recorded here.
+- **Affected canonical sections:** [Game Design Document §8](game-design-document.md#8-knowledge-and-research), [Game Design Document §14](game-design-document.md#14-setting-and-civilization-identity), and [World and Civilizations — Brasal clans](world-and-civilizations.md#brasal-clans--orcs).
 
 ### Auren League identity — initial prototype
 

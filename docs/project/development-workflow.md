@@ -1,34 +1,33 @@
 # Development Workflow
 
+This document is the operational source of truth for how work moves through Vaelora. The normal path is deliberately narrow: **feature branch → `dev` → `main`**.
+
 ## Branch model
 
-The project uses a three-level flow: **`main` → `dev` → short-lived feature branches**.
+The project uses a two-stage promotion flow: **short-lived feature branches → `dev` → `main`**.
 
 | Branch | Role | Receives changes from |
 |---|---|---|
-| `main` | Stable, reviewed project state; release candidates and tagged releases originate here | PRs from `dev` |
-| `dev` | Integration branch for the next development cycle | PRs from `feature/*`, `fix/*`, and `docs/*` |
-| `feature/<issue>-<slug>` | New game behavior/content for one issue | Starts from and returns to `dev` |
-| `fix/<issue>-<slug>` | A scoped correction | Starts from and returns to `dev` |
-| `docs/<issue>-<slug>` | Documentation-only work | Starts from and returns to `dev` |
-| `hotfix/<issue>-<slug>` | Urgent correction to a released `main` build | Starts from `main`; after the main PR, back-merge to `dev` |
+| `dev` | Integration branch for the next development cycle | PRs from `feature/*` only |
+| `feature/<issue>-<slug>` | Any approved feature, fix, content, documentation, or repository change tied to one issue | Starts from and returns to `dev` |
+| `main` | Stable, reviewed project state and release source | Promotion PRs from `dev` only |
 
-Examples: `feature/42-city-growth`, `fix/58-road-movement`, `docs/31-combat-rules`. Use lowercase kebab-case and include the issue number whenever an issue exists.
+Examples: `feature/42-city-growth`, `feature/58-road-movement`, `feature/31-combat-rules`. Use lowercase kebab-case and always include the issue number.
 
 ### Change flow
 
-1. Open or select an issue and confirm its acceptance criteria.
-2. Create a short-lived branch from `dev` (or from `main` for an urgent release hotfix).
+1. Search open and closed issues, then open or select the concrete issue for the work and confirm its acceptance criteria.
+2. Create `feature/<issue>-<slug>` from `dev`.
 3. Commit a coherent work unit using Conventional Commits.
-4. Open a PR to `dev`; link the issue, describe player-visible behavior, and provide tests/screenshots/platform evidence as relevant.
+4. Open a PR to `dev`; link the issue with `Closes #N`, describe the outcome, and provide tests/screenshots/platform evidence as relevant.
 5. Address review feedback and verify the final candidate.
-6. Merge approved feature PRs into `dev`.
+6. Confirm GitGuardian and every required check pass, resolve review conversations, and merge the approved feature PR into `dev`.
 7. After each feature PR is merged, review the integrated `dev` state for technical correctness and documentation quality before promoting it. Use the [integration review gate](#integration-review-gate).
-8. Only when that review passes, open a separate release/integration PR from `dev` to `main`; review the complete promotion diff and release checklist before merging it.
-9. If the integration review finds a problem, keep `main` unchanged. Create a corrective branch from `dev`, send its PR to `dev`, merge it after review, and repeat the integration review.
-10. Back-merge urgent hotfixes from `main` to `dev` so the fix is not lost in ongoing work.
+8. The merged feature PR closes its linked issue. No separate issue is required for the `dev` → `main` promotion.
+9. Only when the integration review passes, open a promotion PR from `dev` to `main`; review the complete promotion diff and release checklist before merging it.
+10. If the integration review finds a problem, keep `main` unchanged. Create another feature issue and `feature/*` branch from `dev`, merge its corrective PR into `dev`, and repeat the integration review.
 
-GitHub Issue Forms and PR templates are stored in `.github/`. GitHub only displays these templates after they are committed to the repository's default branch; use the initial bootstrap release path in the [GitHub readiness checklist](github-readiness.md).
+GitHub Issue Forms and PR templates are stored in `.github/`. They are available from the current default branch after the foundation bootstrap. Use the [GitHub readiness checklist](github-readiness.md) when changing repository settings.
 
 ## Conventional Commits
 
@@ -72,7 +71,7 @@ The Conventional Commits format is documented at [conventionalcommits.org](https
 
 ## Issues
 
-Use the matching issue form for bugs, feature proposals, or unresolved design decisions. Before opening a new issue, search for an existing open or closed issue covering the same behavior. An issue should include:
+Use the matching issue form for bugs, feature proposals, or unresolved design decisions. Every change that will enter `dev` needs one concrete issue, including documentation and repository work. Before opening a new issue, search for an existing open or closed issue covering the same behavior. An issue should include:
 
 - One problem, decision, or outcome.
 - Context and motivation, without prescribing unrelated implementation.
@@ -84,8 +83,8 @@ Do not use issues to silently approve TBD game rules. A design proposal remains 
 
 ## Pull requests
 
-- Feature/fix/docs PRs target `dev`; release/integration PRs target `main`.
-- Use the repository PR template. Link issues and state whether the change closes or only references them.
+- Every `feature/*` PR targets `dev`; the only normal PR targeting `main` is the promotion PR from `dev`.
+- Use the repository PR template. Feature PRs must use `Closes #N`; the promotion PR has no intermediate issue requirement.
 - Explain the player-facing outcome and what is intentionally out of scope.
 - Include focused automated tests and complete relevant checks; passive documentation changes need structural/link validation.
 - For game behavior, include a manual test scenario and affected platform/export coverage. For visual changes, include screenshots or a short capture when practical.
@@ -96,14 +95,14 @@ Do not use issues to silently approve TBD game rules. A design proposal remains 
 
 ## Integration review gate
 
-Every feature/fix/docs PR is reviewed and merged into `dev` first. Then evaluate the resulting integrated `dev` branch before opening a `dev` → `main` PR:
+Every feature PR is reviewed and merged into `dev` first. Then evaluate the resulting integrated `dev` branch before opening a `dev` → `main` PR:
 
 - **Technical review:** check the change against the intended architecture and game rules; run the focused tests and the applicable project checks/builds; inspect platform impact and any known limitations.
 - **Documentation review:** confirm the README and relevant design/technical docs match the behavior, links work, unresolved decisions remain explicit, and the PR provides enough context to maintain the change.
 - **Decision:** record the outcome. If either review finds a blocker, fix it through another PR to `dev` and repeat the gate. Do not promote a known-bad integration state.
-- **Promotion PR:** after both reviews pass, create a distinct PR from `dev` to `main`. Include the promoted change range, review outcome, test/build evidence, and release notes or a concise change summary. Merge only after this PR's checks and final diff review pass.
+- **Promotion PR:** after both reviews pass, create a distinct PR from `dev` to `main`. It does not require a new issue. Include the promoted change range, review outcome, test/build evidence, and release notes or a concise change summary. Merge only after this PR's checks and final diff review pass.
 
-This gate is a required human review step. The remote repository currently has active `main` and `dev` rulesets that require PRs, block force-pushes and deletion, and require resolved review conversations. No CI checks are required yet because the Godot project and its test workflow are not in place.
+This gate is a required human review step. The remote repository currently has active `main` and `dev` rulesets that require PRs, block force-pushes and deletion, and require resolved review conversations. GitGuardian is a mandatory project check before a feature PR may merge; other CI checks will be added after the Godot project and its test workflow exist.
 
 ## Initial solo-maintainer policy
 

@@ -1,6 +1,6 @@
 # GitHub Readiness Checklist
 
-This file records both the local preparation and the verified GitHub configuration as of 2026-10-16.
+This file records the local preparation and the verified GitHub configuration as of 2026-10-19.
 
 ## Prepared in the repository
 
@@ -11,14 +11,13 @@ This file records both the local preparation and the verified GitHub configurati
 - [x] Root repository hygiene for the planned Godot project: generated-file ignores, text line endings, and editor defaults.
 - [x] Proprietary rights notice for original Vaelora materials in `LICENSE`.
 - [x] README and `docs/` navigation.
-- [ ] Files merged to the repository default branch — required before GitHub presents the issue forms and PR template.
-- [ ] GitHub labels and project board — proposed vocabulary is below; do not assign labels that have not been created.
+- [x] Foundation files merged to the repository default branch and available to GitHub.
+- [x] Required labels used by the current workflow exist: `status:approved`, `type:docs`, and `size:exception`.
+- [ ] Broader label catalog and project board — optional; do not add them speculatively.
 
 ## Initial publication/bootstrap
 
-The repository's default branch is `main`. GitHub reads issue-form and PR-template files from the default branch, not from an arbitrary feature branch, as described in [GitHub's template documentation](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates). Therefore the initial foundation needs a one-time bootstrap path: review and merge the project-foundation changes to `main`, then create or fast-forward `dev` from that stable baseline. After bootstrap, ordinary feature PRs target `dev`, and release/integration PRs target `main`.
-
-If the initial foundation is first merged into `dev`, the forms will not be available until the later `dev` → `main` PR is merged. This delay is expected and does not require changing the default branch to `dev`.
+The repository's default branch is `main`. GitHub reads issue-form and PR-template files from the default branch, as described in [GitHub's template documentation](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/about-issue-and-pull-request-templates). The one-time foundation bootstrap is complete: the templates are on `main`, and `dev` is the published integration branch. Normal work now follows `feature/<issue>-<slug>` → `dev` → `main`.
 
 ## Verified repository settings
 
@@ -38,8 +37,8 @@ GitHub's Terms of Service allow users to view and fork a public repository throu
 - [x] Create/publish `dev` from the approved foundation baseline.
 - [x] Add a ruleset for `main`: require PRs, block force pushes and deletion, and require resolved review conversations.
 - [x] Add a ruleset for `dev`: require PRs, block force pushes and deletion, and require resolved review conversations.
-- [ ] Preserve the two-stage review flow: feature PRs merge into `dev`; after technical and documentation review, promote `dev` to `main` with a separate PR.
-- [ ] Initially require zero outside approvals while this is a solo-maintainer project. Revisit when collaborators can independently review.
+- [x] Preserve the two-stage review flow: feature PRs merge into `dev`; after technical and documentation review, promote `dev` to `main` with a separate PR.
+- [x] Initially require zero outside approvals while this is a solo-maintainer project. Revisit when collaborators can independently review.
 - [ ] Do not configure required status check names until the matching workflow has completed successfully; then select the exact job name.
 - [ ] Allow only narrowly justified bypass actors. Avoid blanket administrator bypass for ordinary changes.
 
@@ -48,17 +47,17 @@ GitHub branch protections and rulesets are repository settings, not files in thi
 ### Issues and project tracking
 
 - [x] Confirm the default branch contains `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md`.
-- [ ] Create agreed labels before any form is configured to apply labels automatically.
+- [x] Create the labels required by the current issue/PR workflow before using them.
 - [ ] Suggested minimal label groups: `type:bug`, `type:feature`, `type:design`, `type:docs`; `area:gameplay`, `area:tech`, `area:art`, `area:repo`; `priority:high`, `priority:normal`, `priority:low`; `status:needs-decision`, `status:blocked`.
 - [ ] Consider a single GitHub Project board with `Backlog`, `Ready`, `In progress`, `Review`, and `Done` only after the issue backlog exists.
 - [ ] Create milestones around deliverables, not arbitrary dates: repository foundation, design lock, two-civilization prototype, prototype validation, civilization expansion.
 - [ ] Keep issue labels and project columns lightweight; use the issue body and links for detailed context.
 
-The issue forms currently do not assign labels because the remote label catalog has not been reviewed or created.
+The current issue forms do not assign labels automatically. Labels are applied deliberately during issue/PR triage so the repository does not silently depend on an incomplete catalog.
 
 ### Merge and release settings
 
-- [ ] Select one merge method after deciding how Conventional Commits should appear in the stable history. Squash merge makes the PR title become the main-branch commit subject; if selected, require Conventional Commit PR titles.
+- [x] Keep the configured merge methods available to the solo maintainer; use the repository PR title and merge method that preserve a reviewable Conventional Commit history.
 - [ ] Add CI only after the Godot project skeleton and a real test/check command exist; then require the exact successful workflow check on `dev` and `main`.
 - [ ] Decide whether final art assets need Git LFS after representative source files and expected asset sizes are known; do not add LFS rules or storage assumptions speculatively.
 - [ ] Disable automatic deployment until platform exports, signing, and release checks are approved.
@@ -66,6 +65,11 @@ The issue forms currently do not assign labels because the remote label catalog 
 - [x] Add a proprietary `LICENSE` notice for original Vaelora materials; third-party materials remain under their own terms.
 - [ ] Add a `SECURITY.md`, code of conduct, or public support link only after choosing the appropriate project policy.
 
-## Not performed yet
+## Current verified state
 
-The `docs/github-foundation` feature branch and `dev` are published. The project-foundation form is available on `main`, and issue [#1](https://github.com/ivandpazd/vaelora/issues/1) is open. No PR has been created yet. Custom labels, project board, merge method, and CI checks remain undecided or unconfigured; the two active rulesets apply to their matching branches.
+- `main` is the public default branch and contains the issue forms, PR template, contributor guidance, and repository foundation.
+- `dev` is published and protected by ruleset `25234622`; `main` is protected by ruleset `25234621`.
+- PR #2 merged the foundation into `dev` as `0057a59ba9346a56bba90022adf9e52c5af79e2e`; issue [#1](https://github.com/ivandpazd/vaelora/issues/1) is closed.
+- GitGuardian passed on PR #2. No Godot project or repository CI workflow exists yet, so no additional required CI checks are configured.
+- The normal path is `feature/<issue>-<slug>` → `dev` → `main`. Feature PRs close their concrete issue; the promotion PR from `dev` to `main` does not require an intermediate issue.
+- Optional labels, project-board columns, release automation, Git LFS, and packaged-build policy remain intentionally unconfigured until their need is demonstrated.

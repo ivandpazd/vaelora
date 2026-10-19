@@ -31,7 +31,7 @@ Create the Godot project and content/simulation boundaries. Implement determinis
 
 ### 3. Complete two-civilization prototype
 
-Implement all agreed match modes and initial systems for the human Liga de Auren and orc Clanes de Brasal: procedural maps; exploration/fog; settlement/cities/territory; city production/buildings; workers/improvements/roads; growth/economy; research; land movement/combat; transport/naval rules; AI; score and victory; manual and five-complete-round autosaves.
+Implement all agreed match modes and initial systems for the human Auren League and orc Brasal clans: procedural maps; exploration/fog; settlement/cities/territory; city production/buildings; workers/improvements/roads; growth/economy; research; land movement/combat; transport/naval rules; AI; score and victory; manual and five-complete-round autosaves.
 
 **Exit:** full matches can be completed on every target platform with final-quality visuals and no temporary gameplay rules.
 

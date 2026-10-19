@@ -4,7 +4,7 @@
 
 Vaelora is a 2D, turn-based fantasy strategy game in preproduction. You explore a seeded hexagonal world, found and develop cities, claim and improve territory, research technologies, connect settlements with roads, and compete against an AI rival.
 
-The game is set on the continent of Vaelora, where generations of political disputes and neglected infrastructure have weakened **the Trama**: an old network of roads and signal beacons. The human **Liga de Auren** and the orc **Clanes de Brasal** are the first civilizations competing to restore, control, or replace it.
+The game is set on the continent of Vaelora, where generations of political disputes and neglected infrastructure have weakened **the Trama**: an old network of roads and signal beacons. The human **Auren League** and the orc **Brasal clans** are the first civilizations competing to restore, control, or replace it.
 
 > **Current status:** the design and repository foundation are complete enough to begin the Godot project. Gameplay implementation, assets, and automated game tests have not started yet. The first prototype must use final-quality visual assets; placeholder art is out of scope.
 
@@ -21,7 +21,7 @@ The game is set on the continent of Vaelora, where generations of political disp
 | Map sizes | 48×32, 64×40, and 80×50 hexes |
 | Platforms | Android, Windows, macOS, Linux, and Web are planned targets |
 | Engine | Godot with GDScript |
-| Prototype civilizations | Human Liga de Auren and orc Clanes de Brasal |
+| Prototype civilizations | Human Auren League and orc Brasal clans |
 | Match modes | Turn-limited score, total conquest, full-tree knowledge, and combined victory |
 | Visual direction | Bright, luminous, readable fantasy art in landscape orientation |
 

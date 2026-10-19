@@ -34,3 +34,10 @@
 - [ ] No unapproved game rule, balance value, license, or placeholder asset was added.
 - [ ] Save, turn, platform, and accessibility effects were considered where applicable.
 - [ ] All review conversations are resolved and required checks pass.
+
+## Promotion review (complete for `dev` → `main` PRs)
+
+- **Technical review of the integrated `dev` branch:** pending / passed / blocked
+- **Documentation review of the integrated `dev` branch:** pending / passed / blocked
+- **Evidence or review links:**
+- [ ] Both reviews passed; this PR promotes only the reviewed integration state.

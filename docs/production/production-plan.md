@@ -19,7 +19,7 @@ Establish the branch model, issue/PR templates, README, documentation index, and
 
 ### 1. Design lock for the initial game
 
-Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, and interaction requirements. Use playtest prototypes for uncertain balance rather than freezing guesses.
+Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, interaction requirements, and the permanent tutorial/onboarding and pacing contract. Use playtest prototypes for uncertain balance rather than freezing guesses.
 
 Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md): fixed seeds, named metrics, initial tolerances, explicit tuning ownership, and rerun rules. A value is not considered locked merely because it appears in code or passes one unseeded match.
 

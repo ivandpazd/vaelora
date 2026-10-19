@@ -49,11 +49,12 @@ The other four planned civilization concepts—elves, dwarves, goblins, and skel
 
 ## Audience and market assumptions
 
-**Assumption to validate:** the primary audience is players who enjoy turn-based empire building but prefer shorter, more readable matches than a full-scale 4X simulation. This is a positioning hypothesis, not a demographic claim. The product's onboarding, expected match length, accessibility requirements, and commercial model have not yet been specified.
+**Assumption to validate:** the primary audience is players who enjoy turn-based empire building but prefer shorter, more readable matches than a full-scale 4X simulation. This is a positioning hypothesis, not a demographic claim. The product's accessibility requirements and commercial model remain open; onboarding structure and initial pacing targets are defined in the GDD.
 
 ## Success criteria for the first complete prototype
 
 - A new player can complete the first match without needing undocumented rules.
+- A permanent, replayable modular tutorial and in-match codex explain the complete first-prototype loop without forcing tutorial use in normal matches.
 - City production, growth, territory ownership, research, and turn progression remain predictable and inspectable.
 - Both initial civilizations can pursue multiple victory approaches and each has a distinct strategic identity.
 - Procedural maps are reproducible from saves and meet the agreed separation/fairness checks.
@@ -63,4 +64,4 @@ The other four planned civilization concepts—elves, dwarves, goblins, and skel
 
 ## Open product questions
 
-Match length, onboarding/tutorial, commercial model, localization, accessibility targets, visual asset budget, sound direction, browser support matrix, and measurable performance budgets require separate decisions. See the [open design decisions register](../game-design/open-decisions.md) for gameplay-specific questions.
+Commercial model, localization, accessibility targets, visual asset budget, sound direction, browser support matrix, and measurable performance budgets require separate decisions. Match pacing and the permanent modular tutorial are defined in the [Game Design Document](../game-design/game-design-document.md#13-saving-and-accessibility-constraints). See the [open design decisions register](../game-design/open-decisions.md) for gameplay-specific questions.

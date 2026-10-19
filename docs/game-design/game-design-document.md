@@ -270,6 +270,34 @@ On desktop, primary click selects and secondary click cancels or closes a previe
 
 All actionable controls use a minimum 48 logical-pixel target, preserve landscape safe areas, provide visible focus, and expose text labels for screen readers where the platform supports them. UI scaling offers 100%, 125%, 150%, 175%, and 200% presets. Detailed localization, colorblind palette validation, and screen-reader coverage beyond actionable labels remain content-lock decisions.
 
+### Onboarding, tutorial, and match pacing
+
+The tutorial is a permanent, separate mode available from the main menu. It is not a campaign, does not add narrative or gameplay progression, and does not grant exclusive rewards. Players may start, restart, leave, and replay it at any time. All tutorial modules use the same rules, validated commands, presentation patterns, and input vocabulary as normal matches; tutorial state must not create a second rules path.
+
+The initial tutorial is divided into independent modules:
+
+1. **Fundamentals** — objective, setup, map reading, and victory overview.
+2. **Exploration** — hex movement, unit actions, and fog of war.
+3. **Foundation and territory** — settler use, city founding, and claims.
+4. **City development** — production, growth, and buildings.
+5. **Research** — technologies, prerequisites, and acceleration.
+6. **Infrastructure** — workers, improvements, and roads.
+7. **Land combat** — movement, attack, defense, retaliation, and capture.
+8. **Naval transport** — ports, embarkation, sea movement, and disembarkation.
+9. **Turns and victory** — confirmation, saving, end turn, and match completion.
+
+Every module has a fixed learning objective, a reproducible setup, contextual explanations, an observable completion condition, a restart action, an exit action, and links to the relevant codex entries. All modules are available without hard prerequisites; the menu may show a recommended order. Completing or skipping a module is recorded for onboarding metrics, not used to lock normal gameplay. Normal matches never force the tutorial, while the codex and contextual help remain available during any match.
+
+Match pacing is skill-sensitive. The turn-limit rules and victory conditions remain authoritative; minutes are observational targets for playtesting, not fixed minimums or maximums. Initial target ranges are:
+
+| Map size | New-player first match | Experienced-player match |
+|---|---:|---:|
+| Small | 45–75 minutes | 25–50 minutes |
+| Medium | 60–100 minutes | 40–75 minutes |
+| Large | 75–120 minutes | 55–100 minutes |
+
+These ranges are evaluated separately by player familiarity, map size, match mode, and difficulty. Playtest records must also capture time to first additional city, first shared technology, first combat, first road connection, first victory-condition progress, completion, and abandonment. A conquest or knowledge victory may end a match before its turn limit; a skilled player completing a match below the reference range is not a failure.
+
 ## 14. Setting and civilization identity
 
 Vaelora is both the game title and the continent. Its people once relied on **the Trama**, a network of roads and signal beacons that connected settlements and supported trade and communication. The network weakened through neglected upkeep and political disputes over which routes deserved investment. As connections failed, the alliance coordinating them dissolved. Generations later, rival civilizations rebuild, expand, and compete for control of valuable land and routes. This is grounded context for a strategy game, not a prophecy or world-ending epic.
@@ -293,7 +321,7 @@ All gameplay is 2D with a consistent, fixed isometric camera. Initial art should
 
 ## 16. Open decisions before implementation
 
-The following remain intentionally unresolved—not implied approvals: save slots, save compatibility/versioning, and platform persistence; touch/mouse/keyboard/controller interaction priorities and accessibility; later balance refinements; final platform performance targets; and final art/audio specifications. These should be decided in focused batches and playtested rather than guessed in code. Terrain, map setup and fairness, city territory, production, workers, improvements, roads, research, economy, land combat, naval transport, victory/scoring, AI/difficulty, city-garrison behavior, and both prototype civilization identities are resolved in the preceding sections, subject to implementation verification and balance testing.
+The following remain intentionally unresolved—not implied approvals: save slots, save compatibility/versioning, and platform persistence; touch/mouse/keyboard/controller interaction priorities and accessibility; later balance refinements; final platform performance targets; and final art/audio specifications. These should be decided in focused batches and playtested rather than guessed in code. Terrain, map setup and fairness, city territory, production, workers, improvements, roads, research, economy, land combat, naval transport, victory/scoring, AI/difficulty, city-garrison behavior, onboarding/tutorial structure, match pacing targets, and both prototype civilization identities are resolved in the preceding sections, subject to implementation verification and balance testing.
 
 ## 17. Prototype content contract
 

@@ -21,6 +21,8 @@ Establish the branch model, issue/PR templates, README, documentation index, and
 
 Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, and interaction requirements. Use playtest prototypes for uncertain balance rather than freezing guesses.
 
+Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md): fixed seeds, named metrics, initial tolerances, explicit tuning ownership, and rerun rules. A value is not considered locked merely because it appears in code or passes one unseeded match.
+
 **Exit:** every initial rule has observable acceptance criteria, all starting units/buildings/technologies have data, and procedural fairness has measurable tests.
 
 ### 2. Godot foundation and vertical slice

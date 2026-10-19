@@ -35,6 +35,7 @@ This register prevents missing detail from being mistaken for approval. A questi
 |---|---|---|
 | Vision | Resolved in GDD §4: unit radius 2, city radius 3, terrain line-of-sight rules, and no improvement-based vision changes | Keep visibility tests aligned with the canonical rules | Resolved |
 | Civilizations | Later balance refinements and future civilization content; Auren League and Brasal clans identities resolved in issues #11 and #12 | High |
+| Content contract | Shared/unique units, buildings, improvements, technologies, modifiers, prerequisites, and vertical-slice boundary | Keep content IDs and data schemas aligned with the canonical contract | Resolved |
 | Cities | Resolved in GDD §9: no city garrison in the initial prototype; military units defend city tiles | Keep city-capture tests aligned with the canonical rules | Resolved |
 | Improvements | Resolved in GDD §7: one worker action per turn, no cancellation after start, replacement semantics, and transfer on city capture | Keep worker-action and ownership tests aligned with the canonical rules | Resolved |
 | Balance | Values should begin as tuning data and be iterated through seeded scenarios | High |
@@ -54,6 +55,16 @@ This register prevents missing detail from being mistaken for approval. A questi
 When resolving an item, capture: question, evidence or playtest context, selected rule, rejected alternatives and trade-offs, acceptance checks, and affected document sections. Then update this table and the canonical GDD in the same change. Do not duplicate a long design debate here after it has been recorded in the relevant issue or accepted decision document.
 
 ## Resolved decisions
+
+### Shared and civilization-specific content contract — initial prototype
+
+- **Selected rule:** The prototype uses one shared content definition for Settler, Worker, Explorer, Basic soldier, Patrol ship, Granary, Barracks, Walls, Academy, Farm, Lumber facility, Mine, Port, roads, and twelve shared technologies. Auren contributes Civic Charter and Public Works; Brasal contributes Warband Tradition and Foraging Doctrine. No unique units, buildings, improvements, base unit statistics, extra economy resources, or faction-specific production slots are included in the initial contract.
+- **Exact ratio:** The 80/20 target is measured by technology-node count with a 75–85% shared tolerance. The initial tree has 12 shared and 4 unique nodes, so it is exactly 75% shared and sits at the lower accepted boundary. Adding or removing technology nodes requires recalculating the ratio and reopening this decision if it leaves the tolerance.
+- **Trade-off:** A shared roster keeps player comprehension, art/animation cost, AI evaluation, balance, and save compatibility manageable while the four unique technologies provide readable faction identity. Unique units or buildings would increase presentation and counterplay surface before the first prototype has a stable test battery.
+- **Rules:** Shared content has one canonical data ID and one rule definition. Civilization-specific effects are explicit modifiers with stable IDs, prerequisites, costs, timing, scope, and stacking behavior. Unique technologies use shared prerequisites only, do not unlock exclusive units or buildings, and pass through the same human and AI command path. Names and presentation may vary by civilization, but assignment timing, persistence, uniqueness, localization hooks, and player rename restrictions remain shared.
+- **Vertical-slice boundary:** The first vertical slice must load both civilization definitions, all shared core records, all four unique technology records, both city-name pools, and the prerequisite/modifier validators. It must demonstrate at least one shared and one unique technology per civilization through common production, research, AI, and save/load paths. Unique units, unique buildings, faction-specific base stats, extra economy resources, additional technology nodes, and four future civilizations are deferred.
+- **Acceptance checks:** The matrix in GDD §17 names every initial unit, building, improvement, road, technology, modifier, prerequisite rule, naming rule, unlock rule, and vertical-slice status; the 12/16 technology ratio is measurable; the GDD and architecture proposal reference the same contract; and no future content is silently added outside this boundary.
+- **Affected canonical sections:** [Game Design Document §8](game-design-document.md#8-knowledge-and-research), [Game Design Document §17](game-design-document.md#17-prototype-content-contract), and [Technical Architecture Proposal — Content and balance data](../technical/architecture-proposal.md#content-and-balance-data).
 
 ### Brasal clans identity — initial prototype
 

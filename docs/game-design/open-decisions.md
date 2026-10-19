@@ -38,7 +38,7 @@ This register prevents missing detail from being mistaken for approval. A questi
 | Content contract | Shared/unique units, buildings, improvements, technologies, modifiers, prerequisites, and vertical-slice boundary | Keep content IDs and data schemas aligned with the canonical contract | Resolved |
 | Cities | Resolved in GDD §9: no city garrison in the initial prototype; military units defend city tiles | Keep city-capture tests aligned with the canonical rules | Resolved |
 | Improvements | Resolved in GDD §7: one worker action per turn, no cancellation after start, replacement semantics, and transfer on city capture | Keep worker-action and ownership tests aligned with the canonical rules | Resolved |
-| Balance | Values should begin as tuning data and be iterated through seeded scenarios | High |
+| Balance | Values, metrics, tolerances, scenario catalog, tuning ownership, and regression policy resolved in the Balance Methodology and Scenario Catalog | Keep scenario evidence and tuning data synchronized | Resolved |
 | UI/accessibility | Font scaling, color contrast, colorblind support, screen-reader scope, localization plan | High |
 | Art/audio | Asset dimensions, silhouette standards, palette, animation scope, audio direction and budget | High |
 
@@ -55,6 +55,16 @@ This register prevents missing detail from being mistaken for approval. A questi
 When resolving an item, capture: question, evidence or playtest context, selected rule, rejected alternatives and trade-offs, acceptance checks, and affected document sections. Then update this table and the canonical GDD in the same change. Do not duplicate a long design debate here after it has been recorded in the relevant issue or accepted decision document.
 
 ## Resolved decisions
+
+### Seeded balance methodology and scenario catalog — initial prototype
+
+- **Selected rule:** Vaelora uses a hybrid balance process: fixed-seed deterministic scenarios, manual player-facing review, deterministic simulation batches once the runner exists, and supplemental AI-vs-AI sampling. The authoritative catalog is `BAL-01-OPENING` through `BAL-08-ENDGAME` in [Balance Methodology and Scenario Catalog](balance-methodology.md). Each record has a stable ID, seed, setup, focus, expected observations, metrics, tolerance, evidence status, and owner.
+- **Initial measurements:** Starting opportunity remains within 15%. The initial catalog uses explicit ranges for first additional city (8–20 turns), city level 2 (8–20 completed city turns after founding), first shared technology (5–14 civilization turns), first unique technology (20–50 civilization turns), Basic soldier production (4–10 city turns from an idle level-1 city at baseline production), road connectivity (turns 12–30 when a legal corridor exists), matchup win share (40–60% paired sample), and victory diversity (no route above 70% in mixed samples).
+- **Trade-off:** Deterministic scenarios make tuning reproducible and protect against optimizing one map or victory mode, while manual review catches readability and counterplay problems that aggregate metrics cannot see. AI-vs-AI is useful for sampling but cannot replace player-versus-AI or manual review.
+- **Tuning ownership:** The GDD owns rule meaning and formulas; versioned content data owns values; simulation owns calculation and validation; the catalog owns evidence requirements. Balance changes must name the changed IDs/formulas, scenarios rerun, before/after metrics, tolerance, player-facing problem, counterplay, and regression risk.
+- **Regression policy:** Faction-specific changes rerun `BAL-07` plus affected scenarios and both player orders. Shared formulas/content rerun the complete catalog. Map, terrain, AI, victory, score, turn, or save changes rerun the complete catalog plus their applicable specialized checks. Replaced seeds remain archived and a new scenario revision is created.
+- **Acceptance checks:** The catalog covers opening, expansion, roads, naval, combat, research, civilization identity, and endgame; every scenario has fixed setup and measurable tolerance; tuning ownership and evidence status are explicit; and the GDD, production plan, and architecture proposal reference the same methodology.
+- **Affected canonical sections:** [Game Design Document §18](game-design-document.md#18-balance-validation-contract), [Production Plan — Phase 1](../production/production-plan.md#1-design-lock-for-the-initial-game), and [Technical Architecture Proposal — Content and balance data](../technical/architecture-proposal.md#content-and-balance-data).
 
 ### Shared and civilization-specific content contract — initial prototype
 

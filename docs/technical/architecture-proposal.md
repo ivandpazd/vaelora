@@ -54,15 +54,15 @@ This is an initial organization proposal, not a requirement to adopt these exact
 
 ## Persistence
 
-A save should contain a schema/version marker, match configuration, map seed, full authoritative board/entity state, active civilization/round, production/research progress, and fog/visibility state needed to resume. Prefer model-level serialization over serializing scene nodes. Define corruption handling, migration policy, slot behavior, and browser persistence before save implementation. Test manual save/load round trips and autosave boundaries, including a save after all AI turns.
+A save should use a versioned, checksummed model-level JSON envelope containing match configuration, map seed and deterministic random-state, full authoritative board/entity state, active civilization/round, production/research progress, completed technologies, and fog/visibility state needed to resume. Do not serialize scene nodes. Use atomic temporary-file replacement, explicit sequential migrations, three manual slots, one autosave, and one previous-autosave backup. Validate checksums and invariants before load; preserve the original slot on any failure. Use Godot's `user://` abstraction for desktop, Android, and Web persistence. Test manual round trips, corrupted and unsupported saves, migration, manual-slot preservation, and autosave boundaries after all AI turns.
 
 ## Input and display
 
-Separate player intents from input hardware so touch, mouse, keyboard, and any later controller can express the same actions. Design for landscape layouts, readable hex selection, safe areas, text scaling, and touch targets. Exact supported input matrix, UI scaling rules, keyboard bindings, screen reader support, and accessibility targets are open.
+Separate player intents from input hardware so touch, mouse, keyboard, and controller adapters emit the same validated actions. Keep selection, preview, confirmation, cancellation, and focus navigation in the application/presentation boundary; only the simulation applies authoritative transitions. Design for landscape layouts, safe areas, readable hex selection, visible focus, 48 logical-pixel minimum targets, and the documented UI-scale presets. Persist no input-device-specific gameplay state.
 
 ## AI boundary
 
-The AI receives the same visible information and legal actions as a human unless a difficulty advantage is explicitly approved. Difficulty is selected before the match and remains fixed; its primary difference is AI starting resources. Avoid difficulty modifiers that secretly change rules mid-match. AI strategy, planning horizon, tie-breaking, and evaluation metrics are open.
+The AI receives the same visible information and legal actions as a human. Difficulty is selected before the match and remains fixed; its explicit differences are starting coins and planning horizon as defined in the Game Design Document. Avoid difficulty modifiers that secretly change rules mid-match. AI decisions must pass through the same validated command path as human actions.
 
 ## Cross-platform validation
 

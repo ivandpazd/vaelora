@@ -23,7 +23,7 @@ The Trama is the old road-and-beacon network; it is not a playable faction or a 
 | Civilization | People | Prototype timing | Identity status |
 |---|---|---|---|
 | Auren League | Humans | Initial prototype | Resolved in issue #11; infrastructure-led baseline with Civic Charter and Public Works |
-| Brasal clans | Orcs | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
+| Brasal clans | Orcs | Initial prototype | Resolved in issue #12; adaptive frontier identity with Foraging Doctrine and Warband Tradition |
 | Raíces de Nymara | Elves | After prototype gate | Working name and archetype; design not finalized |
 | Círculos de Durn | Dwarves | After prototype gate | Working name and archetype; design not finalized |
 | Compañías de la Chispa | Goblins | After prototype gate | Working name and archetype; design not finalized |
@@ -91,7 +91,48 @@ Each scenario must use the standard equal starting package, deterministic tie-br
 
 ### Brasal clans — orcs
 
-An orc civilization with a distinct strategic identity and a different path to prosperity. It may emphasize a non-standard source of income or a specific military/economic trade-off, while retaining access to ordinary infrastructure such as ports and lumber facilities. Exact mechanics, unit stats, buildings, names, and visuals remain open.
+**Identity statement:** The Brasal clans are an adaptive frontier society that turns difficult land and organized pressure into momentum. They are the approachable aggression-and-resourcefulness counterpart to Auren: use ordinary infrastructure to sustain the frontier, then choose between stronger field provisioning and a faster basic-soldier response.
+
+**Player-facing promise:** *Make the frontier feed the clan, then decide where the pressure lands.* Brasal rewards deliberate use of Forest and Plains territory plus timely military preparation without creating a second economy engine or making combat automatic.
+
+#### Strategic identity and trade-offs
+
+- The clans' core advantage is conditional tempo: their strongest effects require either productive Forest/Plains territory or a deliberate military research path.
+- The clans have no innate unit or building-stat modifier. Settlers, workers, explorers, soldiers, buildings, ports, lumber facilities, production rules, and the shared technology tree remain common unless the accepted technologies below change them.
+- The trade-off is dependence on context: Foraging Doctrine has no effect without assigned Forest or Plains tiles, while Warband Tradition arrives through a deeper military path and improves production tempo rather than combat statistics.
+- Brasal can pursue peaceful development, infrastructure, or conquest. Its identity is visible through territory and production choices, and Auren can counter it by contesting productive land, disrupting roads, or forcing research trade-offs.
+
+#### Unique technologies
+
+| Technology | Prerequisites | Cost | Exact effect | Formula or system affected |
+|---|---|---:|---|---|
+| Warband Tradition | Military Training and Metallurgy | 35 RP | Reduces Basic soldier production cost from 12 to 9 production points for Brasal cities | Basic soldier production cost |
+| Foraging Doctrine | Agriculture and Medicine | 50 RP | Grants +1 food to every assigned Forest and Plains tile owned by Brasal; the bonus is included before city growth is calculated | Assigned-tile food and city growth |
+
+Warband Tradition does not change Basic soldier attack, defense, health, movement, military-unit limits, or the shared production slot. Foraging Doctrine does not affect unassigned tiles, other terrain, coin income, production, city level thresholds, or enemy-owned territory. Both effects apply only after the technology is completed and remain part of the civilization's authoritative state.
+
+#### City names and naming rules
+
+Cities draw uniformly without replacement from the following initial pool until the pool is exhausted: Brasal, Dargan, Ghorra, Kraz, Morga, Naska, Odrik, Raska, Sarga, Thorga, Uldan, Varka, Vorg, Yagra, and Zorak. Names are assigned when a settler founds a city, cannot be chosen or edited by the player in the initial prototype, and are persisted in saves. If a later pool expansion is needed, new names must follow the same compact, hard-consonant, non-hyphenated naming rule and must not duplicate an existing name.
+
+#### Heraldry and visual language
+
+- **Heraldic mark:** three ascending iron bars beneath an ember-red sun, representing clan continuity, practical craft, and pressure moving forward together.
+- **Palette:** charcoal `#24262B`, ember red `#B84A3A`, copper `#C47A44`, weathered bone `#D8C7A2`, and deep moss `#3F5A43` for terrain-linked accents. Red is reserved for active pressure and military emphasis; bone remains an accent, not a skin-tone shorthand.
+- **Silhouette:** sturdy, mobile silhouettes with layered hide, practical iron, broad tools, hooked standards, field packs, and modular clan markers. Buildings favor reinforced timber, stone footings, kilns, storehouses, and visible repair work. Avoid generic spikes, skull overload, or visual shorthand that reduces the clans to brute force.
+- **Naming voice:** concise, tactile, and clan-rooted; prefer names that sound like places shaped by labor, weather, and remembered agreements rather than random aggressive syllables.
+
+#### Seeded matchup scenario matrix
+
+These deterministic scenario identifiers define the first balance checks; they are design fixtures to run once the Godot simulation exists, not claims that runtime playtests have already passed.
+
+| Scenario | Match setup | Brasal route to validate | Viability signal |
+|---|---|---|---|
+| `BRASAL-01-FORGE-AND-FIELD` | Seed `1201`, Continents, Small, Brasal vs Auren League | Research Agriculture → Medicine → Foraging Doctrine and develop assigned Forest/Plains tiles | Brasal can pursue a peaceful growth route without requiring conquest or a hidden income source |
+| `BRASAL-02-BROKEN-GATE` | Seed `1202`, Inland Sea, Medium, Brasal vs Auren League | Use common roads, ports, and lumber facilities while delaying the unique military path | Brasal can build and maintain infrastructure without losing its identity or needing exclusive buildings |
+| `BRASAL-03-WARBAND-PRESSURE` | Seed `1203`, Archipelago, Medium, Brasal vs Auren League | Research Military Training → Metallurgy → Warband Tradition and use the cost reduction to contest a city | Brasal can create conquest pressure while Auren retains readable counterplay through defense, roads, and research choices |
+
+Each scenario must use the standard equal starting package, deterministic tie-breaking, and the approved fairness constraints. Balance testing may adjust the seeds or thresholds, but it must not silently change the identity or formulas above.
 
 ## Naming and content policy
 

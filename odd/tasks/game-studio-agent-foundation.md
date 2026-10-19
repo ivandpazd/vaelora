@@ -39,3 +39,6 @@ Created `AGENTS.md` plus 12 role skills. Refreshed `.atl/skill-registry.md` succ
 
 ### L4
 Review found that role routing was clear but lifecycle-stage routing was implicit. The accepted correction is to add an explicit six-stage production model to `AGENTS.md` and a stage scope/gate to every skill, while retaining ODD only as the execution workflow underneath those product stages.
+
+### L5
+User constraint: preserve efficient existing flows and avoid unnecessary workload. Skill selection must be minimal and decision-driven: one primary skill by default, supporting skills only across real discipline boundaries, with no duplicated documents, checks, or ceremony.

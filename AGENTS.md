@@ -65,6 +65,14 @@ Load the narrowest project skill that matches the work. Skills are runtime contr
 | QA and playtesting | `skills/game-qa/SKILL.md` |
 | Build, platform, release | `skills/game-release/SKILL.md` |
 
+## Efficient skill selection
+
+- Select the smallest skill set that can safely decide or execute the request. One primary skill is the default.
+- Add a supporting skill only when the change crosses a real discipline boundary, such as gameplay plus UI, or content plus balance.
+- Do not activate every skill listed for a stage, repeat a check already covered by the responsible discipline, or create a second document for the same decision.
+- Keep stage and gate reporting lightweight for small work; use the full production gate only when the requested outcome actually advances that gate.
+- Prefer the existing project workflow, helpers, tests, and evidence formats before introducing new process or tooling.
+
 ## Handoff contract
 
 Every substantial change must state: objective, canonical sources, affected role(s), dependencies, changed files, checks run and their observed result, manual/platform evidence where applicable, open decisions, and risk. Do not claim completion when a required check is unavailable or skipped.

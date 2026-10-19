@@ -148,7 +148,7 @@ The initial shared technology tree is:
 | 3 | Engineering | Masonry and Mining | 50 RP | Building projects cost 3 fewer production points, to a minimum cost of 3 |
 | 3 | Metallurgy | Military Training and Mining | 50 RP | Basic soldiers gain +10% attack and defense |
 
-The Liga de Auren has two additional technologies: **Civic Charter** (Agriculture and Scholarship; 35 RP), which grants one additional territory-claim token at each city level-up before level 6, and **Public Works** (Engineering; 50 RP), which grants +1 production point per turn to cities connected by an active own road network. The Clanes de Brasal has two additional technologies: **Warband Tradition** (Military Training and Metallurgy; 35 RP), which reduces Basic soldier production cost from 12 to 9 points, and **Foraging Doctrine** (Agriculture and Medicine; 50 RP), which grants +1 food to assigned Forest and Plains tiles.
+The Auren League has two additional technologies: **Civic Charter** (Agriculture and Scholarship; 35 RP), which grants one additional territory-claim token at each city level-up before level 6, and **Public Works** (Engineering; 50 RP), which grants +1 production point per turn to cities connected by an active own road network. The Brasal clans have two additional technologies: **Warband Tradition** (Military Training and Metallurgy; 35 RP), which reduces Basic soldier production cost from 12 to 9 points, and **Foraging Doctrine** (Agriculture and Medicine; 50 RP), which grants +1 food to assigned Forest and Plains tiles.
 
 At the end of each civilization turn, research generates:
 
@@ -278,8 +278,8 @@ The six planned civilization concepts are:
 
 | Civilization | People | Initial status |
 |---|---|---|
-| Liga de Auren | Humans | Prototype |
-| Clanes de Brasal | Orcs | Prototype |
+| Auren League | Humans | Prototype |
+| Brasal clans | Orcs | Prototype |
 | Raíces de Nymara | Elves | Later expansion |
 | Círculos de Durn | Dwarves | Later expansion |
 | Compañías de la Chispa | Goblins | Later expansion |

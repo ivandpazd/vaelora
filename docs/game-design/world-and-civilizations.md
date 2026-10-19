@@ -22,8 +22,8 @@ The Trama is the old road-and-beacon network; it is not a playable faction or a 
 
 | Civilization | People | Prototype timing | Identity status |
 |---|---|---|---|
-| Liga de Auren | Humans | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
-| Clanes de Brasal | Orcs | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
+| Auren League | Humans | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
+| Brasal clans | Orcs | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
 | Raíces de Nymara | Elves | After prototype gate | Working name and archetype; design not finalized |
 | Círculos de Durn | Dwarves | After prototype gate | Working name and archetype; design not finalized |
 | Compañías de la Chispa | Goblins | After prototype gate | Working name and archetype; design not finalized |
@@ -44,11 +44,11 @@ The six concepts are original fantasy peoples informed by familiar fantasy arche
 
 These are design prompts, not finalized mechanics.
 
-### Liga de Auren — humans
+### Auren League — humans
 
 A human civilization for the approachable baseline: flexible city development, recognizable unit roles, and a balanced route into research, infrastructure, or conquest. Exact economic advantage, units, buildings, city names, heraldry, and visual language remain open.
 
-### Clanes de Brasal — orcs
+### Brasal clans — orcs
 
 An orc civilization with a distinct strategic identity and a different path to prosperity. It may emphasize a non-standard source of income or a specific military/economic trade-off, while retaining access to ordinary infrastructure such as ports and lumber facilities. Exact mechanics, unit stats, buildings, names, and visuals remain open.
 

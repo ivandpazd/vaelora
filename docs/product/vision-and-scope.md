@@ -33,7 +33,7 @@ The target platform set is a design commitment. The supported browser matrix, An
 
 ## Initial prototype scope
 
-The prototype should implement the complete agreed initial ruleset with two playable civilizations: the human **Liga de Auren** and the orc **Clanes de Brasal**. It includes procedural seeded maps, all four match modes, city growth and territory, one-action city production, research, workers and improvements, roads, fog of war, land and naval transport play, combat, AI, score/victory rules, and save/resume. Exact content values must be approved before implementation, not improvised in code.
+The prototype should implement the complete agreed initial ruleset with two playable civilizations: the human **Auren League** and the orc **Brasal clans**. It includes procedural seeded maps, all four match modes, city growth and territory, one-action city production, research, workers and improvements, roads, fog of war, land and naval transport play, combat, AI, score/victory rules, and save/resume. Exact content values must be approved before implementation, not improvised in code.
 
 The other four planned civilization concepts—elves, dwarves, goblins, and skeletons—follow only after the initial prototype passes its final test battery. The expansion gate is intended to protect balance and regression quality, not to reduce the first prototype's game systems.
 

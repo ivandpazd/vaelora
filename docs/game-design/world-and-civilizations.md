@@ -22,7 +22,7 @@ The Trama is the old road-and-beacon network; it is not a playable faction or a 
 
 | Civilization | People | Prototype timing | Identity status |
 |---|---|---|---|
-| Auren League | Humans | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
+| Auren League | Humans | Initial prototype | Resolved in issue #11; infrastructure-led baseline with Civic Charter and Public Works |
 | Brasal clans | Orcs | Initial prototype | Name accepted; exact bonuses, units, buildings, and lore details open |
 | Raíces de Nymara | Elves | After prototype gate | Working name and archetype; design not finalized |
 | Círculos de Durn | Dwarves | After prototype gate | Working name and archetype; design not finalized |
@@ -46,7 +46,48 @@ These are design prompts, not finalized mechanics.
 
 ### Auren League — humans
 
-A human civilization for the approachable baseline: flexible city development, recognizable unit roles, and a balanced route into research, infrastructure, or conquest. Exact economic advantage, units, buildings, city names, heraldry, and visual language remain open.
+**Identity statement:** The Auren League rebuilds the Trama through coordinated civic investment. It is the approachable infrastructure-and-research baseline: connect cities, turn reliable administration into production, and use a broad technology route to choose between expansion, development, and conquest.
+
+**Player-facing promise:** *Connect first, then make every city count.* Auren rewards visible, deliberate networks rather than hidden information, free units, or a separate rules system.
+
+#### Strategic identity and trade-offs
+
+- The League's core advantage is dependable infrastructure: its strongest faction-specific effects require research and active road connections between its own cities.
+- The League has no innate unit or building-stat modifier. Settlers, workers, explorers, soldiers, buildings, production costs, and shared technologies use the common prototype rules unless an accepted technology below changes them.
+- The trade-off is tempo: Auren must invest workers, road segments, and research before its strongest production benefit appears. An early military rush remains possible, but it does not receive a faction discount.
+- The intended routes are readable and complementary: Civic Charter supports territorial growth, while Public Works supports connected-city production. Neither technology makes a peaceful victory automatic or blocks conquest.
+
+#### Unique technologies
+
+| Technology | Prerequisites | Cost | Exact effect | Formula or system affected |
+|---|---|---:|---|---|
+| Civic Charter | Agriculture and Scholarship | 35 RP | Grants one additional territory-claim token whenever an Auren city levels up from level 1 through level 5; level 6 grants no further token | City level-up claim-token award |
+| Public Works | Engineering | 50 RP | Grants +1 production point per turn to each Auren city in an active own road network; a city must be connected to at least one other own city when its civilization turn resolves | City production points |
+
+Public Works does not create a route, make a disconnected city eligible, alter the road-network coin or growth bonus, or stack for multiple connected cities. Civic Charter does not change claim legality, territory range, city growth thresholds, or the base level-6 maximum outside its documented extra tokens.
+
+#### City names and naming rules
+
+Cities draw uniformly without replacement from the following initial pool until the pool is exhausted: Auren, Ceralis, Doreva, Elandor, Faren, Halden, Ilyra, Liora, Maroven, Nareth, Orsena, Pellan, Queral, Ravelin, and Veyra. Names are assigned when a settler founds a city, cannot be chosen or edited by the player in the initial prototype, and are persisted in saves. If a later pool expansion is needed, new names must follow the same short, pronounceable, non-hyphenated naming rule and must not duplicate an existing name.
+
+#### Heraldry and visual language
+
+- **Heraldic mark:** a gold three-strand knot over a deep blue field, representing the Trama's connected routes and the League's civic institutions.
+- **Palette:** deep blue `#183A63`, civic gold `#D6A63A`, warm ivory `#F2E8CF`, and restrained red `#A8443F` for warnings or military accents. Gold is an accent, not a full background, and must retain contrast at UI scale.
+- **Silhouette:** clean human infantry and civic architecture with readable vertical standards, bridges, arches, road markers, ledgers, and beacon motifs. Avoid oversized armor, skull imagery, or uncontrolled ornament that would blur the contrast with Brasal clans.
+- **Naming voice:** practical, civic, and place-based; prefer compact names that sound like established settlements rather than prophetic titles.
+
+#### Seeded matchup scenario matrix
+
+These deterministic scenario identifiers define the first balance checks; they are design fixtures to run once the Godot simulation exists, not claims that runtime playtests have already passed.
+
+| Scenario | Match setup | Auren route to validate | Viability signal |
+|---|---|---|---|
+| `AUREN-01-TRAMA-RELAY` | Seed `1101`, Continents, Small, Auren vs Brasal clans | Research Forestry and Engineering, connect the first two cities, then use Public Works for production | Auren can reach a connected two-city network without abandoning a legal defensive response |
+| `AUREN-02-CHARTER-EXPANSION` | Seed `1102`, Inland Sea, Medium, Auren vs Brasal clans | Research Agriculture → Scholarship → Civic Charter and use extra claims to secure a third-city corridor | Auren can expand territory and cities without requiring a mirrored or strictly superior start |
+| `AUREN-03-CROSSROADS` | Seed `1103`, Archipelago, Medium, Auren vs Brasal clans | Research toward Engineering and Public Works while producing soldiers through the shared roster | Auren can contest or capture an exposed enemy city without a faction-specific combat bonus |
+
+Each scenario must use the standard equal starting package, deterministic tie-breaking, and the approved fairness constraints. Balance testing may adjust the seeds or thresholds, but it must not silently change the identity or formulas above.
 
 ### Brasal clans — orcs
 

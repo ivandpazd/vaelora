@@ -1,0 +1,44 @@
+name: Feature proposal
+description: Propose a player-facing improvement or capability.
+title: "[Feature]: "
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Describe the player problem first. A proposal is not an accepted design decision
+        until it has been reviewed and the canonical documentation is updated.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or opportunity
+      description: What is difficult, missing, or worth improving for the player?
+    validations:
+      required: true
+  - type: textarea
+    id: player_impact
+    attributes:
+      label: Player impact
+      description: Who benefits and what changes in the game experience?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the outcome without prescribing unrelated implementation details.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: List observable results that would show this request is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives and trade-offs
+      description: What other directions were considered, and what would they cost?
+    validations:
+      required: false

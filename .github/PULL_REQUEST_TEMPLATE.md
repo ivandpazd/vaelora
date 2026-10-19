@@ -1,0 +1,43 @@
+## Summary
+
+<!-- What changes for the player, project, or contributor? -->
+
+## Related issue
+
+<!-- Use Closes #123 only when this PR completes the issue; otherwise use Refs #123. -->
+
+## Change type
+
+- [ ] Gameplay feature or content
+- [ ] Bug fix
+- [ ] Design/documentation
+- [ ] Build or repository maintenance
+
+## Design and scope
+
+- **Canonical document(s) updated:**
+- **Intentionally out of scope:**
+- **Balance/data changes:**
+
+## Verification
+
+- **Automated checks:**
+- **Manual scenario:**
+- **Platforms tested:**
+- **Screenshots or capture (for visual changes):**
+
+## Review checklist
+
+- [ ] The PR is either a feature PR targeting `dev` or the single promotion PR from `dev` to `main`.
+- [ ] Acceptance criteria are observable and linked to the issue or design decision.
+- [ ] Tests and documentation accompany the behavior/content changes.
+- [ ] No unapproved game rule, balance value, license, or placeholder asset was added.
+- [ ] Save, turn, platform, and accessibility effects were considered where applicable.
+- [ ] All review conversations are resolved and required checks pass.
+
+## Promotion review (complete for `dev` → `main` PRs)
+
+- **Technical review of the integrated `dev` branch:** pending / passed / blocked
+- **Documentation review of the integrated `dev` branch:** pending / passed / blocked
+- **Evidence or review links:**
+- [ ] Both reviews passed; this PR promotes only the reviewed integration state.

@@ -40,6 +40,8 @@ The canonical content boundary is defined in the [GDD prototype content contract
 
 Keep formulas in testable code rather than copying near-identical logic into each faction resource. Every content entry needs a stable ID, display/name data, prerequisites, cost or base stats where applicable, affected formula, timing, scope, and stacking behavior. Civilization-specific entries may reference shared entries and explicit modifiers, but scenes must not contain faction branches that duplicate rule behavior. The first vertical slice must load both civilization definitions and exercise at least one shared and one unique technology for each faction through the same production, research, AI, and save/load paths. Unique units, unique buildings, faction-specific base stats, extra economy resources, and new technology nodes are deferred by the contract and require a new design decision.
 
+The [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md) owns scenario IDs, fixed seeds, metric definitions, initial tolerances, evidence status, and rerun scope. Content data owns tunable values; simulation code owns formulas and validation; scenario records own reproducible evidence. A tuning change must not introduce a second source of truth or alter a persisted content ID without the corresponding save-schema assessment.
+
 Candidate directory split:
 
 ```text

@@ -34,7 +34,7 @@ This register prevents missing detail from being mistaken for approval. A questi
 | Area | Question | Priority |
 |---|---|---|
 | Vision | Resolved in GDD §4: unit radius 2, city radius 3, terrain line-of-sight rules, and no improvement-based vision changes | Keep visibility tests aligned with the canonical rules | Resolved |
-| Civilizations | Exact human/orc identities, bonuses, buildings, unit stat variations, city-name pools | High |
+| Civilizations | Brasal clans identity, later balance refinements, and future civilization content; Auren League identity resolved in issue #11 | High |
 | Cities | Resolved in GDD §9: no city garrison in the initial prototype; military units defend city tiles | Keep city-capture tests aligned with the canonical rules | Resolved |
 | Improvements | Resolved in GDD §7: one worker action per turn, no cancellation after start, replacement semantics, and transfer on city capture | Keep worker-action and ownership tests aligned with the canonical rules | Resolved |
 | Balance | Values should begin as tuning data and be iterated through seeded scenarios | High |
@@ -54,6 +54,15 @@ This register prevents missing detail from being mistaken for approval. A questi
 When resolving an item, capture: question, evidence or playtest context, selected rule, rejected alternatives and trade-offs, acceptance checks, and affected document sections. Then update this table and the canonical GDD in the same change. Do not duplicate a long design debate here after it has been recorded in the relevant issue or accepted decision document.
 
 ## Resolved decisions
+
+### Auren League identity — initial prototype
+
+- **Selected rule:** The Auren League is the approachable infrastructure-and-research baseline. It has no innate unit or building-stat modifier. **Civic Charter** requires Agriculture and Scholarship, costs 35 RP, and grants one additional claim token on each city level-up from level 1 through level 5. **Public Works** requires Engineering, costs 50 RP, and grants +1 production point per turn to each Auren city connected by an active own road network to at least one other own city. The initial city-name pool, heraldry, palette, silhouettes, and naming rules are defined in [World and Civilizations](world-and-civilizations.md#auren-league--humans). The first balance fixtures are `AUREN-01-TRAMA-RELAY` (seed 1101), `AUREN-02-CHARTER-EXPANSION` (seed 1102), and `AUREN-03-CROSSROADS` (seed 1103).
+- **Trade-off:** Auren's advantage is visible and earned through roads, city development, and research, but it has a delayed payoff and no free military strength. Infrastructure can be disrupted and Civic Charter competes with other research priorities. This contrasts with the still-open Brasal clans identity without creating a separate rules system or preventing ordinary ports, lumber facilities, units, or buildings.
+- **Rejected alternatives:** A pure research bonus was rejected because it would make the knowledge route strictly dominant and reduce the value of roads. A flat economic bonus was rejected because it would be invisible, always active, and difficult to contest. A free starting unit or unique military roster was rejected because it would distort the equal starting package and increase implementation scope. A defensive-only civic identity was rejected because it would not support the required expansion and conquest routes.
+- **Balance risks:** Public Works may snowball after a safe two-city connection; Civic Charter may overvalue early expansion on high-opportunity maps; the fixed city-name pool may be exhausted in long matches; and the three scenario seeds may not expose enough map variance. Balance tests must track time to first connection, production gained from Public Works, claim-token value, city count, research completion, and conquest outcomes without changing the identity contract silently.
+- **Acceptance checks:** The three named scenario fixtures use the standard equal starting package and fairness constraints; Auren has viable research, infrastructure, and conquest routes without a faction-specific combat bonus; unique technology prerequisites, costs, and formulas match GDD §8; city names and visual rules match the world document; and rejected alternatives and balance risks remain recorded here.
+- **Affected canonical sections:** [Game Design Document §8](game-design-document.md#8-knowledge-and-research), [Game Design Document §14](game-design-document.md#14-setting-and-civilization-identity), and [World and Civilizations — Auren League](world-and-civilizations.md#auren-league--humans).
 
 ### Match setup — initial prototype
 

@@ -148,7 +148,7 @@ The initial shared technology tree is:
 | 3 | Engineering | Masonry and Mining | 50 RP | Building projects cost 3 fewer production points, to a minimum cost of 3 |
 | 3 | Metallurgy | Military Training and Mining | 50 RP | Basic soldiers gain +10% attack and defense |
 
-The Auren League has two additional technologies: **Civic Charter** (Agriculture and Scholarship; 35 RP), which grants one additional territory-claim token at each city level-up before level 6, and **Public Works** (Engineering; 50 RP), which grants +1 production point per turn to cities connected by an active own road network. The Brasal clans have two additional technologies: **Warband Tradition** (Military Training and Metallurgy; 35 RP), which reduces Basic soldier production cost from 12 to 9 points, and **Foraging Doctrine** (Agriculture and Medicine; 50 RP), which grants +1 food to assigned Forest and Plains tiles.
+The Auren League has two additional technologies: **Civic Charter** (Agriculture and Scholarship; 35 RP), which grants one additional territory-claim token whenever an Auren city levels up from level 1 through level 5, and **Public Works** (Engineering; 50 RP), which grants +1 production point per turn to each Auren city in an active own road network when its civilization turn resolves. Public Works requires a city to be connected to at least one other own city; it does not create a route or alter the road-network coin and growth bonuses. The Auren League has no innate unit or building-stat modifier. The Brasal clans have two additional technologies: **Warband Tradition** (Military Training and Metallurgy; 35 RP), which reduces Basic soldier production cost from 12 to 9 points, and **Foraging Doctrine** (Agriculture and Medicine; 50 RP), which grants +1 food to assigned Forest and Plains tiles.
 
 At the end of each civilization turn, research generates:
 
@@ -278,14 +278,14 @@ The six planned civilization concepts are:
 
 | Civilization | People | Initial status |
 |---|---|---|
-| Auren League | Humans | Prototype |
+| Auren League | Humans | Prototype — infrastructure and research baseline; identity resolved in issue #11 |
 | Brasal clans | Orcs | Prototype |
 | Raíces de Nymara | Elves | Later expansion |
 | Círculos de Durn | Dwarves | Later expansion |
 | Compañías de la Chispa | Goblins | Later expansion |
 | Vigilia de los Nombres | Skeletons | Later expansion |
 
-These are original fantasy civilizations inspired by familiar archetypes, not licensed Warhammer factions. Civilizations are asymmetric: specializations affect available options and strengths but do not wholly forbid common functions (for example, orcs may still build ports or lumber facilities). Their exact unique technologies, units, buildings, city-name lists, and economic identities remain TBD.
+These are original fantasy civilizations inspired by familiar archetypes, not licensed Warhammer factions. Civilizations are asymmetric: specializations affect available options and strengths but do not wholly forbid common functions (for example, orcs may still build ports or lumber facilities). The Auren League's identity, unique technologies, city-name pool, heraldry, palette, and visual language are resolved in issue #11; Brasal clans identity details remain open until issue #12.
 
 ## 15. Art and audio direction
 
@@ -293,4 +293,4 @@ All gameplay is 2D with a consistent, fixed isometric camera. Initial art should
 
 ## 16. Open decisions before implementation
 
-The following remain intentionally unresolved—not implied approvals: save slots, save compatibility/versioning, and platform persistence; touch/mouse/keyboard/controller interaction priorities and accessibility; exact human/orc visual identities, city-name pools, and later balance refinements; final platform performance targets; and final art/audio specifications. These should be decided in focused batches and playtested rather than guessed in code. Terrain, map setup and fairness, city territory, production, workers, improvements, roads, research, economy, land combat, naval transport, victory/scoring, AI/difficulty, and city-garrison behavior are resolved in the preceding sections, subject to implementation verification and balance testing.
+The following remain intentionally unresolved—not implied approvals: save slots, save compatibility/versioning, and platform persistence; touch/mouse/keyboard/controller interaction priorities and accessibility; Brasal clans visual identity, city-name pool, and later balance refinements; final platform performance targets; and final art/audio specifications. These should be decided in focused batches and playtested rather than guessed in code. Terrain, map setup and fairness, city territory, production, workers, improvements, roads, research, economy, land combat, naval transport, victory/scoring, AI/difficulty, city-garrison behavior, and the Auren League identity are resolved in the preceding sections, subject to implementation verification and balance testing.

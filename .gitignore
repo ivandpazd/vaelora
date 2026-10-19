@@ -17,3 +17,6 @@ export_credentials.cfg
 Thumbs.db
 *.swp
 *~
+
+# Local Gentle AI runtime metadata
+.atl/

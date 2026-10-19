@@ -36,7 +36,9 @@ Fog-of-war state should distinguish at least unexplored, explored-but-not-curren
 
 ## Content and balance data
 
-Prefer data resources for faction content and tuning values, with shared rules and explicit faction modifiers. Keep formulas in testable code rather than copying near-identical logic into each faction resource. The exact type system, resource schema, and directory layout should be chosen with the first vertical slice, then documented once actual editor constraints are known.
+The canonical content boundary is defined in the [GDD prototype content contract](../game-design/game-design-document.md#17-prototype-content-contract). Prefer data resources for the two civilization definitions and their content references, with shared rules and explicit faction modifiers. The initial contract contains five shared unit records, four shared building records, five shared improvement/road records, twelve shared technology records, two Auren technology records, and two Brasal technology records. The technology ratio is measured by node count: 12/16 shared equals 75%, accepted within the 75–85% tolerance around the 80% target.
+
+Keep formulas in testable code rather than copying near-identical logic into each faction resource. Every content entry needs a stable ID, display/name data, prerequisites, cost or base stats where applicable, affected formula, timing, scope, and stacking behavior. Civilization-specific entries may reference shared entries and explicit modifiers, but scenes must not contain faction branches that duplicate rule behavior. The first vertical slice must load both civilization definitions and exercise at least one shared and one unique technology for each faction through the same production, research, AI, and save/load paths. Unique units, unique buildings, faction-specific base stats, extra economy resources, and new technology nodes are deferred by the contract and require a new design decision.
 
 Candidate directory split:
 
@@ -50,7 +52,7 @@ assets/       final visual/audio resources, licensed source files
  tests/       deterministic rule and integration tests
 ```
 
-This is an initial organization proposal, not a requirement to adopt these exact names.
+This is an initial organization proposal, not a requirement to adopt these exact names. Whatever final directory names are selected, the content IDs and shared/unique boundary remain stable and are referenced by the simulation, AI, presentation, and persistence layers.
 
 ## Persistence
 

@@ -129,7 +129,7 @@ A route is complete when a continuous chain of adjacent road tiles and city tile
 
 ## 8. Knowledge and research
 
-Research belongs to the civilization, not to an individual city. Only one technology can be active at once and there is no research queue. Technologies form a prerequisite tree with approximately 75% shared technologies and two civilization-specific technologies for each prototype civilization. Research can unlock buildings and improvements or grant explicit movement, growth, vision, healing, production, or combat modifiers.
+Research belongs to the civilization, not to an individual city. Only one technology can be active at once and there is no research queue. Technologies form a prerequisite tree with an 80/20 shared-to-unique target measured by technology-node count, with a permitted initial tolerance of 75–85% shared. The initial tree has twelve shared technologies and two civilization-specific technologies per prototype civilization: 12 shared of 16 total nodes equals 75%, the lower boundary of the accepted tolerance. Research can unlock buildings and improvements or grant explicit movement, growth, vision, healing, production, or combat modifiers.
 
 The initial shared technology tree is:
 
@@ -294,3 +294,33 @@ All gameplay is 2D with a consistent, fixed isometric camera. Initial art should
 ## 16. Open decisions before implementation
 
 The following remain intentionally unresolved—not implied approvals: save slots, save compatibility/versioning, and platform persistence; touch/mouse/keyboard/controller interaction priorities and accessibility; later balance refinements; final platform performance targets; and final art/audio specifications. These should be decided in focused batches and playtested rather than guessed in code. Terrain, map setup and fairness, city territory, production, workers, improvements, roads, research, economy, land combat, naval transport, victory/scoring, AI/difficulty, city-garrison behavior, and both prototype civilization identities are resolved in the preceding sections, subject to implementation verification and balance testing.
+
+## 17. Prototype content contract
+
+This contract is the single boundary between shared and civilization-specific content for the initial Auren League and Brasal clans prototype. Content is identified by stable data IDs and loaded by the civilization definition; scenes and rule systems must not duplicate or branch the same behavior by faction.
+
+| Category | Shared content | Auren-specific content | Brasal-specific content | Vertical-slice status |
+|---|---|---|---|---|
+| Units | Settler, Worker, Explorer, Basic soldier, Patrol ship; shared stats and legal actions | None; Auren technologies do not alter unit statistics | None; Brasal technologies do not alter unit statistics | Required: all five data records and shared deployment/transport rules |
+| Buildings | Granary, Barracks, Walls, Academy; shared costs, limits, and effects | None; Civic Charter and Public Works are technology effects, not buildings | None; Warband Tradition and Foraging Doctrine are technology effects, not buildings | Required: all four records and shared prerequisite validation |
+| Improvements and roads | Farm, Lumber facility, Mine, Port, and roads; shared terrain legality and worker rules | None | None | Required: all five improvement records, road connectivity, and replacement rules |
+| Technologies | Agriculture, Forestry, Mining, Military Training, Seamanship, Scholarship, Masonry, Cartography, Logistics, Medicine, Engineering, Metallurgy | Civic Charter; Public Works | Warband Tradition; Foraging Doctrine | Required: all 16 nodes, prerequisites, costs, effects, and completion rules |
+| Modifiers | Terrain, city, building, road, research, combat, and economy formulas defined in §§4–12 | Civic Charter: +1 claim token at level-ups 1–5; Public Works: +1 production in active own connected networks | Warband Tradition: Basic soldier cost 12 → 9; Foraging Doctrine: +1 food on assigned Forest/Plains tiles | Required: modifier IDs, affected formula, timing, scope, and stacking behavior |
+| Names and presentation | Shared assignment timing, persistence, no player renaming, and naming validation | Auren city-name pool, heraldry, palette, silhouettes, and naming voice | Brasal city-name pool, heraldry, palette, silhouettes, and naming voice | Required: both civilization data packs; final art assets remain outside this issue |
+
+### Contract rules
+
+1. The exact technology ratio is measured by nodes, not by lines of code, art assets, or effects: 12 shared / 16 total = 75%, accepted within the 75–85% tolerance around the 80% target. No additional unique technology may be added to the prototype without revisiting this ratio and the content decision.
+2. A shared unit, building, improvement, or technology has one canonical definition. A civilization may reference it, but may not fork it in a scene or silently replace its rules.
+3. Civilization-specific effects are explicit data modifiers with stable IDs, prerequisites, cost, timing, scope, and stacking behavior. They may change a documented formula but may not create hidden information, a second economy engine, or an unbounded exception path.
+4. Unique technologies require only shared technologies as prerequisites in the initial prototype. They do not unlock exclusive buildings or units; future unique content requires a new decision and a matching content-data, AI, art, and save-schema assessment.
+5. Unit and building stat variation is forbidden in the initial prototype unless added as an explicit technology effect in this contract. The current contract contains no unit-stat or building-stat variation.
+6. Names and presentation data are civilization-specific, but naming timing, uniqueness, persistence, localization hooks, and player rename restrictions remain shared rules.
+7. The AI evaluates shared and unique content through the same content IDs, prerequisites, modifiers, and validated commands as the human. No faction receives hidden information, illegal actions, or special AI-only content.
+8. Save data persists the civilization ID, content IDs, completed technology IDs, and modifier-relevant state. It must not infer content from scene names or reorder content by display text.
+
+### Vertical slice and deferred boundary
+
+The first vertical slice must load both civilization definitions; the five shared unit records; the four shared building records; the five shared improvement/road records; all twelve shared technology records; all four unique technology records; both city-name pools; and the explicit modifier/prerequisite validators. It must demonstrate at least one shared technology and one unique technology for each civilization through the same production, research, AI, and save/load paths.
+
+Deferred until a separate approved decision: unique units, unique buildings, faction-specific base unit statistics, faction-specific production slots, additional economy resources or conversion systems, additional civilizations, and any content that changes the 75–85% technology boundary.

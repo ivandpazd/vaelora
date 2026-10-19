@@ -2,6 +2,10 @@
 
 > **Build a civilization. Reconnect the Trama. Decide what survives.**
 
+![Vaelora key art showing the Auren League and Brasal clans connected by the Trama](assets/branding/vaelora-key-art.jpeg)
+
+> **Visual foundation:** the supplied key art establishes the current reference for Vaelora's bright, luminous fantasy direction, the contrast between its prototype civilizations, and the Trama as a visible connection across the world. It is a project reference, not implemented game UI.
+
 Vaelora is a 2D, turn-based fantasy strategy game in preproduction. You explore a seeded hexagonal world, found and develop cities, claim and improve territory, research technologies, connect settlements with roads, and compete against an AI rival.
 
 The game is set on the continent of Vaelora, where generations of political disputes and neglected infrastructure have weakened **the Trama**: an old network of roads and signal beacons. The human **Auren League** and the orc **Brasal clans** are the first civilizations competing to restore, control, or replace it.

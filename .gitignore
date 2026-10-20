@@ -11,6 +11,8 @@ export_credentials.cfg
 # Local export output
 /builds/
 /exports/
+/game/builds/
+/game/exports/
 
 # Operating system and editor swap files
 .DS_Store

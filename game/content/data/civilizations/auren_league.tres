@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CivilizationDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/resources/civilization_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "civilization.auren_league"
+display_name = "Auren League"
+identity_statement = "The Auren League rebuilds the Trama through coordinated civic investment. It is the approachable infrastructure-and-research baseline: connect cities, turn reliable administration into production, and use a broad technology route to choose between expansion, development, and conquest."
+heraldic_mark_description = "A gold three-strand knot over a deep blue field, representing the Trama's connected routes and the League's civic institutions."
+palette_hex = {"deep_blue": "#183A63", "civic_gold": "#D6A63A", "warm_ivory": "#F2E8CF", "warning_red": "#A8443F"}
+silhouette_description = "Clean human infantry and civic architecture with readable vertical standards, bridges, arches, road markers, ledgers, and beacon motifs. Avoid oversized armor, skull imagery, or uncontrolled ornament that would blur the contrast with Brasal clans."
+naming_voice = "Practical, civic, and place-based; prefer compact names that sound like established settlements rather than prophetic titles."
+shared_unit_ids = Array[String](["unit.settler", "unit.worker", "unit.explorer", "unit.basic_soldier", "unit.patrol_ship"])
+shared_building_ids = Array[String](["building.granary", "building.barracks", "building.walls", "building.academy"])
+shared_improvement_ids = Array[String](["improvement.farm", "improvement.lumber_facility", "improvement.mine", "improvement.port", "improvement.road"])
+shared_technology_ids = Array[String](["technology.agriculture", "technology.forestry", "technology.mining", "technology.military_training", "technology.seamanship", "technology.scholarship", "technology.masonry", "technology.cartography", "technology.logistics", "technology.medicine", "technology.engineering", "technology.metallurgy"])
+unique_technology_ids = Array[String](["technology.civic_charter", "technology.public_works"])
+city_name_pool = Array[String](["Auren", "Ceralis", "Doreva", "Elandor", "Faren", "Halden", "Ilyra", "Liora", "Maroven", "Nareth", "Orsena", "Pellan", "Queral", "Ravelin", "Veyra"])

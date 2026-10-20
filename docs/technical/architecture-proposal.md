@@ -1,12 +1,12 @@
 # Technical Architecture Proposal
 
-**Status:** proposal for review; engine and renderer decisions below are approved, while other architecture choices remain open.
+**Status:** proposal for review; engine, renderer, repository location, and the issue #20 project/data boundaries below are approved. Unlisted architecture choices remain open.
 **Engine/language:** Godot 4.7.2 stable (`4.7.2.stable.official.ed1daf0bf`) with GDScript, using the Compatibility renderer. Pin this version for project bootstrap; evaluate later stable upgrades through an explicit issue and export/runtime checks rather than upgrading automatically.
 
 ## Constraints
 
 - Ship the same core game to Android, Windows, macOS, Linux, and Web from the start.
-- Keep the complete Godot project in this GitHub repository. Issue #20 will select its repository-relative project directory before bootstrap; no separate project repository is planned.
+- Keep the complete Godot project in this GitHub repository at `game/`; no separate project repository is planned.
 - Use 2D graphics, a fixed isometric camera, hex-grid rules, and mandatory landscape orientation.
 - Keep simulation rules independent from screen rendering and input device.
 - Use seed-driven procedural maps so a saved or reported match can be reproduced.
@@ -43,19 +43,25 @@ Keep formulas in testable code rather than copying near-identical logic into eac
 
 The [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md) owns scenario IDs, fixed seeds, metric definitions, initial tolerances, evidence status, and rerun scope. Content data owns tunable values; simulation code owns formulas and validation; scenario records own reproducible evidence. A tuning change must not introduce a second source of truth or alter a persisted content ID without the corresponding save-schema assessment.
 
-Candidate directory split:
+Approved Godot project structure (issue #20):
 
 ```text
-app/          screens, match flow, command orchestration
-simulation/   board, entities, rules, transitions
-content/      civilizations, terrain, units, structures, technologies
-presentation/ isometric rendering, fog, effects, UI
-platform/     input, persistence, export adapters
-assets/       final visual/audio resources, licensed source files
- tests/       deterministic rule and integration tests
+game/
+  project.godot
+  app/                 match setup, use cases, command orchestration
+  simulation/          deterministic model, commands, rules, events, results
+  content/             typed definitions, stable-ID catalog, authored resources
+    resources/         civilization and terrain resource schemas
+    data/              civilization and terrain .tres definitions
+  presentation/        isometric projection, scenes, UI, effects, fog display
+  platform/            input, persistence, export and platform adapters
+  assets/              final-quality source and imported game assets
+  tests/               deterministic model, content-contract, integration tests
 ```
 
-This is an initial organization proposal, not a requirement to adopt these exact names. Whatever final directory names are selected, the content IDs and shared/unique boundary remain stable and are referenced by the simulation, AI, presentation, and persistence layers.
+Simulation and its model types are plain GDScript data objects (using `RefCounted` where runtime identity/lifetime is needed), never scene nodes. `HexCoord(q, r)` is the canonical axial coordinate model; isometric projection is presentation-only. Commands from human and AI adapters converge on one application validation path. Rejection must preserve authoritative state. Content references crossing runtime or save boundaries use stable IDs, never resource paths, display names, scene names, or list positions. See [Godot project structure and data contract](godot-project-structure.md) for the module dependency rules, type dictionary, and currently implemented content resources.
+
+Content `.tres` resources own authored identity, names, references, and tunable values. Testable simulation code owns formulas, legality, transitions, and modifier application. This issue establishes schema boundaries and representative content only; it does not implement the game systems or claim the complete vertical-slice catalog has been authored.
 
 ## Persistence
 
@@ -86,4 +92,4 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 GDScript static typing policy, exact project directory, test framework, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. Issue #24 owns the supported platform/version matrix and performance budgets.
 
-The selected engine and renderer are recorded in [Open Decisions — Godot engine and renderer](../game-design/open-decisions.md#godot-engine-and-renderer--issue-19).
+The selected engine and renderer are recorded in [Open Decisions — Godot engine and renderer](../game-design/open-decisions.md#godot-engine-and-renderer--issue-19). The project directory and data boundaries are recorded in [Godot project structure and data contract](godot-project-structure.md) (issue #20).

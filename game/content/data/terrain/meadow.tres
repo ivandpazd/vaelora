@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="TerrainDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/resources/terrain_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "terrain.meadow"
+display_name = "Meadow"
+movement_domain = 0
+land_movement_cost = 1
+food_yield = 2
+production_yield = 0
+coin_yield = 0
+defense_modifier = 0.0
+vision_bonus = 0
+blocks_line_of_sight = false
+workable_city_territory = true
+legal_improvement_ids = Array[String](["improvement.farm"])
+allows_roads = true

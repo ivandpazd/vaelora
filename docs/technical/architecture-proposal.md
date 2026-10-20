@@ -1,11 +1,12 @@
 # Technical Architecture Proposal
 
-**Status:** proposal for review; not an implemented or fully approved architecture.
-**Engine/language:** Godot with GDScript, selected for the initial Android, desktop, and Web targets. Confirm the current stable engine version and export capabilities during project bootstrap; do not assume version-specific behavior without checking the official documentation.
+**Status:** proposal for review; engine and renderer decisions below are approved, while other architecture choices remain open.
+**Engine/language:** Godot 4.7.2 stable (`4.7.2.stable.official.ed1daf0bf`) with GDScript, using the Compatibility renderer. Pin this version for project bootstrap; evaluate later stable upgrades through an explicit issue and export/runtime checks rather than upgrading automatically.
 
 ## Constraints
 
 - Ship the same core game to Android, Windows, macOS, Linux, and Web from the start.
+- Keep the complete Godot project in this GitHub repository. Issue #20 will select its repository-relative project directory before bootstrap; no separate project repository is planned.
 - Use 2D graphics, a fixed isometric camera, hex-grid rules, and mandatory landscape orientation.
 - Keep simulation rules independent from screen rendering and input device.
 - Use seed-driven procedural maps so a saved or reported match can be reproduced.
@@ -70,7 +71,11 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 ## Cross-platform validation
 
-- Verify export and launch on Android, Windows, macOS, Linux, and supported Web browsers.
+- Compatibility is selected because Web requires this renderer and the 2D game benefits from its broad hardware reach. Godot's Web export requires WebAssembly and WebGL 2.0 support.
+- The game uses landscape orientation. Human and AI input continue through the same validated action path; issue #20 will define the initial Godot input map as part of project bootstrap.
+- This decision does not freeze texture filtering, compression, or per-asset import presets. Set those after the visual asset requirements and supported platform matrix are established; do not infer them from the smoke project's temporary export settings.
+- Keep exports available for Android, Windows, macOS, Linux, and Web. Prioritize Web and Android runtime validation during bootstrap: verify Web launch in a supported browser and produce an Android APK; validate Android installation/runtime when the Android Studio/device test setup is ready.
+- Produce Windows, macOS, and Linux exports during the engine feasibility decision. Their native runtime checks follow when packaged builds are available and are not blockers for resolving issue #19. These checks remain part of the later vertical-slice platform gate.
 - Test landscape orientation, input parity, UI scaling, save persistence, memory, loading, and a complete match per target family.
 - Run the GDD §13 `ACC-*` and `LOC-*` acceptance checks on Android, Windows, macOS, Linux, and supported Web browsers; record actual accessibility API support and platform-specific gaps.
 - Run deterministic tests for hex geometry, legal movement, turns, city ownership, growth, production/research progress, combat, and victory.
@@ -79,4 +84,6 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 ## Technical questions still open
 
-Godot version, renderer selection, GDScript static typing policy, folder names, test framework, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes.
+GDScript static typing policy, exact project directory, test framework, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. Issue #24 owns the supported platform/version matrix and performance budgets.
+
+The selected engine and renderer are recorded in [Open Decisions — Godot engine and renderer](../game-design/open-decisions.md#godot-engine-and-renderer--issue-19).

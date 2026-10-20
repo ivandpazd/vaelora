@@ -62,7 +62,7 @@ A save should use a versioned, checksummed model-level JSON envelope containing 
 
 ## Input and display
 
-Separate player intents from input hardware so touch, mouse, keyboard, and controller adapters emit the same validated actions. Keep selection, preview, confirmation, cancellation, and focus navigation in the application/presentation boundary; only the simulation applies authoritative transitions. Design for landscape layouts, safe areas, readable hex selection, visible focus, 48 logical-pixel minimum targets, and the documented UI-scale presets. Persist no input-device-specific gameplay state.
+Separate player intents from input hardware so touch, mouse, keyboard, and controller adapters emit the same validated actions. Keep selection, preview, confirmation, cancellation, and focus navigation in the application/presentation boundary; only the simulation applies authoritative transitions. Design for landscape layouts, safe areas, readable hex selection, visible focus, 48 logical-pixel minimum targets, and the documented UI-scale presets. Follow the GDD's WCAG 2.2 AA-informed contrast, minimum text size, redundant feedback, reduced-motion, and scoped screen-reader requirements; preserve essential actions at 200% scaling. Keep player-facing text behind stable localization keys, with English source strings, English/Spanish prototype catalogs, English fallback, and layouts tested for 30% ordinary-text and 35% control-text expansion. Persist no input-device-specific gameplay state.
 
 ## AI boundary
 
@@ -72,6 +72,7 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 - Verify export and launch on Android, Windows, macOS, Linux, and supported Web browsers.
 - Test landscape orientation, input parity, UI scaling, save persistence, memory, loading, and a complete match per target family.
+- Run the GDD §13 `ACC-*` and `LOC-*` acceptance checks on Android, Windows, macOS, Linux, and supported Web browsers; record actual accessibility API support and platform-specific gaps.
 - Run deterministic tests for hex geometry, legal movement, turns, city ownership, growth, production/research progress, combat, and victory.
 - Use fixed seeds for regression tests; record failing seeds in test output.
 - Do not mark a platform complete based only on successful editor execution or a successful export build.

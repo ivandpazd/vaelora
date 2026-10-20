@@ -29,7 +29,7 @@ A match should make the player feel that each turn presents a small number of me
 | Save behavior | Manual save at any time; automatic save every five complete rounds |
 | Multiplayer/networking | Not part of initial scope |
 
-The target platform set is a design commitment. The supported browser matrix, Android minimum version, input-device priorities, memory budget, performance targets, and storefront requirements remain open technical decisions.
+The target platform set is a design commitment. Issue #24 selects the initial platform floor: Godot 4.7's published exported-project minimums as a compatibility starting point; Web support covers the two latest stable releases of Chrome, Edge, and Firefox with WebAssembly and WebGL 2.0. Safari/WebKit and iOS are outside the initial guaranteed target matrix. These engine minimums are not a performance guarantee. Numerical performance budgets, including memory, remain open until measured on representative minimum-spec devices during the Stage 2 vertical slice and approved before its gate closes. Input-device priorities and storefront requirements remain open technical decisions.
 
 ## Initial prototype scope
 
@@ -64,4 +64,4 @@ The other four planned civilization concepts—elves, dwarves, goblins, and skel
 
 ## Open product questions
 
-Commercial model, localization, accessibility targets, visual asset budget, sound direction, browser support matrix, and measurable performance budgets require separate decisions. Match pacing and the permanent modular tutorial are defined in the [Game Design Document](../game-design/game-design-document.md#13-saving-and-accessibility-constraints). See the [open design decisions register](../game-design/open-decisions.md) for gameplay-specific questions.
+Commercial model, localization, accessibility targets, visual asset budget, sound direction, and storefront requirements require separate decisions. The browser support matrix is selected in issue #24; numerical performance budgets remain pending representative vertical-slice measurements. Match pacing and the permanent modular tutorial are defined in the [Game Design Document](../game-design/game-design-document.md#13-saving-and-accessibility-constraints). See the [open design decisions register](../game-design/open-decisions.md) for gameplay-specific questions.

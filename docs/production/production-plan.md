@@ -19,17 +19,17 @@ Establish the branch model, issue/PR templates, README, documentation index, and
 
 ### 1. Design lock for the initial game
 
-Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, interaction requirements, and the permanent tutorial/onboarding and pacing contract. Use playtest prototypes for uncertain balance rather than freezing guesses.
+Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, interaction requirements, the accessibility/localization contract, and the permanent tutorial/onboarding and pacing contract. Use playtest prototypes for uncertain balance rather than freezing guesses.
 
 Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md): fixed seeds, named metrics, initial tolerances, explicit tuning ownership, and rerun rules. A value is not considered locked merely because it appears in code or passes one unseeded match.
 
-**Exit:** every initial rule has observable acceptance criteria, all starting units/buildings/technologies have data, and procedural fairness has measurable tests.
+**Exit:** every initial rule has observable acceptance criteria, all starting units/buildings/technologies have data, procedural fairness has measurable tests, and the named accessibility/localization checks are ready to execute.
 
 ### 2. Godot foundation and vertical slice
 
 Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet.
 
-**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed.
+**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers.
 
 ### 3. Complete two-civilization prototype
 
@@ -39,7 +39,7 @@ Implement all agreed match modes and initial systems for the human Auren League 
 
 ### 4. Final prototype test battery
 
-Test both player civilizations and AI selections/difficulties, every match type, multiple map seeds/types, fair starts, city capture/elimination, all victory routes, terrain/combat interactions, roads and worker exhaustion, interrupted and completed production/research, saves/resume/autosave, and complete platform flows. Include regression coverage for failures discovered during the battery.
+Test both player civilizations and AI selections/difficulties, every match type, multiple map seeds/types, fair starts, city capture/elimination, all victory routes, terrain/combat interactions, roads and worker exhaustion, interrupted and completed production/research, saves/resume/autosave, complete platform flows, and the GDD §13 accessibility/localization checks. Include regression coverage for failures discovered during the battery.
 
 **Gate:** the test battery passes, blocking defects are resolved, game balance has been reviewed, and the two civilizations remain viable before expansion work begins.
 

@@ -78,11 +78,24 @@ The AI receives the same visible information and legal actions as a human. Diffi
 ## Cross-platform validation
 
 - Compatibility is selected because Web requires this renderer and the 2D game benefits from its broad hardware reach. Godot's Web export requires WebAssembly and WebGL 2.0 support.
+- **Initial supported platform floor (issue #24):** use Godot 4.7's published minimum requirements for exported projects as the compatibility starting point, not as a performance guarantee.
+
+  | Target | Initial operating-system/browser floor | Compatibility requirement |
+  |---|---|---|
+  | Windows | Windows 10 or newer | Compatibility renderer; OpenGL 3.3 or Direct3D 11 |
+  | macOS | macOS 11 or newer on Intel; macOS 13 or newer on Apple silicon | Compatibility renderer; OpenGL 3.3 |
+  | Linux | Distributions released after 2018 | Compatibility renderer; OpenGL 3.3 |
+  | Android | Android 7.0 or newer | Compatibility renderer; OpenGL ES 3.0 |
+  | Web | Two latest stable releases of Chrome, Edge, and Firefox | WebAssembly and WebGL 2.0 |
+
+  Safari/WebKit and iOS are outside the initial guaranteed target matrix. Godot's CPU references are x86-32 with SSE2, x86_64 with SSE4.2, or ARMv8 for Windows; x86-32 with SSE2, x86_64 with SSE4.2, or ARMv7/ARMv8 for Linux; x86_64 or ARM for macOS; and 32/64-bit ARM or x86 for Android. Its published minimum RAM references for simple exports are 2 GB for native desktop, 1 GB for native mobile, 4 GB for desktop Web, and 2 GB for mobile Web. These are engine references only; representative Vaelora devices and actual minimum hardware remain subject to Stage 2 measurements. Reassess the OS/browser floors only through an explicit decision and validation evidence.
+- Godot warns that CPU, GPU, memory, and storage needs vary with project scope. Vaelora's final-quality assets, 80 × 50 maps, and simulation workload must therefore be measured on representative devices at the selected floor before claiming supported performance. The engine's baseline does not itself establish Vaelora compatibility.
 - The game uses landscape orientation. Human and AI input continue through the same validated action path; issue #20 will define the initial Godot input map as part of project bootstrap.
 - This decision does not freeze texture filtering, compression, or per-asset import presets. Set those after the visual asset requirements and supported platform matrix are established; do not infer them from the smoke project's temporary export settings.
 - Keep exports available for Android, Windows, macOS, Linux, and Web. Prioritize Web and Android runtime validation during bootstrap: verify Web launch in a supported browser and produce an Android APK; validate Android installation/runtime when the Android Studio/device test setup is ready.
 - Produce Windows, macOS, and Linux exports during the engine feasibility decision. Their native runtime checks follow when packaged builds are available and are not blockers for resolving issue #19. These checks remain part of the later vertical-slice platform gate.
 - Test landscape orientation, input parity, UI scaling, save persistence, memory, loading, and a complete match per target family.
+- During the Stage 2 vertical slice, select and record representative minimum-spec devices for Android, Windows, macOS, and Linux, plus browser/OS combinations for Web. Measure startup and load time, generation time for the largest map, full-turn and AI response time, frame time, peak memory, and save size. Set numerical budgets from those measurements and approve them before the vertical-slice gate closes; until then, report them as pending rather than inventing thresholds.
 - Run the GDD §13 `ACC-*` and `LOC-*` acceptance checks on Android, Windows, macOS, Linux, and supported Web browsers; record actual accessibility API support and platform-specific gaps.
 - Run deterministic tests for hex geometry, legal movement, turns, city ownership, growth, production/research progress, combat, and victory.
 - Use fixed seeds for regression tests; record failing seeds in test output.
@@ -90,6 +103,6 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 ## Technical questions still open
 
-GDScript static typing policy, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. GUT 9.7.1 is selected in issue #21; its test boundaries and commands are documented in the [automated testing strategy](testing-strategy.md). Issue #24 owns the supported platform/version matrix and performance budgets.
+GDScript static typing policy, measured numerical performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. Issue #24 selects the initial platform floor and browser matrix; its numerical budgets must be established from representative vertical-slice measurements before that gate closes. GUT 9.7.1 is selected in issue #21; its test boundaries and commands are documented in the [automated testing strategy](testing-strategy.md).
 
 The selected engine and renderer are recorded in [Open Decisions — Godot engine and renderer](../game-design/open-decisions.md#godot-engine-and-renderer--issue-19). The project directory and data boundaries are recorded in [Godot project structure and data contract](godot-project-structure.md) (issue #20).

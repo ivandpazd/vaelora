@@ -16,7 +16,7 @@ The complete Godot project lives at `game/` in this repository. Godot 4.7.2 stab
 | `game/assets/` | Final-quality game assets and licensed editable sources | Placeholder production visuals |
 | `game/tests/` | Deterministic content/model tests and integration checks | A second implementation of gameplay rules |
 
-Runtime domain/model objects are not Nodes and do not depend on the scene tree. Use `RefCounted` for runtime objects requiring identity or managed lifetime; immutable/value-like types may use the smallest suitable GDScript value representation. The initial contract deliberately does not define a test framework or save envelope; those remain owned by issues #21 and #23 respectively.
+Runtime domain/model objects are not Nodes and do not depend on the scene tree. Use `RefCounted` for runtime objects requiring identity or managed lifetime; immutable/value-like types may use the smallest suitable GDScript value representation. Issue #21 selects GUT 9.7.1 and defines the test boundaries in [the automated testing strategy](testing-strategy.md); issue #23 owns the save envelope.
 
 ## Dependency and state-flow rules
 
@@ -62,7 +62,7 @@ The initial project contains representative data resources for Auren League, Bra
 
 ## Deferred decisions and boundaries
 
-- Issue #21 selects the project test runner/framework.
+- Issue #21 owns the selected test runner and test strategy; gameplay-level seeded regression coverage is tracked in issue #55.
 - Issue #23 defines the save format, schema versioning, checksum, migration, and slot guarantees.
 - Issue #24 owns minimum platform/browser versions and performance budgets.
 - Issue #20 does not create gameplay systems, final art/audio, input mappings, export automation, or platform compatibility claims.

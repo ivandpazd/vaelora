@@ -30,8 +30,8 @@ Branch: `feature/22-23-17-18-28-27-general-decisions`; delivery: one feature PR 
 - **Scope and acceptance:** Pending independent issue review and user-confirmed decision; do not infer requirements.
 
 ## Tasks
-- T1 — S1; route: inline; status: documentation complete; commit: pending.
-- T2 — S2; route: inline; status: documentation complete; commit: pending.
+- T1 — S1; route: inline; status: documentation complete; commit: `8c8a2d3`.
+- T2 — S2; route: inline; status: documentation complete; commit: `8c8a2d3`.
 - T3 — S3; route: inline after decision; status: pending user decisions; commit: pending.
 - T4 — S4; route: inline after decision; status: pending user decisions; commit: pending.
 - T5 — S5; route: inline after decision; status: pending user decisions; commit: pending.
@@ -43,3 +43,4 @@ Branch: `feature/22-23-17-18-28-27-general-decisions`; delivery: one feature PR 
 - L2 — User authorized writing the complete repository files/code for each decision issue immediately after it is fully defined, then continuing with the next issue's questions. Issues #22 and #23 are fully defined; #17, #18, #28, and #27 remain pending their independent decision conversations.
 - L3 — User authorized fetching `dev` from `origin` using the configured Git credential session. Local `dev` was behind `origin/dev`; created this feature branch from fetched `origin/dev` commit `19f1d66`.
 - L4 — Updated the canonical GDD, open-decision register, architecture proposal, production plan, and testing strategy for #22/#23. `git diff --check` passed; a relative-link check passed for all five changed Markdown documents. No runtime test or gameplay code applies at the Stage 1 decision-documentation boundary; dependent behavior remains gated for later stages.
+- L5 — Commit `8c8a2d3` (`docs(decisions): lock issues 22 and 23`) contains T1/T2 and their task record. Committed-only RDD assessment against `19f1d66` returned `passive`, `review_due: false`.

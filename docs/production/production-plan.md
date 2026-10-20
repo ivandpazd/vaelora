@@ -29,7 +29,7 @@ Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-
 
 Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet.
 
-**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
+**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. Representative minimum-floor devices/browser combinations are used to measure startup/load, largest-map generation, turn and AI response, frame time, peak memory, and save size; numerical budgets are approved and recorded before this gate closes. The initial Godot system requirements are not treated as proof of Vaelora performance. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
 
 ### 3. Complete two-civilization prototype
 

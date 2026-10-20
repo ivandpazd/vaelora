@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CivilizationDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/resources/civilization_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "civilization.brasal_clans"
+display_name = "Brasal clans"
+identity_statement = "The Brasal clans are an adaptive frontier society that turns difficult land and organized pressure into momentum. They are the approachable aggression-and-resourcefulness counterpart to Auren: use ordinary infrastructure to sustain the frontier, then choose between stronger field provisioning and a faster basic-soldier response."
+heraldic_mark_description = "Three ascending iron bars beneath an ember-red sun, representing clan continuity, practical craft, and pressure moving forward together."
+palette_hex = {"charcoal": "#24262B", "ember_red": "#B84A3A", "copper": "#C47A44", "weathered_bone": "#D8C7A2", "deep_moss": "#3F5A43"}
+silhouette_description = "Sturdy, mobile silhouettes with layered hide, practical iron, broad tools, hooked standards, field packs, and modular clan markers. Buildings favor reinforced timber, stone footings, kilns, storehouses, and visible repair work. Avoid generic spikes, skull overload, or visual shorthand that reduces the clans to brute force."
+naming_voice = "Concise, tactile, and clan-rooted; prefer names that sound like places shaped by labor, weather, and remembered agreements rather than random aggressive syllables."
+shared_unit_ids = Array[String](["unit.settler", "unit.worker", "unit.explorer", "unit.basic_soldier", "unit.patrol_ship"])
+shared_building_ids = Array[String](["building.granary", "building.barracks", "building.walls", "building.academy"])
+shared_improvement_ids = Array[String](["improvement.farm", "improvement.lumber_facility", "improvement.mine", "improvement.port", "improvement.road"])
+shared_technology_ids = Array[String](["technology.agriculture", "technology.forestry", "technology.mining", "technology.military_training", "technology.seamanship", "technology.scholarship", "technology.masonry", "technology.cartography", "technology.logistics", "technology.medicine", "technology.engineering", "technology.metallurgy"])
+unique_technology_ids = Array[String](["technology.warband_tradition", "technology.foraging_doctrine"])
+city_name_pool = Array[String](["Brasal", "Dargan", "Ghorra", "Kraz", "Morga", "Naska", "Odrik", "Raska", "Sarga", "Thorga", "Uldan", "Varka", "Vorg", "Yagra", "Zorak"])

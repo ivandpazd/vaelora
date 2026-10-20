@@ -10,7 +10,7 @@ Objective: lock the in-repository Godot foundation and content/domain boundaries
 4. **S4 — Canonical docs.** Update architecture proposal and project structure/data dictionary to reflect this issue's approved decisions, clearly preserving open/deferred decisions and later stage gates. Check: links, diff check, and source-of-truth consistency.
 
 ## Tasks
-- T1 — Establish project/data contract, samples, tests, docs, and validation. Route: inline (one cohesive unit; no writer trigger). Status: complete; focused checks passed. Commit: pending.
+- T1 — Establish project/data contract, samples, tests, docs, and validation. Route: inline (one cohesive unit; no writer trigger). Status: complete; focused checks passed. Commit: `2545a22`.
 
 ## Log
 - L1 — User request verbatim: “Me parece bien. Utiliza el AGENTS.md y todas las skills que hemos creado para este proyecto en concreto. Veo que quieres crear la estructura de carpetas. Quiero que actues como un experto en desarrollo de videojuegos con Godot y debes crear una base ultra profesional para que todo funcione a la perfección y nos sirva para el juego completo”
@@ -18,3 +18,4 @@ Objective: lock the in-repository Godot foundation and content/domain boundaries
 - L3 — RED observed 2026-10-20: Godot 4.7.2 headless test failed to parse because referenced content classes and sample resources do not yet exist. Continue with minimal typed contracts; do not claim system-level tests beyond issue #20.
 - L4 — User selected one PR: “hazlo todo en una unica PR mejor”. The 410-line change is one cohesive issue #20 deliverable; preserve it intact and document the over-budget exception rationale in the PR rather than splitting behavior or removing content.
 - L5 — GREEN observed 2026-10-20: `Godot --headless --editor --path game --quit` and `Godot --headless --path game --script res://tests/test_content_contract.gd` passed; `git diff --check` passed; content-layer dependency scan found no scene/render/input/platform API imports.
+- L6 — Native review assessment for `2545a22` against `origin/dev`: risk `medium`; `review_due: false`; reason `under_budget`. No native review was started.

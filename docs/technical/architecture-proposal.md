@@ -90,6 +90,6 @@ The AI receives the same visible information and legal actions as a human. Diffi
 
 ## Technical questions still open
 
-GDScript static typing policy, exact project directory, test framework, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. Issue #24 owns the supported platform/version matrix and performance budgets.
+GDScript static typing policy, minimum device/browser versions, performance budgets, save schema/migration guarantees, localization tooling, asset import settings, build automation, code signing, and release pipeline remain for project bootstrap and technical spikes. GUT 9.7.1 is selected in issue #21; its test boundaries and commands are documented in the [automated testing strategy](testing-strategy.md). Issue #24 owns the supported platform/version matrix and performance budgets.
 
 The selected engine and renderer are recorded in [Open Decisions — Godot engine and renderer](../game-design/open-decisions.md#godot-engine-and-renderer--issue-19). The project directory and data boundaries are recorded in [Godot project structure and data contract](godot-project-structure.md) (issue #20).

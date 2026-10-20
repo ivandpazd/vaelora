@@ -8,7 +8,7 @@
 - Track each unresolved product decision as an issue with acceptance criteria; accepted decisions update their canonical documentation.
 - Deliver complete two-player gameplay systems for the first prototype rather than a reduced rules demo.
 - Use final-quality art throughout the prototype; placeholder visuals are not acceptable.
-- Validate Android, Windows, macOS, Linux, and Web continuously instead of treating them as a later port.
+- Keep Android, Windows, macOS, Linux, and Web exportable throughout development. Prioritize runtime checks for Web and Android during bootstrap; run Windows, macOS, and Linux launch checks when packaged builds are available. Deferred desktop runtime checks do not block the engine/renderer decision in issue #19; they remain part of the vertical-slice platform gate.
 - Add the remaining four planned civilizations only after the prototype passes the final test battery.
 
 ## Phases and gates
@@ -29,7 +29,7 @@ Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-
 
 Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet.
 
-**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers.
+**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
 
 ### 3. Complete two-civilization prototype
 

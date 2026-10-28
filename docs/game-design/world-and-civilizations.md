@@ -16,7 +16,7 @@ Generations later, the settlements of Vaelora are rebuilding. Cities compete for
 
 The Trama is the old road-and-beacon network; it is not a playable faction or a separate magic system. Its legacy can appear through road-building, map landmarks, city histories, ruins, and visual motifs. Current gameplay roads are practical infrastructure that improves movement and rewards completed connections between a civilization's own cities.
 
-**Open:** whether old beacons, ruins, or remnants provide any mechanical effect. Do not add an effect merely because the lore mentions them.
+**Initial-prototype boundary:** Old beacons, ruins, and remnants are cosmetic world dressing only. They have no interaction, ownership, reward, terrain/map-generation, movement, vision, placement, yield, fairness, AI, or victory effect. Any optional decoration is rendered outside authoritative simulation state, placed deterministically from the match seed and tile coordinates, and omitted if it could obscure or obstruct play. A static codex entry may provide lore only; it does not reveal map information or grant an action/reward. Mechanical landmark behavior is future scope and requires a new design decision.
 
 ## Planned civilizations
 

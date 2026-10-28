@@ -43,6 +43,8 @@ Keep formulas in testable code rather than copying near-identical logic into eac
 
 The [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md) owns scenario IDs, fixed seeds, metric definitions, initial tolerances, evidence status, and rerun scope. Content data owns tunable values; simulation code owns formulas and validation; scenario records own reproducible evidence. A tuning change must not introduce a second source of truth or alter a persisted content ID without the corresponding save-schema assessment.
 
+Optional Trama beacons, ruins, and remnants are presentation-only decorations. Derive placement from match seed and tile coordinates without consuming gameplay RNG or modifying authoritative map state, fairness, legal actions, or AI inputs. A decoration may have an optional static lore entry, but it has no domain object, interaction, reward, or gameplay content record.
+
 Approved Godot project structure (issue #20):
 
 ```text

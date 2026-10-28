@@ -312,7 +312,7 @@ These ranges are evaluated separately by player familiarity, map size, match mod
 
 ## 14. Setting and civilization identity
 
-Vaelora is both the game title and the continent. Its people once relied on **the Trama**, a network of roads and signal beacons that connected settlements and supported trade and communication. The network weakened through neglected upkeep and political disputes over which routes deserved investment. As connections failed, the alliance coordinating them dissolved. Generations later, rival civilizations rebuild, expand, and compete for control of valuable land and routes. This is grounded context for a strategy game, not a prophecy or world-ending epic.
+Vaelora is both the game title and the continent. Its people once relied on **the Trama**, a network of roads and signal beacons that connected settlements and supported trade and communication. The network weakened through neglected upkeep and political disputes over which routes deserved investment. As connections failed, the alliance coordinating them dissolved. Generations later, rival civilizations rebuild, expand, and compete for control of valuable land and routes. This is grounded context for a strategy game, not a prophecy or world-ending epic. Old Trama beacons, ruins, and remnants are cosmetic-only in the initial prototype: they cannot be interacted with for rewards, owned, or used to change map generation, movement, vision, placement, yields, AI, fairness, or victory. Their optional presentation is seed-derived and never changes authoritative map state; omit a decoration whenever it would obscure play. A static codex entry may explain their history but grants no information or effect.
 
 The six planned civilization concepts are:
 

@@ -19,11 +19,11 @@ Establish the branch model, issue/PR templates, README, documentation index, and
 
 ### 1. Design lock for the initial game
 
-Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, interaction requirements, the accessibility/localization contract, and the permanent tutorial/onboarding and pacing contract. Use playtest prototypes for uncertain balance rather than freezing guesses.
+Resolve implementation-blocking choices in the [open decisions register](../game-design/open-decisions.md): map constraints, exact terrain and city rules, initial content, economy/research/production formulas, combat/naval behavior, AI, scoring, saves, interaction requirements, the accessibility/localization contract, and the permanent tutorial/onboarding and pacing contract. Issues #22 and #23 now define measurable adaptive interaction/display and save/migration contracts; runtime behavior remains later-stage implementation and validation work. Use playtest prototypes for uncertain balance rather than freezing guesses.
 
 Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-design/balance-methodology.md): fixed seeds, named metrics, initial tolerances, explicit tuning ownership, and rerun rules. A value is not considered locked merely because it appears in code or passes one unseeded match.
 
-**Exit:** every initial rule has observable acceptance criteria, all starting units/buildings/technologies have data, procedural fairness has measurable tests, and the named accessibility/localization checks are ready to execute.
+**Exit:** every initial rule has observable acceptance criteria, all starting units/buildings/technologies have data, procedural fairness has measurable tests, and the named accessibility/localization checks are ready to execute. The issue #22 viewport, safe-area, and rejected-action checks and issue #23 migration, corruption-recovery, and slot-preservation checks are specified before dependent systems are implemented.
 
 ### 2. Godot foundation and vertical slice
 

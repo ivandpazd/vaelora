@@ -21,7 +21,9 @@
 | Application/use cases | New match setup, validated player commands, AI actions, sequential turn orchestration, save/load coordination | Rendering or raw platform APIs |
 | Presentation | Isometric board, selection, fog, animation, HUD, menus, accessible feedback | Authoritative game rules or persistent match truth |
 | Content | Civilizations, tech, units, buildings, improvements, terrain, names, balance values | Behavior duplicated as faction-specific branches across scenes |
-| Platform adapters | Input mapping, save locations, browser storage, audio and export-specific integration | Gameplay decisions |
+| Platform adapters | Input mapping, save locations, browser storage, audio decoding/mixing and export-specific integration | Gameplay decisions or authoritative simulation state |
+
+Audio playback belongs to the presentation/platform boundary and consumes observable state-linked events; it never owns gameplay rules or match truth. The initial package is fixed event-and-ambience audio with separate master/music/ambience/effects controls, master mute, and reduced-distraction behavior. Stream music and avoid preloading the full catalog. The 32 MiB compressed-import and 8 MiB decoded-memory values are project budgets to measure on representative Stage 2 targets, not guarantees from Godot or any platform. Adaptive scoring is out of scope for the initial prototype.
 
 ### State changes
 

@@ -27,7 +27,7 @@ Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-
 
 ### 2. Godot foundation and vertical slice
 
-Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet.
+Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet. Accept representative visual and audio slices and measure asset/audio budgets on representative target devices before integration.
 
 #### Stage 2 vertical-slice scenario (`VS-01`)
 

@@ -110,7 +110,7 @@ Every feature PR is reviewed and merged into `dev` first. Then evaluate the resu
 - **Decision:** record the outcome. If either review finds a blocker, fix it through another PR to `dev` and repeat the gate. Do not promote a known-bad integration state.
 - **Promotion PR:** after both reviews pass, create a distinct PR from `dev` to `main`. It does not require a new issue. Include the promoted change range, review outcome, test/build evidence, and release notes or a concise change summary. Merge only after this PR's checks and final diff review pass.
 
-This gate is a required human review step. The remote repository currently has active `main` and `dev` rulesets that require PRs, block force-pushes and deletion, and require resolved review conversations. GitGuardian is a mandatory project check before a feature PR may merge; other CI checks will be added after the Godot project and its test workflow exist.
+This gate is a required human review step. The remote repository currently has active `main` and `dev` rulesets that require PRs, block force-pushes and deletion, and require resolved review conversations. GitGuardian is a mandatory project check before a feature PR may merge. The approved CI/export policy is documented in the [CI pipeline specification](../technical/ci-release-pipeline.md); do not require its check until the workflows pass on both protected branches and the exact check name is verified.
 
 ## Initial solo-maintainer policy
 

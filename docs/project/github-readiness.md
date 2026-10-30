@@ -39,7 +39,7 @@ GitHub's Terms of Service allow users to view and fork a public repository throu
 - [x] Add a ruleset for `dev`: require PRs, block force pushes and deletion, and require resolved review conversations.
 - [x] Preserve the two-stage review flow: feature PRs merge into `dev`; after technical and documentation review, promote `dev` to `main` with a separate PR.
 - [x] Initially require zero outside approvals while this is a solo-maintainer project. Revisit when collaborators can independently review.
-- [ ] Do not configure required status check names until the matching workflow has completed successfully; then select the exact job name.
+- [ ] Implement the approved [CI/export pipeline](../technical/ci-release-pipeline.md), then configure its exact required check only after successful runs on both `dev` and `main`.
 - [ ] Allow only narrowly justified bypass actors. Avoid blanket administrator bypass for ordinary changes.
 
 GitHub branch protections and rulesets are repository settings, not files in this checkout. Current GitHub documentation describes the available rules and PR requirements in [rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) and [protected branches](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches).
@@ -61,10 +61,11 @@ For weekly backlog hygiene, reconcile active preproduction issues against the bo
 ### Merge and release settings
 
 - [x] Keep the configured merge methods available to the solo maintainer; use the repository PR title and merge method that preserve a reviewable Conventional Commit history.
-- [ ] Add CI only after the Godot project skeleton and a real test/check command exist; then require the exact successful workflow check on `dev` and `main`.
+- [x] Define CI, unsigned-export, signing, versioning, retention, and approval policy in [CI, export, and release pipeline](../technical/ci-release-pipeline.md).
+- [ ] Implement CI workflows and the five export presets; activate their exact required check only after successful runs on `dev` and `main`.
 - [ ] Decide whether final art assets need Git LFS after representative source files and expected asset sizes are known; do not add LFS rules or storage assumptions speculatively.
-- [ ] Disable automatic deployment until platform exports, signing, and release checks are approved.
-- [ ] Set release/version policy before the first packaged build.
+- [x] Keep automatic deployment disabled; future release signing requires a manually dispatched workflow and protected maintainer approval.
+- [x] Define release version, artifact naming, and retention policy before the first packaged build; see the pipeline specification.
 - [x] Add a proprietary `LICENSE` notice for original Vaelora materials; third-party materials remain under their own terms.
 - [ ] Add a `SECURITY.md`, code of conduct, or public support link only after choosing the appropriate project policy.
 
@@ -75,4 +76,5 @@ For weekly backlog hygiene, reconcile active preproduction issues against the bo
 - PR #2 merged the foundation into `dev` as `0057a59ba9346a56bba90022adf9e52c5af79e2e`; issue [#1](https://github.com/ivandpazd/vaelora/issues/1) is closed.
 - GitGuardian passed on PR #2. The Godot project foundation and GUT runner are now in place; no repository CI workflow or additional required checks are configured yet.
 - The normal path is `feature/<issue>-<slug>` → `dev` → `main`. Feature PRs close their concrete issue; the promotion PR from `dev` to `main` does not require an intermediate issue.
-- Project #4 is the active project board; its owner-maintained workflow is documented there and preserved as-is. Release automation, Git LFS, and packaged-build policy remain intentionally unconfigured until their need is demonstrated.
+- No CI workflow or required CI status check is currently configured. Issue #25 defines the policy; activate required checks only after workflows and export presets have passed on both protected branches.
+- Project #4 is the active project board; its owner-maintained workflow is documented there and preserved as-is. Release automation, signing secrets, and packaged-build implementation remain unconfigured until their reviewed operational follow-up is complete.

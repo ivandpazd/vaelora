@@ -16,7 +16,7 @@ Generations later, the settlements of Vaelora are rebuilding. Cities compete for
 
 The Trama is the old road-and-beacon network; it is not a playable faction or a separate magic system. Its legacy can appear through road-building, map landmarks, city histories, ruins, and visual motifs. Current gameplay roads are practical infrastructure that improves movement and rewards completed connections between a civilization's own cities.
 
-**Open:** whether old beacons, ruins, or remnants provide any mechanical effect. Do not add an effect merely because the lore mentions them.
+**Initial-prototype boundary:** Old beacons, ruins, and remnants are cosmetic world dressing only. They have no interaction, ownership, reward, terrain/map-generation, movement, vision, placement, yield, fairness, AI, or victory effect. Any optional decoration is rendered outside authoritative simulation state, placed deterministically from the match seed and tile coordinates, and omitted if it could obscure or obstruct play. A static codex entry may provide lore only; it does not reveal map information or grant an action/reward. Mechanical landmark behavior is future scope and requires a new design decision.
 
 ## Planned civilizations
 
@@ -68,7 +68,7 @@ Public Works does not create a route, make a disconnected city eligible, alter t
 
 #### City names and naming rules
 
-Cities draw uniformly without replacement from the following initial pool until the pool is exhausted: Auren, Ceralis, Doreva, Elandor, Faren, Halden, Ilyra, Liora, Maroven, Nareth, Orsena, Pellan, Queral, Ravelin, and Veyra. Names are assigned when a settler founds a city, cannot be chosen or edited by the player in the initial prototype, and are persisted in saves. If a later pool expansion is needed, new names must follow the same short, pronounceable, non-hyphenated naming rule and must not duplicate an existing name.
+The initial Auren pool is Auren, Ceralis, Doreva, Elandor, Faren, Halden, Ilyra, Liora, Maroven, Nareth, Orsena, Pellan, Queral, Ravelin, and Veyra. Assignment, uniqueness, deterministic exhaustion fallback, persistence, and name-review rules follow [Naming and content policy](#naming-and-content-policy). Names are not player-editable in the initial prototype.
 
 #### Heraldry and visual language
 
@@ -113,7 +113,7 @@ Warband Tradition does not change Basic soldier attack, defense, health, movemen
 
 #### City names and naming rules
 
-Cities draw uniformly without replacement from the following initial pool until the pool is exhausted: Brasal, Dargan, Ghorra, Kraz, Morga, Naska, Odrik, Raska, Sarga, Thorga, Uldan, Varka, Vorg, Yagra, and Zorak. Names are assigned when a settler founds a city, cannot be chosen or edited by the player in the initial prototype, and are persisted in saves. If a later pool expansion is needed, new names must follow the same compact, hard-consonant, non-hyphenated naming rule and must not duplicate an existing name.
+The initial Brasal pool is Brasal, Dargan, Ghorra, Kraz, Morga, Naska, Odrik, Raska, Sarga, Thorga, Uldan, Varka, Vorg, Yagra, and Zorak. Assignment, uniqueness, deterministic exhaustion fallback, persistence, and name-review rules follow [Naming and content policy](#naming-and-content-policy). Names are not player-editable in the initial prototype.
 
 #### Heraldry and visual language
 
@@ -136,4 +136,6 @@ Each scenario must use the standard equal starting package, deterministic tie-br
 
 ## Naming and content policy
 
-Civilization names above are working canon for the prototype and future concepts. City names are drawn randomly from a civilization-specific list when a settler founds a city. No city rename action is planned initially. New lore should reinforce the game's direct, practical tone and should not introduce new gameplay rules without an explicit design decision.
+Civilization names above are working canon for the prototype and future concepts. The two current city-name pools are authored here as canon content. For each match, rank each pool by ascending SHA-256 digest over this unambiguous byte sequence: UTF-8 `vaelora-city-names-v1`, byte `0x00`, canonical signed decimal match seed (ASCII; no leading `+` or zeroes, except zero is `0`), byte `0x00`, unsigned 32-bit big-endian byte length of the UTF-8 stable civilization ID, civilization-ID bytes, unsigned 32-bit big-endian byte length of the UTF-8 stable name key, and name-key bytes. Length-prefixing prevents different component tuples from producing the same hash input. Break the extraordinarily unlikely digest tie by stable name key. This gives a deterministic per-match permutation without consuming gameplay RNG or depending on engine PRNG versions. Assign names sequentially in city-founding order without replacement through the first full pass. If the pool is exhausted, cycle that deterministic order and append the cycle's positive ordinal (the first pass has no suffix; later passes use 2, 3, …), keeping displayed names unique. Never release/reassign a name during the match after a city is destroyed. Persist each city's stable name key and display ordinal, plus the next founding sequence per civilization; this preserves names and future assignments through save/load. Names cannot be chosen or edited by the player initially. City lists sort by founding order, independent of locale.
+
+New or expanded city names must fit their civilization's naming voice, be concise, pronounceable, non-hyphenated, distinct from every existing civilization pool, and avoid accidental real-world/cultural references or offensive meanings. Content review checks canon fit, pronunciation, readability at compact UI sizes, localization behavior, uniqueness, and mechanical neutrality before adding names. Do not invent gameplay rules in lore. The GDD owns rules terms and the player-facing glossary; this document owns proper names and setting/lore canon; content definitions bind stable IDs to localization keys; locale catalogs own translated strings. Write English source text in direct, practical language. Lore snippets are flavor only: they cannot imply bonuses, actions, ownership, or other mechanics unless an approved GDD rule explicitly supplies them. Stable localization keys, English/Spanish coverage and fallback, contextual translation, accessible labels, text expansion, and future-language behavior follow the GDD's localization contract.

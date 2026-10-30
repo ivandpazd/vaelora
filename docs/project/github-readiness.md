@@ -1,6 +1,6 @@
 # GitHub Readiness Checklist
 
-This file records the local preparation and the verified GitHub configuration as of 2026-10-19.
+This file records the local preparation and the verified GitHub configuration as of 2026-10-30.
 
 ## Prepared in the repository
 
@@ -13,7 +13,7 @@ This file records the local preparation and the verified GitHub configuration as
 - [x] README and `docs/` navigation.
 - [x] Foundation files merged to the repository default branch and available to GitHub.
 - [x] Required labels used by the current workflow exist: `status:approved`, `type:docs`, and `size:exception`.
-- [ ] Broader label catalog and project board — optional; do not add them speculatively.
+- [x] Existing GitHub Project #4 is the active Vaelora planning and delivery board; do not create a duplicate.
 
 ## Initial publication/bootstrap
 
@@ -47,13 +47,16 @@ GitHub branch protections and rulesets are repository settings, not files in thi
 ### Issues and project tracking
 
 - [x] Confirm the default branch contains `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE.md`.
-- [x] Create the labels required by the current issue/PR workflow before using them.
-- [ ] Suggested minimal label groups: `type:bug`, `type:feature`, `type:design`, `type:docs`; `area:gameplay`, `area:tech`, `area:art`, `area:repo`; `priority:high`, `priority:normal`, `priority:low`; `status:needs-decision`, `status:blocked`.
-- [ ] Consider a single GitHub Project board with `Backlog`, `Ready`, `In progress`, `Review`, and `Done` only after the issue backlog exists.
+- [x] Use the existing user-owned [Vaelora GitHub Project #4](https://github.com/users/ivandpazd/projects/4); it is associated with `ivandpazd/vaelora`. The user has validated and approved its current workflow.
+- [x] Preserve the existing five lifecycle values: `Backlog`, `Ready`, `In progress`, `In review`, and `Done`. Their meanings are maintained in the Project's own README; do not create another board or change its workflow as part of repository documentation.
+- [x] The Project includes all six currently open repository issues and uses `Status`, `Priority`, `Size`, and `Estimate` fields. Built-in issue labels carry the issue's type, area, priority, phase, and decision/readiness markers.
+- [x] Distinguish the Project `Status` lifecycle field from issue labels such as `status:approved` and `status:needs-decision`; do not treat those labels as replacement board columns or infer synchronization between them.
+- [x] Keep issue labels and project fields lightweight; use the issue body and links for detailed context.
 - [ ] Create milestones around deliverables, not arbitrary dates: repository foundation, design lock, two-civilization prototype, prototype validation, civilization expansion.
-- [ ] Keep issue labels and project columns lightweight; use the issue body and links for detailed context.
 
 The current issue forms do not assign labels automatically. Labels are applied deliberately during issue/PR triage so the repository does not silently depend on an incomplete catalog.
+
+For weekly backlog hygiene, reconcile active preproduction issues against the board, confirm their type/area/priority/phase labels and dependency notes, and move lifecycle status only when the documented work state changes. Keep acceptance evidence in the issue/PR history; do not create automation that silently reopens completed issues.
 
 ### Merge and release settings
 
@@ -70,6 +73,6 @@ The current issue forms do not assign labels automatically. Labels are applied d
 - `main` is the public default branch and contains the issue forms, PR template, contributor guidance, and repository foundation.
 - `dev` is published and protected by ruleset `25234622`; `main` is protected by ruleset `25234621`.
 - PR #2 merged the foundation into `dev` as `0057a59ba9346a56bba90022adf9e52c5af79e2e`; issue [#1](https://github.com/ivandpazd/vaelora/issues/1) is closed.
-- GitGuardian passed on PR #2. No Godot project or repository CI workflow exists yet, so no additional required CI checks are configured.
+- GitGuardian passed on PR #2. The Godot project foundation and GUT runner are now in place; no repository CI workflow or additional required checks are configured yet.
 - The normal path is `feature/<issue>-<slug>` → `dev` → `main`. Feature PRs close their concrete issue; the promotion PR from `dev` to `main` does not require an intermediate issue.
-- Optional labels, project-board columns, release automation, Git LFS, and packaged-build policy remain intentionally unconfigured until their need is demonstrated.
+- Project #4 is the active project board; its owner-maintained workflow is documented there and preserved as-is. Release automation, Git LFS, and packaged-build policy remain intentionally unconfigured until their need is demonstrated.

@@ -29,6 +29,23 @@ Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-
 
 Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet.
 
+#### Stage 2 vertical-slice scenario (`VS-01`)
+
+Use the established `BAL-07-AUREN-BRASAL-IDENTITY` fixture as the reproducible end-to-end scenario: seed `1407`, Continents, Medium, Auren League versus Brasal clans, Intermediate difficulty, and Combined victory. Run both player orders with the same seed and setup; do not add a scenario-only game rule, unit, resource, or advantage. Combined matches end only through the GDD's existing conquest or knowledge conditions.
+
+The scenario exercises match setup, exploration, city founding and growth, territory improvement, city production, research, land combat, save/load, and a complete valid match outcome. Across the two player orders, both civilizations must complete at least one shared and one unique technology through the same content, research, save/load, and validated-command paths used by the human and AI. The full initial content inventory and explicit modifier/prerequisite validation remain required as specified in [GDD §17](../game-design/game-design-document.md#17-prototype-content-contract). Save/load checkpoints use the accepted [GDD §13](../game-design/game-design-document.md#13-saving-and-accessibility-constraints) contract. The scenario proves a vertical slice, not the complete prototype or every balance scenario.
+
+| Evidence | Stage 2 acceptance |
+|---|---|
+| Reproducibility | Repeating each player order with seed `1407` and the same build/configuration produces the same authoritative initial map and the same outcomes for the same confirmed action sequence. A save/load checkpoint preserves the full authoritative state and deterministic continuation. |
+| Functional path | Both runs complete the actions above and end through a valid Combined-mode victory. Human and AI actions use the same authoritative validation path; rejected actions preserve state. |
+| Presentation and content | Every asset used is final-quality and rights-cleared. Required prototype content is present; no placeholder assets, scenario-only mechanics, or unapproved audio are used. |
+| Automated evidence | Headless tests exercise the seed/configuration, public simulation and command interfaces, rejected-action state preservation, research/content paths, and save/load continuation. Record exact commands, build, seed, configuration, and results. |
+| Platform smoke matrix | Record launch and the scenario's start-to-save/load checkpoint on Windows, macOS, and Linux desktop builds; one representative Android device at the selected floor; and each supported Web browser family in issue #24's current matrix. Record OS/device or browser/runtime versions, build, steps, result, and limitations separately; an export or editor run alone is not runtime evidence. |
+| Gate ownership and failure | The issue owner/maintainer records the evidence; the integration reviewer checks it against this table. Any failed criterion, nondeterministic result, rejected-action state change, save/load mismatch, missing final-quality asset, or required-target smoke failure leaves Stage 2 open. Record the failing evidence and reopen the affected implementation work before reconsidering the gate. |
+
+If seed `1407` cannot satisfy the required legal scenario without changing accepted rules, do not weaken this contract or tune the game around the fixture. Mark the run blocked, preserve its evidence, and propose a versioned replacement seed/setup with the prior result retained under the scenario-catalog rules.
+
 **Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. Representative minimum-floor devices/browser combinations are used to measure startup/load, largest-map generation, turn and AI response, frame time, peak memory, and save size; numerical budgets are approved and recorded before this gate closes. The initial Godot system requirements are not treated as proof of Vaelora performance. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
 
 ### 3. Complete two-civilization prototype

@@ -81,6 +81,14 @@ Use the matching issue form for bugs, feature proposals, or unresolved design de
 
 Do not use issues to silently approve TBD game rules. A design proposal remains open until the user accepts it and the canonical docs are updated.
 
+## Project tracking
+
+Track repository work in the existing user-owned [Vaelora GitHub Project #4](https://github.com/users/ivandpazd/projects/4). Preserve its validated workflow; do not create a duplicate or change its settings without the owner's authorization.
+
+The Project `Status` field uses `Backlog`, `Ready`, `In progress`, `In review`, and `Done`. The Project README is the source of truth for each status's meaning and transition. Its other planning fields include `Priority`, `Size`, and `Estimate`. GitHub issue labels carry type, area, priority, phase, and decision/readiness metadata. Project lifecycle status and issue labels are separate records; do not imply automatic synchronization.
+
+During weekly backlog hygiene, reconcile active preproduction issues against the Project, check their taxonomy labels and dependency notes, and update lifecycle status when work state changes. Keep completion evidence in the issue/PR history. The Project's `Done` state and the production plan's Definition of Done must remain aligned. Do not configure automation that silently reopens closed issues.
+
 ## Pull requests
 
 - Every `feature/*` PR targets `dev`; the only normal PR targeting `main` is the promotion PR from `dev`.

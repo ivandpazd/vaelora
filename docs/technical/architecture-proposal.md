@@ -7,7 +7,7 @@
 
 - Ship the same core game to Android, Windows, macOS, Linux, and Web from the start.
 - Keep the complete Godot project in this GitHub repository at `game/`; no separate project repository is planned.
-- Use 2D graphics, a fixed isometric camera, hex-grid rules, and mandatory landscape orientation.
+- Use 2D graphics, a fixed 2:1 dimetric camera, hex-grid rules, and mandatory landscape orientation.
 - Keep simulation rules independent from screen rendering and input device.
 - Use seed-driven procedural maps so a saved or reported match can be reproduced.
 - Use final-quality visual assets in the prototype, not placeholder art.
@@ -19,7 +19,7 @@
 |---|---|---|
 | Domain/simulation | Board, hex coordinates, terrain, units, cities, ownership, economy, turns, combat, research, victory | Scene-tree references, UI state, input-device details |
 | Application/use cases | New match setup, validated player commands, AI actions, sequential turn orchestration, save/load coordination | Rendering or raw platform APIs |
-| Presentation | Isometric board, selection, fog, animation, HUD, menus, accessible feedback | Authoritative game rules or persistent match truth |
+| Presentation | Fixed 2:1 dimetric board, selection, fog, animation, HUD, menus, accessible feedback | Authoritative game rules or persistent match truth |
 | Content | Civilizations, tech, units, buildings, improvements, terrain, names, balance values | Behavior duplicated as faction-specific branches across scenes |
 | Platform adapters | Input mapping, save locations, browser storage, audio decoding/mixing and export-specific integration | Gameplay decisions or authoritative simulation state |
 
@@ -33,7 +33,7 @@ Turn ownership must remain explicit: human turn completes first, then AI civiliz
 
 ## Hex board and map generation
 
-Use one canonical coordinate model for neighbor lookup, distance, movement, range, city claims, and pathfinding. Keep render projection to isometric coordinates in a presentation adapter. The generator receives an explicit seed and configuration. Fairness constraints—minimum separation, start-region comparability, and terrain/resource thresholds—must be specified in testable terms before the generator is considered complete.
+Use one canonical coordinate model for neighbor lookup, distance, movement, range, city claims, and pathfinding. Keep the fixed 2:1 dimetric render projection in a presentation adapter. The generator receives an explicit seed and configuration. Fairness constraints—minimum separation, start-region comparability, and terrain/resource thresholds—must be specified in testable terms before the generator is considered complete.
 
 Fog-of-war state should distinguish at least unexplored, explored-but-not-currently-visible, and currently visible. Whether remembered enemy structures/units persist in explored fog is still open.
 
@@ -59,13 +59,13 @@ game/
   content/             typed definitions, stable-ID catalog, authored resources
     resources/         civilization and terrain resource schemas
     data/              civilization and terrain .tres definitions
-  presentation/        isometric projection, scenes, UI, effects, fog display
+  presentation/        2:1 dimetric projection, scenes, UI, effects, fog display
   platform/            input, persistence, export and platform adapters
   assets/              final-quality source and imported game assets
   tests/               deterministic model, content-contract, integration tests
 ```
 
-Simulation and its model types are plain GDScript data objects (using `RefCounted` where runtime identity/lifetime is needed), never scene nodes. `HexCoord(q, r)` is the canonical axial coordinate model; isometric projection is presentation-only. Commands from human and AI adapters converge on one application validation path. Rejection must preserve authoritative state. Content references crossing runtime or save boundaries use stable IDs, never resource paths, display names, scene names, or list positions. See [Godot project structure and data contract](godot-project-structure.md) for the module dependency rules, type dictionary, and currently implemented content resources.
+Simulation and its model types are plain GDScript data objects (using `RefCounted` where runtime identity/lifetime is needed), never scene nodes. `HexCoord(q, r)` is the canonical axial coordinate model; fixed 2:1 dimetric projection is presentation-only. Commands from human and AI adapters converge on one application validation path. Rejection must preserve authoritative state. Content references crossing runtime or save boundaries use stable IDs, never resource paths, display names, scene names, or list positions. See [Godot project structure and data contract](godot-project-structure.md) for the module dependency rules, type dictionary, and currently implemented content resources.
 
 Content `.tres` resources own authored identity, names, references, and tunable values. Testable simulation code owns formulas, legality, transitions, and modifier application. This issue establishes schema boundaries and representative content only; it does not implement the game systems or claim the complete vertical-slice catalog has been authored.
 

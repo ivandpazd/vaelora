@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1080" viewBox="0 0 1440 1080" role="img" aria-labelledby="title desc">
+  <title id="title">Vaelora prototype visual slice</title>
+  <desc id="desc">A 2D dimetric Plains map with level three-to-four Auren and Brasal settlements, their Basic soldiers, and readable terrain and road overlays.</desc>
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#243746"/><stop offset="1" stop-color="#52645a"/></linearGradient>
+    <linearGradient id="land" x2="0.3" y2="1"><stop stop-color="#aeb77c"/><stop offset=".55" stop-color="#899965"/><stop offset="1" stop-color="#596d51"/></linearGradient>
+    <linearGradient id="aurenStone" x2="0" y2="1"><stop stop-color="#f2e8cf"/><stop offset="1" stop-color="#bba982"/></linearGradient>
+    <linearGradient id="brasalWood" x2="0" y2="1"><stop stop-color="#bd8050"/><stop offset="1" stop-color="#694b3b"/></linearGradient>
+    <linearGradient id="blueCloth" x2="0" y2="1"><stop stop-color="#41678b"/><stop offset="1" stop-color="#183a63"/></linearGradient>
+    <linearGradient id="redCloth" x2="0" y2="1"><stop stop-color="#d16c4b"/><stop offset="1" stop-color="#873c32"/></linearGradient>
+    <pattern id="grass" width="38" height="30" patternUnits="userSpaceOnUse">
+      <path d="M5 24l5-9m1 11l5-7M25 9l4-6m-1 17l5-8" stroke="#d4d19a" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+      <circle cx="18" cy="20" r="1.7" fill="#586a4e" opacity=".45"/>
+    </pattern>
+    <pattern id="stoneTexture" width="28" height="24" patternUnits="userSpaceOnUse">
+      <path d="M0 12h28M14 0v12M7 12v12" stroke="#8d8067" stroke-width="1" opacity=".38"/>
+      <circle cx="4" cy="5" r="1" fill="#fff2d8" opacity=".4"/>
+    </pattern>
+    <filter id="softShadow" x="-.25" y="-.3" width="1.5" height="1.7"><feGaussianBlur stdDeviation="9"/></filter>
+    <g id="hex">
+      <path d="M0-104L180-52L180 52L0 104L-180 52L-180-52Z" fill="url(#land)" stroke="#ded5b4" stroke-width="5"/>
+      <path d="M0-104L180-52L180 52L0 104L-180 52L-180-52Z" fill="url(#grass)" opacity=".75"/>
+      <path d="M-180-52L0 0L0 104L-180 52Z" fill="#344b43" opacity=".13"/>
+      <path d="M0 0L180-52L180 52L0 104Z" fill="#f1e4ad" opacity=".10"/>
+    </g>
+    <g id="aurenHouse">
+      <ellipse cx="0" cy="54" rx="78" ry="18" fill="#18282c" opacity=".25"/>
+      <path d="M-54 5L0-22L54 5V57L0 83L-54 57Z" fill="url(#aurenStone)" stroke="#756c5b" stroke-width="3"/>
+      <path d="M-54 5L0 32L54 5M0 32V82" fill="none" stroke="#8b806b" stroke-width="3"/>
+      <path d="M-61 7L0-28L61 7L49 17L0-9L-49 17Z" fill="#315678" stroke="#183a63" stroke-width="3"/>
+      <path d="M-16 37Q0 19 16 37V65H-16Z" fill="#263b4c"/>
+      <path d="M-10 40Q0 29 10 40" fill="none" stroke="#d6a63a" stroke-width="3"/>
+      <rect x="30" y="20" width="6" height="20" fill="#d6a63a"/>
+    </g>
+    <g id="brasalHouse">
+      <ellipse cx="0" cy="54" rx="78" ry="18" fill="#18282c" opacity=".25"/>
+      <path d="M-55 9L0-18L55 9V57L0 82L-55 57Z" fill="url(#brasalWood)" stroke="#493a32" stroke-width="3"/>
+      <path d="M-55 9L0 36L55 9M0 36V81M-42 18V52M42 18V52" fill="none" stroke="#3a3531" stroke-width="5"/>
+      <path d="M-64 8L0-31L64 8L48 18L0-11L-48 18Z" fill="#30383a" stroke="#24262b" stroke-width="3"/>
+      <path d="M-16 43Q0 25 16 43V66H-16Z" fill="#24262b"/>
+      <path d="M-9 44Q0 34 9 44" fill="none" stroke="#c47a44" stroke-width="4"/>
+      <path d="M-31 23l12 6m38-6l-12 6" stroke="#d8c7a2" stroke-width="3"/>
+    </g>
+    <g id="aurenSoldier">
+      <ellipse cx="0" cy="42" rx="35" ry="10" fill="#17252a" opacity=".32"/>
+      <path d="M-20 22L-15-7L0-18L15-7L20 22L0 35Z" fill="url(#blueCloth)" stroke="#132c48" stroke-width="3"/>
+      <path d="M-14-6L0-24L14-6L9 2H-9Z" fill="#d6a63a" stroke="#8e6e2c" stroke-width="2"/>
+      <path d="M-7-5L0-14L7-5L5 5H-5Z" fill="#e8c89a"/>
+      <path d="M-16 4L-28 23L-20 27L-8 12M16 4L28 21L20 26L8 12" fill="#c9bda4" stroke="#5b6570" stroke-width="3"/>
+      <path d="M25 21L37-20" stroke="#6a5135" stroke-width="4"/><path d="M37-20l-5 12l9-1Z" fill="#d9d5c7"/>
+      <path d="M-12 29L-10 40M12 29L10 40" stroke="#d6a63a" stroke-width="5"/>
+      <path d="M-4 1L0 10L4 1" fill="#d6a63a"/>
+    </g>
+    <g id="brasalSoldier">
+      <ellipse cx="0" cy="42" rx="36" ry="10" fill="#17252a" opacity=".32"/>
+      <path d="M-22 22L-17-6L0-18L17-6L22 22L0 36Z" fill="#3f5a43" stroke="#26372f" stroke-width="3"/>
+      <path d="M-18-6L-12-21L0-24L13-18L19-5L8 1L-9 1Z" fill="#78846a" stroke="#303a33" stroke-width="3"/>
+      <path d="M-12-4L-3-7M4-7L13-4" stroke="#24262b" stroke-width="4"/>
+      <path d="M-8 4L9 4L15 27L0 35L-15 27Z" fill="url(#redCloth)" stroke="#6f352c" stroke-width="2"/>
+      <path d="M-17 4L-30 20L-22 27L-8 12M17 4L30 18L22 27L8 12" fill="#68715f" stroke="#383c36" stroke-width="3"/>
+      <path d="M27 19L36-20" stroke="#604b36" stroke-width="5"/><path d="M36-20l-5 12l10-1Z" fill="#bbb7a9"/>
+      <path d="M-12 30L-10 40M12 30L10 40" stroke="#c47a44" stroke-width="5"/>
+      <path d="M-12 12L0 20L12 12" fill="none" stroke="#d8c7a2" stroke-width="3"/>
+    </g>
+  </defs>
+
+  <rect width="1440" height="1080" fill="url(#sky)"/>
+  <circle cx="1160" cy="165" r="92" fill="#e2c879" opacity=".12"/>
+  <path d="M0 300Q180 245 360 300T720 288T1080 300T1440 270V1080H0Z" fill="#304b47" opacity=".75"/>
+  <path d="M0 410Q240 350 480 410T960 392T1440 410V1080H0Z" fill="#52634f" opacity=".65"/>
+  <g opacity=".22" fill="#d6d1b5">
+    <path d="M155 410l34-105l38 105zM226 423l30-83l33 83zM1180 390l40-118l45 118zM1262 399l34-91l40 91z"/>
+  </g>
+  <text x="72" y="90" fill="#f2e8cf" font-family="Georgia,serif" font-size="38" letter-spacing="4">VAELORA · PROTOTYPE ART SLICE</text>
+  <text x="74" y="132" fill="#d6d0b9" font-family="Arial,sans-serif" font-size="18" letter-spacing="2">2:1 DIMETRIC · PLAINS · CITY STAGE 3–4 · 2× ART DIRECTION</text>
+
+  <!-- Auren settlement: three distinct civic buildings communicate the middle growth stage. -->
+  <g transform="translate(0 -50)">
+  <g transform="translate(440 505)"><use href="#hex"/></g>
+  <path d="M274 516Q445 468 606 519" fill="none" stroke="#9b8158" stroke-width="19" stroke-linecap="round"/>
+  <path d="M274 511Q445 463 606 514" fill="none" stroke="#d4bc83" stroke-width="5" stroke-linecap="round"/>
+  <g transform="translate(397 470) scale(.72)"><use href="#aurenHouse"/></g>
+  <g transform="translate(477 493) scale(.91)"><use href="#aurenHouse"/></g>
+  <g transform="translate(539 460) scale(.66)"><use href="#aurenHouse"/></g>
+  <path d="M474 391V329" stroke="#6b5337" stroke-width="5"/><path d="M476 333l47 15l-47 13Z" fill="#183a63"/><path d="M479 336l27 9l-27 8Z" fill="#d6a63a"/>
+  <g transform="translate(333 548) scale(.72)"><use href="#aurenSoldier"/></g>
+
+  <!-- Brasal settlement: four compact structures use timber/stone massing, not color alone. -->
+  <g transform="translate(1000 505)"><use href="#hex"/></g>
+  <path d="M842 516Q1007 470 1162 518" fill="none" stroke="#88704f" stroke-width="19" stroke-linecap="round"/>
+  <path d="M842 511Q1007 465 1162 513" fill="none" stroke="#c7a574" stroke-width="5" stroke-linecap="round"/>
+  <g transform="translate(933 477) scale(.70)"><use href="#brasalHouse"/></g>
+  <g transform="translate(1001 493) scale(.88)"><use href="#brasalHouse"/></g>
+  <g transform="translate(1069 468) scale(.64)"><use href="#brasalHouse"/></g>
+  <g transform="translate(1098 514) scale(.52)"><use href="#brasalHouse"/></g>
+  <path d="M1001 391V329" stroke="#55442f" stroke-width="5"/><path d="M1003 333l47 15l-47 13Z" fill="#873c32"/><path d="M1006 336l27 9l-27 8Z" fill="#c47a44"/>
+  <g transform="translate(1127 550) scale(.72)"><use href="#brasalSoldier"/></g>
+  </g>
+
+  <!-- Shared Plains read: silhouette, luminance, and texture remain legible without hue. -->
+  <g transform="translate(0 -94)">
+  <g transform="translate(720 744) scale(.92)"><use href="#hex"/></g>
+  <path d="M585 747l55-17m-26 48l46-15m137-42l48 17m-14 53l-49-17" stroke="#e4dca9" stroke-width="5" stroke-linecap="round" opacity=".75"/>
+  <g fill="#53664e" opacity=".78"><path d="M683 715q-13-40 0-55q15 19 0 55m15 1q-6-31 9-42q9 20-9 42M756 780q-5-29 8-40q11 17-8 40"/></g>
+  <path d="M620 752Q716 729 822 754" fill="none" stroke="#9b8158" stroke-width="15" stroke-linecap="round"/>
+  <path d="M620 748Q716 725 822 750" fill="none" stroke="#dfc98c" stroke-width="4" stroke-linecap="round"/>
+  <text x="720" y="884" text-anchor="middle" fill="#f2e8cf" font-family="Arial,sans-serif" font-size="18" letter-spacing="2">SHARED PLAINS · TERRAIN READS THROUGH SHAPE, VALUE, AND TEXTURE</text>
+  </g>
+
+  <!-- Six facings are shown as a direction check; each pose remains inside a hex footprint. -->
+  <g transform="translate(350 836)">
+    <text x="0" y="0" fill="#f2e8cf" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">AUREN · SIX FACING STUDY</text>
+    <g fill="none" stroke="#d8c79c" stroke-width="2" opacity=".7">
+      <path d="M25 72l42-15l42 15v30l-42 15l-42-15Z"/><path d="M145 72l42-15l42 15v30l-42 15l-42-15Z"/><path d="M265 72l42-15l42 15v30l-42 15l-42-15Z"/>
+    </g>
+    <g transform="translate(67 89) scale(.38)"><use href="#aurenSoldier"/></g><g transform="translate(187 89) scale(.38) rotate(60)"><use href="#aurenSoldier"/></g><g transform="translate(307 89) scale(.38) rotate(120)"><use href="#aurenSoldier"/></g>
+    <g fill="none" stroke="#d8c79c" stroke-width="2" opacity=".7">
+      <path d="M25 157l42-15l42 15v30l-42 15l-42-15Z"/><path d="M145 157l42-15l42 15v30l-42 15l-42-15Z"/><path d="M265 157l42-15l42 15v30l-42 15l-42-15Z"/>
+    </g>
+    <g transform="translate(67 174) scale(.38) rotate(180)"><use href="#aurenSoldier"/></g><g transform="translate(187 174) scale(.38) rotate(240)"><use href="#aurenSoldier"/></g><g transform="translate(307 174) scale(.38) rotate(300)"><use href="#aurenSoldier"/></g>
+  </g>
+  <g transform="translate(770 836)">
+    <text x="0" y="0" fill="#f2e8cf" font-family="Arial,sans-serif" font-size="16" letter-spacing="2">BRASAL · SIX FACING STUDY</text>
+    <g fill="none" stroke="#d8c79c" stroke-width="2" opacity=".7">
+      <path d="M25 72l42-15l42 15v30l-42 15l-42-15Z"/><path d="M145 72l42-15l42 15v30l-42 15l-42-15Z"/><path d="M265 72l42-15l42 15v30l-42 15l-42-15Z"/>
+    </g>
+    <g transform="translate(67 89) scale(.38)"><use href="#brasalSoldier"/></g><g transform="translate(187 89) scale(.38) rotate(60)"><use href="#brasalSoldier"/></g><g transform="translate(307 89) scale(.38) rotate(120)"><use href="#brasalSoldier"/></g>
+    <g fill="none" stroke="#d8c79c" stroke-width="2" opacity=".7">
+      <path d="M25 157l42-15l42 15v30l-42 15l-42-15Z"/><path d="M145 157l42-15l42 15v30l-42 15l-42-15Z"/><path d="M265 157l42-15l42 15v30l-42 15l-42-15Z"/>
+    </g>
+    <g transform="translate(67 174) scale(.38) rotate(180)"><use href="#brasalSoldier"/></g><g transform="translate(187 174) scale(.38) rotate(240)"><use href="#brasalSoldier"/></g><g transform="translate(307 174) scale(.38) rotate(300)"><use href="#brasalSoldier"/></g>
+  </g>
+  <text x="720" y="1050" text-anchor="middle" fill="#d6d0b9" font-family="Arial,sans-serif" font-size="15" letter-spacing="1.5">CONCEPT SAMPLE · NOT A CLAIM OF FINAL GAME IMPORT OR PLATFORM VALIDATION</text>
+</svg>

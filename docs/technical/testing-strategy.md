@@ -18,7 +18,7 @@ Run one suite while iterating:
 godot --headless --path game --script res://addons/gut/gut_cmdln.gd -gtest=res://tests/test_content_contract.gd -gpost_run_script=res://tests/require_tests_hook.gd -gexit
 ```
 
-The same full-suite command is the future CI test step. CI must install the documented Godot version, run the command from the checkout root, preserve the process exit status, and retain the complete failure output. The post-run hook turns GUT's otherwise-successful zero-test run into an actionable failure. Do not report success based on an editor launch or a test run that reports `Nothing was run`.
+The same full-suite command is the approved CI test step. CI must install the documented Godot version, run the command from the checkout root, preserve the process exit status, and retain the complete failure output. The pipeline and its implementation boundary are documented in the [CI, export, and release pipeline](ci-release-pipeline.md). The post-run hook turns GUT's otherwise-successful zero-test run into an actionable failure. Do not report success based on an editor launch or a test run that reports `Nothing was run`.
 
 ## Test categories and ownership
 

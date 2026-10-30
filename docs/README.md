@@ -10,9 +10,10 @@ This directory is the project's documentation hub. The root [README](../README.m
 4. [Open design decisions](game-design/open-decisions.md) — values and rules that must be resolved before they can be implemented.
 5. [Technical architecture proposal](technical/architecture-proposal.md) — a proposed implementation structure and cross-platform validation plan.
 6. [Automated testing strategy](technical/testing-strategy.md) — selected GUT runner, deterministic fixtures, and test boundaries.
-7. [Production plan](production/production-plan.md) — sequencing, prototype acceptance, and the civilization expansion gate.
-8. [Development workflow](project/development-workflow.md) — branch model, commits, issues, and pull requests.
-9. [GitHub readiness](project/github-readiness.md) — remote settings and activation checklist.
+7. [CI, export, and release pipeline](technical/ci-release-pipeline.md) — approved CI checks, unsigned exports, release signing, versioning, and approval boundaries.
+8. [Production plan](production/production-plan.md) — sequencing, prototype acceptance, and the civilization expansion gate.
+9. [Development workflow](project/development-workflow.md) — branch model, commits, issues, and pull requests.
+10. [GitHub readiness](project/github-readiness.md) — remote settings and activation checklist.
 
 ## Source-of-truth rules
 

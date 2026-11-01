@@ -10,7 +10,7 @@ Vaelora is a 2D, turn-based fantasy strategy game in preproduction. You explore 
 
 The game is set on the continent of Vaelora, where generations of political disputes and neglected infrastructure have weakened **the Trama**: an old network of roads and signal beacons. The human **Auren League** and the orc **Brasal clans** are the first civilizations competing to restore, control, or replace it.
 
-> **Current status:** the Godot project foundation and initial GUT test runner are in place. Gameplay implementation and final-quality game assets have not started yet. The first prototype must use final-quality visual assets; placeholder art is out of scope.
+> **Current status:** the Godot project foundation and initial GUT test runner are in place. Gameplay implementation has not started. The approved production sequence completes and validates gameplay functionality first, using clearly provisional visuals only in internal development builds; final-quality art is produced and accepted afterward, before the first accepted playable prototype. Provisional art is never release or acceptance art.
 
 > **Rights:** Vaelora's original materials are proprietary and all rights are reserved by Iván de Paz Delgado. See [LICENSE](LICENSE). This public repository can still be viewed and forked through GitHub's platform permissions; the notice does not grant broader reuse rights.
 

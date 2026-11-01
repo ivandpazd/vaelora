@@ -13,10 +13,12 @@ The complete Godot project lives at `game/` in this repository. Godot 4.7.2 stab
 | `game/content/` | Typed content schemas, stable-ID catalog, authored civilization/terrain/gameplay definitions | Rule formulas or presentation-specific faction branches |
 | `game/presentation/` | Scenes, isometric projection, visible fog, animation, UI and accessible feedback | Authoritative game state or rule decisions |
 | `game/platform/` | Input mapping, persistence backends, export and platform adapters | Gameplay semantics or a parallel validation path |
-| `game/assets/` | Final-quality game assets and licensed editable sources | Placeholder production visuals |
+| `game/assets/` | Final-quality game assets and licensed editable sources | Provisional development visuals |
 | `game/tests/` | Deterministic content/model tests and integration checks | A second implementation of gameplay rules |
 
 Runtime domain/model objects are not Nodes and do not depend on the scene tree. Use `RefCounted` for runtime objects requiring identity or managed lifetime; immutable/value-like types may use the smallest suitable GDScript value representation. Issue #21 selects GUT 9.7.1 and defines the test boundaries in [the automated testing strategy](testing-strategy.md); issue #23 owns the save envelope.
+
+The functionality-first production sequence may use clearly labeled provisional visuals in isolated development-only presentation/test resources. They must not enter `game/assets/`, authoritative content/simulation, accepted builds, or release exports; release configuration and the final-art gate must exclude them. This permits gameplay validation without binding mechanics to unfinished visual assets.
 
 ## Dependency and state-flow rules
 

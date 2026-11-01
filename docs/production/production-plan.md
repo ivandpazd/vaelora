@@ -7,7 +7,7 @@
 - Resolve rules and data contracts before implementing behavior that depends on them.
 - Track each unresolved product decision as an issue with acceptance criteria; accepted decisions update their canonical documentation.
 - Deliver complete two-player gameplay systems for the first prototype rather than a reduced rules demo.
-- Use final-quality art throughout the prototype; placeholder visuals are not acceptable.
+- Complete and validate baseline gameplay functionality before final-art production. Internal development builds may use clearly labeled provisional visuals; final-quality art must be produced and accepted before the prototype/first playable is accepted or released. Provisional visuals never satisfy the final-art gate.
 - Keep Android, Windows, macOS, Linux, and Web exportable throughout development. Prioritize runtime checks for Web and Android during bootstrap; run Windows, macOS, and Linux launch checks when packaged builds are available. Deferred desktop runtime checks do not block the engine/renderer decision in issue #19; they remain part of the vertical-slice platform gate.
 - Add the remaining four planned civilizations only after the prototype passes the final test battery.
 
@@ -27,7 +27,7 @@ Balance evidence follows the [Balance Methodology and Scenario Catalog](../game-
 
 ### 2. Godot foundation and vertical slice
 
-Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Assets used in this slice must be final-quality even if not all gameplay systems are present yet. Accept representative visual and audio slices and measure asset/audio budgets on representative target devices before integration.
+Create the Godot project and content/simulation boundaries. Implement deterministic hex state, one complete turn, seeded map loading, city selection/production, and cross-platform input/presentation flow. Internal functional builds may use clearly labeled provisional visuals while gameplay correctness is developed; this does not accept issue #17 art or satisfy the final-art gate. Defer final visual-art production and acceptance until the agreed gameplay functionality is complete. Audio acceptance and its measured budgets remain on their existing schedule.
 
 #### Stage 2 vertical-slice scenario (`VS-01`)
 
@@ -39,20 +39,24 @@ The scenario exercises match setup, exploration, city founding and growth, terri
 |---|---|
 | Reproducibility | Repeating each player order with seed `1407` and the same build/configuration produces the same authoritative initial map and the same outcomes for the same confirmed action sequence. A save/load checkpoint preserves the full authoritative state and deterministic continuation. |
 | Functional path | Both runs complete the actions above and end through a valid Combined-mode victory. Human and AI actions use the same authoritative validation path; rejected actions preserve state. |
-| Presentation and content | Every asset used is final-quality and rights-cleared. Required prototype content is present; no placeholder assets, scenario-only mechanics, or unapproved audio are used. |
+| Presentation and content | Required prototype content is present. Clearly provisional visuals may support internal functional validation only; record their status and do not treat them as accepted art. No scenario-only mechanics or unapproved audio are used. Final visual-art acceptance is deferred to the Stage 3 exit gate. |
 | Automated evidence | Headless tests exercise the seed/configuration, public simulation and command interfaces, rejected-action state preservation, research/content paths, and save/load continuation. Record exact commands, build, seed, configuration, and results. |
 | Platform smoke matrix | Record launch and the scenario's start-to-save/load checkpoint on Windows, macOS, and Linux desktop builds; one representative Android device at the selected floor; and each supported Web browser family in issue #24's current matrix. Record OS/device or browser/runtime versions, build, steps, result, and limitations separately; an export or editor run alone is not runtime evidence. |
-| Gate ownership and failure | The issue owner/maintainer records the evidence; the integration reviewer checks it against this table. Any failed criterion, nondeterministic result, rejected-action state change, save/load mismatch, missing final-quality asset, or required-target smoke failure leaves Stage 2 open. Record the failing evidence and reopen the affected implementation work before reconsidering the gate. |
+| Gate ownership and failure | The issue owner/maintainer records the evidence; the integration reviewer checks it against this table. Any failed criterion, nondeterministic result, rejected-action state change, save/load mismatch, or required-target smoke failure leaves Stage 2 open. Provisional visuals are not a Stage 2 art verdict. Record the failing evidence and reopen the affected implementation work before reconsidering the gate. |
 
 If seed `1407` cannot satisfy the required legal scenario without changing accepted rules, do not weaken this contract or tune the game around the fixture. Mark the run blocked, preserve its evidence, and propose a versioned replacement seed/setup with the prior result retained under the scenario-catalog rules.
 
-**Exit:** one short end-to-end scenario is playable on target families and can be reproduced from a seed. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. Representative minimum-floor devices/browser combinations are used to measure startup/load, largest-map generation, turn and AI response, frame time, peak memory, and save size; numerical budgets are approved and recorded before this gate closes. The initial Godot system requirements are not treated as proof of Vaelora performance. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
+**Exit:** one short functional end-to-end scenario is reproducible from a seed and runs on target families; it may use provisional internal visuals. The `ACC-*` and `LOC-*` checks in GDD §13 are run and their results or platform limitations recorded for Android, Windows, macOS, Linux, and supported Web browsers. Record functional startup/load, largest-map generation, turn and AI response, frame time, peak memory, and save-size observations, but treat measurements made with provisional visuals as preliminary; approve final visual/import budgets after final art exists and before the Stage 3 exit. The initial Godot system requirements are not treated as proof of Vaelora performance. This remains a later vertical-slice gate; issue #19 does not wait for deferred native desktop launch checks.
 
 ### 3. Complete two-civilization prototype
 
 Implement all agreed match modes and initial systems for the human Auren League and orc Brasal clans: procedural maps; exploration/fog; settlement/cities/territory; city production/buildings; workers/improvements/roads; growth/economy; research; land movement/combat; transport/naval rules; AI; score and victory; manual and five-complete-round autosaves.
 
 **Exit:** full matches can be completed on every target platform with final-quality visuals and no temporary gameplay rules.
+
+#### Stage 3 functionality-first art sequence
+
+Complete the agreed gameplay systems and their functional validation before beginning the full final-art pass. Until then, explicitly label internal visuals as provisional, keep them isolated from final assets, and never use them to claim visual acceptance. After gameplay functionality is complete, produce/refine the final art families, accept the representative issue #17 slice at the documented zooms and viewport, and validate final asset imports/budgets. Stage 3 cannot exit and Stage 4 cannot begin until the final visual gate is accepted. This sequence permits iteration as gameplay needs become clear without weakening the quality bar for the accepted prototype.
 
 ### 4. Final prototype test battery
 
@@ -73,5 +77,5 @@ An issue is Ready when it has one clear player-facing outcome, links to accepted
 - Acceptance criteria pass and required automated checks are green.
 - Relevant docs, balance data, and issue links are updated.
 - Platform and manual scenarios are recorded where the behavior crosses UI, save, or export boundaries.
-- No placeholder art or undocumented rules are introduced.
+- Provisional visuals, if used, are explicitly marked and restricted to internal functional builds; the accepted prototype contains only final-quality, rights-cleared art. No undocumented rules are introduced.
 - Pull request is reviewed and merged through the agreed target branch.

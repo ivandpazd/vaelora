@@ -15,7 +15,7 @@ A match should make the player feel that each turn presents a small number of me
 3. **Infrastructure has strategic value.** Terrain improvements benefit their assigned city; roads connect any distance between friendly cities, improve movement, and support growth and income.
 4. **Progress is civilization-wide.** One technology can be researched at a time; approximately 80% of the tree is shared and approximately 20% supports faction identity.
 5. **Asymmetry without hard exclusion.** Civilizations have different strengths and options, but should not be barred from ordinary strategic functions solely by identity.
-6. **Finished presentation from the first playable build.** The prototype uses final-quality art, a consistent 2D isometric camera, landscape layouts, and the intended bright fantasy direction.
+6. **Finished presentation in the accepted prototype.** Internal functional builds may use clearly provisional visuals while gameplay is completed; final-quality art, a consistent 2D isometric camera, landscape layouts, and the intended bright fantasy direction are required before the first playable prototype is accepted or released.
 
 ## Platform and session model
 
@@ -44,7 +44,7 @@ The other four planned civilization concepts—elves, dwarves, goblins, and skel
 - Mid-match difficulty changes.
 - Player-selected or editable city names.
 - City destruction/razing.
-- Temporary placeholder art or a temporary non-isometric view.
+- Provisional placeholder art in the accepted prototype, or a non-isometric gameplay view. Provisional visuals are permitted only in internal functionality-development and validation builds.
 - Expanding the participant count beyond two before the initial game has been validated.
 
 ## Audience and market assumptions

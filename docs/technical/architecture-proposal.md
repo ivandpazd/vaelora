@@ -10,7 +10,7 @@
 - Use 2D graphics, a fixed 2:1 dimetric camera, hex-grid rules, and mandatory landscape orientation.
 - Keep simulation rules independent from screen rendering and input device.
 - Use seed-driven procedural maps so a saved or reported match can be reproduced.
-- Use final-quality visual assets in the prototype, not placeholder art.
+- Keep final-quality visual assets in the accepted prototype. Clearly provisional visuals may support internal gameplay implementation and validation only; isolate them from final assets and exclude them from accepted/release builds.
 - Support manual saves at any time and autosaves after every five complete rounds.
 
 ## Proposed layers
@@ -62,6 +62,7 @@ game/
   presentation/        2:1 dimetric projection, scenes, UI, effects, fog display
   platform/            input, persistence, export and platform adapters
   assets/              final-quality source and imported game assets
+  # Provisional test visuals, if needed, belong to isolated development-only presentation resources and are excluded from release builds.
   tests/               deterministic model, content-contract, integration tests
 ```
 
@@ -101,7 +102,7 @@ The AI receives the same visible information and legal actions as a human. Diffi
   | Web | Two latest stable releases of Chrome, Edge, and Firefox | WebAssembly and WebGL 2.0 |
 
   Safari/WebKit and iOS are outside the initial guaranteed target matrix. Godot's CPU references are x86-32 with SSE2, x86_64 with SSE4.2, or ARMv8 for Windows; x86-32 with SSE2, x86_64 with SSE4.2, or ARMv7/ARMv8 for Linux; x86_64 or ARM for macOS; and 32/64-bit ARM or x86 for Android. Its published minimum RAM references for simple exports are 2 GB for native desktop, 1 GB for native mobile, 4 GB for desktop Web, and 2 GB for mobile Web. These are engine references only; representative Vaelora devices and actual minimum hardware remain subject to Stage 2 measurements. Reassess the OS/browser floors only through an explicit decision and validation evidence.
-- Godot warns that CPU, GPU, memory, and storage needs vary with project scope. Vaelora's final-quality assets, 80 × 50 maps, and simulation workload must therefore be measured on representative devices at the selected floor before claiming supported performance. The engine's baseline does not itself establish Vaelora compatibility.
+- Godot warns that CPU, GPU, memory, and storage needs vary with project scope. Measure final-quality assets, 80 × 50 maps, and simulation workload on representative devices at the selected floor before claiming supported performance. Measurements from provisional visuals are preliminary; the engine's baseline does not itself establish Vaelora compatibility.
 - The game uses landscape orientation. Human and AI input continue through the same validated action path; issue #20 will define the initial Godot input map as part of project bootstrap.
 - This decision does not freeze texture filtering, compression, or per-asset import presets. Set those after the visual asset requirements and supported platform matrix are established; do not infer them from the smoke project's temporary export settings.
 - Keep exports available for Android, Windows, macOS, Linux, and Web. Prioritize Web and Android runtime validation during bootstrap: verify Web launch in a supported browser and produce an Android APK; validate Android installation/runtime when the Android Studio/device test setup is ready.

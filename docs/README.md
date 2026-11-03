@@ -8,12 +8,13 @@ This directory is the project's documentation hub. The root [README](../README.m
 2. [Game Design Document](game-design/game-design-document.md) — confirmed match and gameplay rules.
 3. [World and civilizations](game-design/world-and-civilizations.md) — setting tone, history, and faction concepts.
 4. [Open design decisions](game-design/open-decisions.md) — values and rules that must be resolved before they can be implemented.
-5. [Technical architecture proposal](technical/architecture-proposal.md) — a proposed implementation structure and cross-platform validation plan.
-6. [Automated testing strategy](technical/testing-strategy.md) — selected GUT runner, deterministic fixtures, and test boundaries.
-7. [CI, export, and release pipeline](technical/ci-release-pipeline.md) — approved CI checks, unsigned exports, release signing, versioning, and approval boundaries.
-8. [Production plan](production/production-plan.md) — sequencing, prototype acceptance, and the civilization expansion gate.
-9. [Development workflow](project/development-workflow.md) — branch model, commits, issues, and pull requests.
-10. [GitHub readiness](project/github-readiness.md) — remote settings and activation checklist.
+5. [Terrain Visual Language v1](game-design/TERRAIN_VISUAL_LANGUAGE_V1.md) — closed terrain art-direction baseline and open export/runtime gates.
+6. [Technical architecture proposal](technical/architecture-proposal.md) — a proposed implementation structure and cross-platform validation plan.
+7. [Automated testing strategy](technical/testing-strategy.md) — selected GUT runner, deterministic fixtures, and test boundaries.
+8. [CI, export, and release pipeline](technical/ci-release-pipeline.md) — approved CI checks, unsigned exports, release signing, versioning, and approval boundaries.
+9. [Production plan](production/production-plan.md) — sequencing, prototype acceptance, and the civilization expansion gate.
+10. [Development workflow](project/development-workflow.md) — branch model, commits, issues, and pull requests.
+11. [GitHub readiness](project/github-readiness.md) — remote settings and activation checklist.
 
 ## Source-of-truth rules
 

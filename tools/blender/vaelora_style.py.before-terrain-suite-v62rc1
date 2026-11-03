@@ -1,0 +1,240 @@
+"""Canonical visual-production constants for Vaelora Art Pipeline v0.3.
+
+This module intentionally avoids bpy imports. Blender generators, host-side QA,
+Godot import tooling and review scripts all read the same immutable production
+contract from here.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+import math
+from typing import Final
+
+GENERATOR_VERSION: Final[str] = "0.3.2-r2"
+MANIFEST_SCHEMA_VERSION: Final[int] = 3
+ART_STYLE_ID: Final[str] = "vaelora-sculpted-diorama-v2"
+PRODUCTION_BLENDER_VERSION: Final[tuple[int, int, int]] = (5, 2, 3)
+SUPPORTED_BLENDER_MIN: Final[tuple[int, int, int]] = (5, 2, 0)
+
+# Immutable world-space registration contract.
+HEX_RADIUS: Final[float] = 2.0
+HEX_ROTATION_DEG: Final[float] = 30.0
+HEX_AXIAL_X_STEP: Final[float] = math.sqrt(3.0) * HEX_RADIUS
+HEX_AXIAL_Y_STEP: Final[float] = 1.5 * HEX_RADIUS
+HEX_SAFE_RADIUS: Final[float] = HEX_RADIUS * 0.80
+HEX_DECOR_SAFE_RADIUS: Final[float] = HEX_RADIUS * 0.73
+HEX_UI_CLEAR_RADIUS: Final[float] = HEX_RADIUS * 0.46
+GROUND_Z: Final[float] = 0.0
+
+# Fixed 2:1 dimetric camera. Never change per asset.
+CAMERA_YAW_DEG: Final[float] = 45.0
+CAMERA_ELEVATION_DEG: Final[float] = 30.0
+CAMERA_ORTHO_TERRAIN: Final[float] = 5.60
+CAMERA_ORTHO_CITY: Final[float] = 5.70
+CAMERA_ORTHO_UNIT: Final[float] = 4.35
+CAMERA_TARGET_Z = {
+    "terrain": 0.20,
+    "overlay": 0.20,
+    "unit": 0.82,
+    "city": 0.52,
+    "hero_prop": 0.38,
+}
+
+# Family-specific framing translation. Camera and target move together, so the
+# canonical 45°/30° projection never changes. The unit offset is measured from
+# the accepted v0.3.1 six-facing bounds test.
+CAMERA_FRAME_Z_OFFSET = {
+    "terrain": 0.0,
+    "overlay": 0.0,
+    "unit": 0.08,
+    "city": 0.0,
+    "hero_prop": 0.0,
+}
+
+# Canonical in-world unit presentation scale. This affects authored geometry itself,
+# so Blender benchmarks and runtime sprites share the same strategic hierarchy.
+UNIT_WORLD_SCALE: Final[float] = 0.80
+
+# Logical game canvas -> accepted 2x asset -> supersampled working render.
+CANVAS = {
+    "terrain": {"logical": (128, 64), "final": (256, 128), "work": (512, 256)},
+    "overlay": {"logical": (128, 64), "final": (256, 128), "work": (512, 256)},
+    "unit": {"logical": (128, 64), "final": (256, 128), "work": (512, 256)},
+    "city": {"logical": (256, 128), "final": (512, 256), "work": (1024, 512)},
+    "hero_prop": {"logical": (128, 64), "final": (256, 128), "work": (512, 256)},
+}
+
+# Minimum transparent padding in final 2x assets. These are QA rules, not camera hints.
+CANVAS_SAFE_MARGIN_PX = {
+    "unit": 5,
+    "city": 7,
+    "hero_prop": 5,
+}
+
+# Z-order bands used by the Godot presentation contract.
+Z_BANDS = {
+    "terrain_base": 0,
+    "terrain_edge": 10,
+    "terrain_feature": 20,
+    "road": 30,
+    "improvement": 40,
+    "prop_shadow": 45,
+    "prop": 50,
+    "city_shadow": 55,
+    "city": 60,
+    "unit_shadow": 65,
+    "unit": 70,
+    "territory": 80,
+    "selection": 90,
+    "fog": 100,
+    "feedback_fx": 110,
+}
+
+# Shared world palette. Faction accents are intentionally excluded from terrain.
+PALETTE_HEX = {
+    "meadow_shadow": "#466947", "meadow": "#6F9651", "meadow_light": "#91B75F",
+    "plains_shadow": "#776C43", "plains": "#A99C58", "plains_light": "#C4B96B",
+    "forest_shadow": "#294B38", "forest": "#3F6E46", "forest_light": "#5F8B50",
+    "moss": "#536A45", "moss_dark": "#354B38",
+    "earth_dark": "#493329", "earth": "#6B4935", "earth_light": "#8B6240", "clay": "#9B6249",
+    "sand_shadow": "#A98653", "sand": "#CEAE70", "sand_light": "#E1C88E",
+    "stone_dark": "#46515A", "stone": "#66727A", "stone_light": "#899397", "stone_warm": "#8A8174",
+    "snow_shadow": "#BAC6C4", "snow": "#E2E9E5",
+    "trunk_dark": "#49352A", "trunk": "#6B4B34", "trunk_light": "#8C6542",
+    "water_deep": "#173F50", "water_open": "#2D687A", "water_open_light": "#477F8D",
+    "water_shallow": "#5BA39C", "water_shallow_light": "#83C4B3", "foam": "#DEE9E1",
+    "flower_gold": "#E6BF4E", "flower_blue": "#7898C4", "flower_ivory": "#E9E0C8",
+    "shadow": "#17272B", "selection_warm": "#F1D37B", "danger": "#B44C42",
+}
+
+FACTION_PALETTE_HEX = {
+    "auren_blue": "#183A63", "auren_blue_light": "#42688C", "auren_gold": "#D6A63A",
+    "auren_ivory": "#F2E8CF", "auren_stone": "#B9AA8A", "auren_red": "#A8443F",
+    "brasal_charcoal": "#24262B", "brasal_red": "#B84A3A", "brasal_copper": "#C47A44",
+    "brasal_bone": "#D8C7A2", "brasal_moss": "#3F5A43", "brasal_wood": "#76503B",
+    "brasal_wood_light": "#9A6B49",
+}
+
+TERRAIN_SYSTEM_VERSION: Final[int] = 4
+TERRAIN_SYSTEM_REVISION: Final[int] = 4
+TERRAIN_V3_KINDS: Final[tuple[str, ...]] = ("plains",)
+TERRAIN_V4_KINDS: Final[tuple[str, ...]] = ("meadow",)
+
+# Terrain v5.0-rc2 keeps the accepted clip-safe density rebalance of rc1 and
+# adds the final painterly-richness pass for Meadow. The system version remains
+# 4 until final acceptance; revision 4 still records clip-safe scatter + density
+# rebalance while rc2 refines material richness and colour massing.
+TERRAIN_RELEASE_CANDIDATE: Final[str] = "5.0-rc2"
+TERRAIN_SUITE_GENERAL_CANDIDATE: Final[str] = "5.0-rc1-general"
+TERRAIN_SUITE_PACKAGE_REVISION: Final[int] = 2
+TERRAIN_SUITE_V6_CANDIDATE: Final[str] = "6.0-rc1"
+TERRAIN_SUITE_V6_PACKAGE_REVISION: Final[int] = 1
+TERRAIN_SUITE_V6_DENSITY_TARGET: Final[float] = 0.68
+TERRAIN_SUITE_V61_CANDIDATE: Final[str] = "6.1-rc1"
+TERRAIN_SUITE_V61_PACKAGE_REVISION: Final[int] = 1
+TERRAIN_SUITE_V61_COAST_SCALE: Final[float] = 0.80
+TERRAIN_SCATTER_DENSITY_TARGET: Final[float] = 0.70
+TERRAIN_PROP_DENSITY: Final[dict[str, float]] = {
+    "rock_garden": 0.85,
+    "hero_grass": 0.70,
+    "medium_clump": 0.60,
+    "groundcover": 0.60,
+    "flower": 0.55,
+}
+# Conservative XY footprint radii in world units before per-instance scale.
+# These include the complete composed prop (fragments/blades/leaves), not only
+# its origin. Shadow padding is added separately by the placement helper.
+TERRAIN_PROP_FOOTPRINT: Final[dict[str, float]] = {
+    "rock_garden": 0.43,
+    "hero_grass": 0.28,
+    "medium_clump": 0.21,
+    "groundcover": 0.16,
+    "flower": 0.085,
+}
+TERRAIN_PROP_SHADOW_PADDING: Final[dict[str, float]] = {
+    "rock_garden": 0.055,
+    "hero_grass": 0.035,
+    "medium_clump": 0.030,
+    "groundcover": 0.025,
+    "flower": 0.020,
+}
+
+TERRAIN_VARIANTS = {
+    "meadow": 4,
+    "plains": 4,
+    "forest": 4,
+    "hills": 4,
+    "mountain": 3,
+    "peak": 2,
+    "coast_base": 3,
+    "shallow_sea": 4,
+    "open_sea": 4,
+}
+
+# Finite runtime shoreline library. Coast v5.1 keeps three semantic morphologies
+# (sandy / mixed / eroded) but ships two authored seed variants of each. This
+# doubles repetition resistance while preserving a small deterministic library.
+COAST_VARIANT_COUNT: Final[int] = 6
+
+TREE_SPECIES = ("broadleaf_round", "broadleaf_columnar", "conifer", "wind_bent")
+HERO_PROPS = ("trama_beacon_broken", "trama_waystone", "trama_signal_base")
+FACTIONS = ("auren", "brasal")
+CITY_STAGES = (1, 2, 3)
+UNIT_ROLES = ("settler", "worker", "explorer", "basic_soldier", "patrol_ship")
+IMPROVEMENTS = ("farm", "lumber_facility", "mine", "port", "road")
+BUILDINGS = ("granary", "barracks", "walls", "academy")
+
+ASSET_STATES = (
+    "concept",
+    "benchmark",
+    "production_candidate",
+    "accepted",
+    "shipped",
+    "rejected",
+)
+
+# Current Steam graphical dimensions used by the marketing-art review contract.
+STEAM_ASSET_SIZES = {
+    "header_capsule": (920, 430),
+    "small_capsule": (462, 174),
+    "main_capsule": (1232, 706),
+    "vertical_capsule": (748, 896),
+    "library_capsule": (600, 900),
+    "library_hero": (3840, 1240),
+    "shortcut_icon": (256, 256),
+    "app_icon": (184, 184),
+    "screenshot_min": (1920, 1080),
+}
+
+
+# v0.3.2 premium quality target. Scores remain human-review evidence, never an
+# automatic acceptance mechanism. No category may hide a major defect behind a
+# high average score.
+QUALITY_SCORE_TARGET: Final[float] = 9.0
+QUALITY_AVERAGE_TARGET: Final[float] = 9.3
+QUALITY_ASPIRATIONAL_SCORE: Final[float] = 10.0
+
+@dataclass(frozen=True)
+class QualityGate:
+    name: str
+    description: str
+    severity: str = "blocker"
+
+QUALITY_GATES = (
+    QualityGate("silhouette", "Terrain/faction/role reads at 75% gameplay zoom and 320 px store-thumbnail proxy."),
+    QualityGate("no_primitive_read", "No primary final form reads as an untouched cube, cone, cylinder or icosphere."),
+    QualityGate("material_response", "Stone, soil, wood, foliage, metal and water have distinct authored procedural response."),
+    QualityGate("hex_registration", "All terrain bases retain the exact six-edge footprint and canonical camera registration."),
+    QualityGate("terrain_distinction", "All nine terrain categories remain distinguishable by macro-shape/value, not hue alone."),
+    QualityGate("negative_space", "Forest/city compositions preserve deliberate unit, road and overlay reading space."),
+    QualityGate("coast_continuity", "Shoreline edges stitch without visible modular seams, water holes, road-like sand strips or corner patches."),
+    QualityGate("city_progression", "Stages 1/2/3 communicate growth while retaining faction identity and avoiding clutter escalation."),
+    QualityGate("unit_anatomy", "Units read as sculpted stylized bodies with coherent joints/weight, never stacked primitives."),
+    QualityGate("six_facing_consistency", "All canonical facings retain role, perceived scale, anchor and safe canvas margins."),
+    QualityGate("faction_grayscale", "Auren and Brasal settlements and soldiers remain distinguishable without faction hue."),
+    QualityGate("no_baked_terrain", "Cities, units, improvements and hero props export independently from terrain."),
+    QualityGate("narrative_affordance", "Decorative lore props cannot be mistaken for interactive gameplay objects."),
+    QualityGate("provenance", "Every candidate records generator version, seed, Blender pin, source hashes and provenance."),
+    QualityGate("runtime_budget", "Candidate respects alpha coverage, texture size and batching profile for its family."),
+    QualityGate("commercial_read", "Gameplay captures remain attractive and recognizably Vaelora at Steam-scale presentation."),
+)

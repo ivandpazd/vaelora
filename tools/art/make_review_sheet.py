@@ -1,0 +1,145 @@
+"""Build Vaelora human-review sheets at art, grayscale and real gameplay scales."""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+from PIL import Image, ImageDraw
+
+BG = (31, 43, 47, 255)
+PANEL = (40, 54, 58, 255)
+LABEL = (235, 230, 210, 255)
+MUTED = (168, 181, 176, 255)
+
+
+def load_assets(root: Path):
+    items = []
+    for manifest_path in sorted((root / "manifests").glob("*.json")):
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        png = root / "final_2x" / f"{manifest['asset_id']}_2x.png"
+        if not png.exists():
+            continue
+        sprite = Image.open(png).convert("RGBA")
+        shadow_path = root / "shadows_2x" / f"{manifest['asset_id']}_shadow_2x.png"
+        if shadow_path.exists():
+            composed = Image.new("RGBA", sprite.size, (0, 0, 0, 0))
+            composed.alpha_composite(Image.open(shadow_path).convert("RGBA"))
+            composed.alpha_composite(sprite)
+            sprite = composed
+        items.append((manifest, sprite))
+    return items
+
+
+def build_sheet(roots: list[Path], out: Path, cell=(560, 330), columns: int = 3) -> Path:
+    assets = [item for root in roots for item in load_assets(root)]
+    if not assets:
+        raise RuntimeError("No final_2x assets found")
+    rows = (len(assets) + columns - 1) // columns
+    sheet = Image.new("RGBA", (cell[0] * columns, cell[1] * rows), BG)
+    draw = ImageDraw.Draw(sheet)
+    for idx, (manifest, image) in enumerate(assets):
+        cx = (idx % columns) * cell[0]
+        cy = (idx // columns) * cell[1]
+        draw.rounded_rectangle((cx + 6, cy + 6, cx + cell[0] - 6, cy + cell[1] - 6), radius=10, fill=PANEL)
+        max_w, max_h = cell[0] - 36, cell[1] - 78
+        scale = min(max_w / image.width, max_h / image.height, 1.75)
+        shown = image.resize((round(image.width * scale), round(image.height * scale)), Image.Resampling.LANCZOS)
+        x = cx + (cell[0] - shown.width) // 2
+        y = cy + 18 + (max_h - shown.height) // 2
+        sheet.alpha_composite(shown, (x, y))
+        draw.text((cx + 14, cy + cell[1] - 50), manifest["asset_id"], fill=LABEL)
+        draw.text((cx + 14, cy + cell[1] - 30), f"seed {manifest.get('seed', '?')} · {manifest.get('lifecycle_state', '?')}", fill=MUTED)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    rgb = sheet.convert("RGB")
+    rgb.save(out, quality=95)
+    rgb.convert("L").convert("RGB").save(out.with_name(out.stem + "_grayscale.jpg"), quality=94)
+    thumb = rgb.copy()
+    thumb.thumbnail((320, 10000), Image.Resampling.LANCZOS)
+    thumb.save(out.with_name(out.stem + "_steam320.jpg"), quality=93)
+    build_gameplay_scale(assets, out.with_name(out.stem + "_gameplay_scale.png"))
+    return out
+
+
+def _layout_zoom_row(assets, zoom: float, width: int, left: int = 24, gap: int = 18):
+    placements = []
+    x = left
+    line = 0
+    max_line_h: dict[int, int] = {}
+    for manifest, image in assets:
+        logical = manifest.get("canvas", {}).get("logical", [image.width // 2, image.height // 2])
+        target = (max(1, round(logical[0] * zoom)), max(1, round(logical[1] * zoom)))
+        shown = image.resize(target, Image.Resampling.LANCZOS)
+        # Reserve enough horizontal room for a readable label as well as the sprite.
+        # Unit sprites are intentionally narrow, so sizing the slot from the image alone
+        # made filenames collide across the 75/100/125% review sheet.
+        slot_w = max(shown.width, 220) + gap
+        if x + slot_w > width - left and x > left:
+            line += 1
+            x = left
+        placements.append((line, x, manifest, shown))
+        max_line_h[line] = max(max_line_h.get(line, 0), shown.height + 34)
+        x += slot_w
+    return placements, max_line_h
+
+
+def build_gameplay_scale(assets, out: Path) -> Path:
+    """Place every asset at exact 75/100/125% logical scale with wrapped rows.
+
+    v0.3 silently stopped when a row exceeded 1920 px, which could hide later assets
+    from human review. The reconciled gate must show every candidate at every zoom.
+    """
+    width = 1920
+    zooms = (0.75, 1.0, 1.25)
+    sections = []
+    total_h = 0
+    for zoom in zooms:
+        placements, line_heights = _layout_zoom_row(assets, zoom, width)
+        body_h = sum(max(150, line_heights[i]) for i in sorted(line_heights))
+        section_h = 54 + body_h + 24
+        sections.append((zoom, placements, line_heights, total_h, section_h))
+        total_h += section_h
+
+    sheet = Image.new("RGBA", (width, total_h), BG)
+    draw = ImageDraw.Draw(sheet)
+    for zoom, placements, line_heights, y0, section_h in sections:
+        draw.text((24, y0 + 16), f"Gameplay-scale proxy · {round(zoom*100)}% · all assets", fill=LABEL)
+        line_offsets = {}
+        cursor = y0 + 54
+        for line in sorted(line_heights):
+            line_offsets[line] = cursor
+            cursor += max(150, line_heights[line])
+        for line, x, manifest, shown in placements:
+            base_y = line_offsets[line]
+            slot_h = max(150, line_heights[line])
+            yy = base_y + max(0, (slot_h - shown.height - 24) // 2)
+            sheet.alpha_composite(shown, (x, yy))
+            asset_id = manifest.get("asset_id", "?")
+            label = asset_id
+            if asset_id.startswith("review_unit_"):
+                parts = asset_id.split("_")
+                faction = parts[2].title() if len(parts) > 2 else "Unit"
+                facing = parts[-1].upper() if parts else ""
+                label = f"{faction} soldier · {facing}"
+            elif asset_id.startswith("review_city_"):
+                parts = asset_id.split("_")
+                faction = parts[2].title() if len(parts) > 2 else "City"
+                stage = parts[-1] if parts else "?"
+                label = f"{faction} city · stage {stage}"
+            draw.text((x, min(base_y + slot_h - 20, yy + shown.height + 4)), label, fill=MUTED)
+        draw.line((20, y0 + section_h - 8, width - 20, y0 + section_h - 8), fill=(64, 80, 84, 255), width=1)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(out)
+    return out
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("roots", nargs="+", type=Path)
+    parser.add_argument("--output", type=Path, default=Path("art-review-v0.3.2-r2.jpg"))
+    args = parser.parse_args()
+    print(build_sheet([p.resolve() for p in args.roots], args.output.resolve()))
+
+
+if __name__ == "__main__":
+    main()

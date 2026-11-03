@@ -1,0 +1,727 @@
+"""Reusable sculpted geometry primitives for Vaelora Art Pipeline v0.3."""
+from __future__ import annotations
+
+import math
+import random
+from typing import Iterable, Sequence
+
+import bmesh
+import bpy
+from mathutils import Vector
+
+from vaelora_materials import world_materials
+from vaelora_style import GROUND_Z, HEX_DECOR_SAFE_RADIUS, HEX_RADIUS, HEX_ROTATION_DEG, HEX_SAFE_RADIUS
+
+TAU = math.tau
+
+
+def set_material(obj: bpy.types.Object, material: bpy.types.Material) -> None:
+    if not hasattr(obj.data, "materials"):
+        return
+    obj.data.materials.clear()
+    obj.data.materials.append(material)
+
+
+def shade_flat(obj: bpy.types.Object) -> None:
+    if hasattr(obj.data, "polygons"):
+        for poly in obj.data.polygons:
+            poly.use_smooth = False
+
+
+def bevel(obj: bpy.types.Object, width: float, segments: int = 2, angle_deg: float = 30.0) -> None:
+    mod = obj.modifiers.new("vaelora_bevel", "BEVEL")
+    mod.width = width
+    mod.segments = segments
+    mod.limit_method = "ANGLE"
+    mod.angle_limit = math.radians(angle_deg)
+
+
+def make_mesh(name: str, vertices: Sequence[Sequence[float]], faces: Sequence[Sequence[int]]) -> bpy.types.Object:
+    mesh = bpy.data.meshes.new(f"{name}_mesh")
+    mesh.from_pydata(vertices, [], faces)
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    return obj
+
+
+def _hex_point(radius: float, index: int, z: float = 0.0) -> tuple[float, float, float]:
+    angle = math.radians(HEX_ROTATION_DEG) + TAU * index / 6.0
+    return (radius * math.cos(angle), radius * math.sin(angle), z)
+
+
+def create_hex_prism(name: str, top_z: float, bottom_z: float, material, radius: float = HEX_RADIUS) -> bpy.types.Object:
+    top = [_hex_point(radius, i, top_z) for i in range(6)]
+    bottom = [_hex_point(radius, i, bottom_z) for i in range(6)]
+    verts = top + bottom
+    faces = [tuple(range(6)), tuple(range(11, 5, -1))]
+    for i in range(6):
+        j = (i + 1) % 6
+        faces.append((i, j, j + 6, i + 6))
+    obj = make_mesh(name, verts, faces)
+    set_material(obj, material)
+    shade_flat(obj)
+    return obj
+
+
+def create_hex_side_band(name: str, top_z: float, bottom_z: float, material, radius: float = HEX_RADIUS) -> bpy.types.Object:
+    top = [_hex_point(radius, i, top_z) for i in range(6)]
+    bottom = [_hex_point(radius, i, bottom_z) for i in range(6)]
+    verts = top + bottom
+    faces = []
+    for i in range(6):
+        j = (i + 1) % 6
+        faces.append((i, j, j + 6, i + 6))
+    obj = make_mesh(name, verts, faces)
+    set_material(obj, material)
+    shade_flat(obj)
+    return obj
+
+
+def _hex_perimeter_samples(subdivisions_per_edge: int = 2, radius: float = HEX_RADIUS) -> list[Vector]:
+    """Return ordered points that lie exactly on the canonical hex perimeter.
+
+    Extra points are collinear with each logical edge, so registration remains exact
+    while the interior surface can use a denser, less obviously radial topology.
+    """
+    if subdivisions_per_edge < 1:
+        raise ValueError("subdivisions_per_edge must be >= 1")
+    result: list[Vector] = []
+    for edge in range(6):
+        a = Vector(_hex_point(radius, edge, 0.0))
+        b = Vector(_hex_point(radius, (edge + 1) % 6, 0.0))
+        for step in range(subdivisions_per_edge):
+            t = step / subdivisions_per_edge
+            result.append(a.lerp(b, t))
+    return result
+
+
+def create_sculpted_hex_surface(name: str, material, rng: random.Random, amplitude: float = 0.075) -> bpy.types.Object:
+    """Create broad authored terrain undulation with an immutable perimeter.
+
+    Earlier revisions used angle-based harmonics around the tile centre. Even with more
+    sectors, those could reveal a subtle radial/starburst construction in large captures.
+    The reconciled premium surface uses a small set of low-frequency *directional plane
+    waves* evaluated in XY space, then fades them to exactly zero at the perimeter.
+    This keeps the six-edge registration exact while producing landscape-like sweeps
+    rather than concentric/radial ripples.
+    """
+    outer = _hex_perimeter_samples(2, HEX_RADIUS)  # 12 exact boundary points.
+    ring_specs = ((1.0, 0.0), (0.76, 0.48), (0.50, 0.82), (0.25, 1.0))
+    verts: list[tuple[float, float, float]] = []
+
+    # Three broad, non-orthogonal directions provide coherent landscape rhythm.
+    wave_specs = []
+    for base_deg, frequency, strength in ((18.0, 1.20, 0.50), (103.0, 1.55, 0.30), (157.0, 0.92, 0.20)):
+        a = math.radians(base_deg + rng.uniform(-13.0, 13.0))
+        wave_specs.append((math.cos(a), math.sin(a), frequency * rng.uniform(0.92, 1.08), rng.uniform(-math.pi, math.pi), strength))
+
+    def field(x: float, y: float) -> float:
+        value = 0.0
+        for dx, dy, freq, phase, strength in wave_specs:
+            value += math.sin((x * dx + y * dy) * freq + phase) * strength
+        # A very broad bias prevents every variant from oscillating around an identical mean.
+        value += math.sin(x * 0.43 + y * 0.31 + wave_specs[0][3]) * 0.10
+        return value
+
+    for scale, weight in ring_specs:
+        for p in outer:
+            x, y = p.x * scale, p.y * scale
+            if scale == 1.0:
+                z = 0.0
+            else:
+                # Small local perturbation breaks overly mathematical plane intersections,
+                # but remains subordinate to the coherent macro field.
+                local = rng.uniform(-0.055, 0.055)
+                z = amplitude * weight * (field(x, y) + local)
+            verts.append((x, y, z))
+
+    center_z = amplitude * (field(0.0, 0.0) + rng.uniform(-0.035, 0.035))
+    center_idx = len(verts)
+    verts.append((0.0, 0.0, center_z))
+
+    sectors = len(outer)
+    faces: list[tuple[int, ...]] = []
+    for ring in range(len(ring_specs) - 1):
+        a0 = ring * sectors
+        a1 = (ring + 1) * sectors
+        for i in range(sectors):
+            j = (i + 1) % sectors
+            faces.append((a0 + i, a0 + j, a1 + j, a1 + i))
+    inner0 = (len(ring_specs) - 1) * sectors
+    for i in range(sectors):
+        j = (i + 1) % sectors
+        faces.append((inner0 + i, inner0 + j, center_idx))
+
+    obj = make_mesh(name, verts, faces)
+    set_material(obj, material)
+    shade_flat(obj)
+    return obj
+
+def create_ground_patch(
+    rng: random.Random,
+    name: str,
+    location: Sequence[float],
+    radius: float,
+    material,
+    *,
+    points: int = 9,
+    z: float = 0.026,
+) -> bpy.types.Object:
+    """Small irregular surface patch used as authored macro detail, never gameplay state."""
+    x, y, _ = location
+    verts = []
+    for i in range(points):
+        a = TAU * i / points + rng.uniform(-0.09, 0.09)
+        r = radius * rng.uniform(0.72, 1.08)
+        verts.append((x + math.cos(a) * r, y + math.sin(a) * r, z))
+    obj = make_mesh(name, verts, [tuple(range(points))])
+    set_material(obj, material)
+    shade_flat(obj)
+    return obj
+
+def create_hex_base(kind: str, rng: random.Random, sculpt_amount: float | None = None) -> list[bpy.types.Object]:
+    mats = world_materials()
+    if kind in {"shallow_sea", "open_sea"}:
+        body = create_hex_prism("VAE_Hex_WaterDepth", -0.05, -0.50, mats["stone"])
+        top_mat = mats["water_shallow"] if kind == "shallow_sea" else mats["water_open"]
+        rim = create_hex_side_band("VAE_Hex_WaterRim", 0.0, -0.055, top_mat)
+        top = create_sculpted_hex_surface("VAE_Hex_WaterSurface", top_mat, rng, amplitude=0.012)
+        return [body, rim, top]
+
+    top_mat = {
+        "meadow": mats["meadow"],
+        "plains": mats["plains"],
+        "forest": mats["meadow"],
+        "hills": mats["plains"],
+        "mountain": mats["plains"],
+        "peak": mats["stone"],
+        "coast_base": mats["meadow"],
+    }[kind]
+    geology = create_hex_prism("VAE_Hex_GeologyDark", -0.22, -0.63, mats["earth"])
+    stratum = create_hex_prism("VAE_Hex_GeologyWarm", -0.11, -0.24, mats["clay"])
+    soil = create_hex_prism("VAE_Hex_Topsoil", -0.035, -0.12, mats["earth"])
+    surface_rim = create_hex_side_band("VAE_Hex_SurfaceRim", 0.0, -0.040, top_mat)
+    # Perimeter-defining strata are intentionally not modifier-bevelled: adjacent tiles
+    # must share the exact same six-edge footprint. Sculptural softness comes from the
+    # interior surface, materials and non-registration geometry.
+    amount = sculpt_amount if sculpt_amount is not None else (0.025 if kind == "peak" else 0.065)
+    top = create_sculpted_hex_surface("VAE_Hex_PlayableSurface", top_mat, rng, amplitude=amount)
+    return [geology, stratum, soil, surface_rim, top]
+
+
+def surface_z_at(surface: bpy.types.Object | None, x: float, y: float, fallback: float = 0.0) -> float:
+    """Sample the authored terrain mesh at local x/y for grounded decoration.
+
+    Terrain surfaces have no transforms in asset-local space. Ray casting keeps trees,
+    rocks and relief formations attached to the sculpted surface instead of using a
+    fixed Z that can visibly float/sink in premium close-ups.
+    """
+    if surface is None or surface.type != "MESH":
+        return fallback
+    origin = Vector((x, y, 2.0))
+    direction = Vector((0.0, 0.0, -1.0))
+    try:
+        hit, location, _normal, _face = surface.ray_cast(origin, direction, distance=4.0)
+    except TypeError:
+        hit, location, _normal, _face = surface.ray_cast(origin, direction)
+    return float(location.z) if hit else fallback
+
+
+def random_xy(rng: random.Random, radius: float = HEX_DECOR_SAFE_RADIUS) -> tuple[float, float]:
+    for _ in range(96):
+        x = rng.uniform(-radius, radius)
+        y = rng.uniform(-radius, radius)
+        if x * x + y * y <= radius * radius:
+            return x, y
+    return 0.0, 0.0
+
+
+def create_convex_hull(name: str, points: Iterable[Sequence[float]], material, bevel_width: float = 0.0) -> bpy.types.Object:
+    mesh = bpy.data.meshes.new(f"{name}_mesh")
+    bm = bmesh.new()
+    verts = [bm.verts.new(tuple(p)) for p in points]
+    bm.verts.ensure_lookup_table()
+    result = bmesh.ops.convex_hull(bm, input=verts, use_existing_faces=False)
+    # The hull operation leaves interior geometry in some cases; remove it.
+    interior = [g for g in result.get("geom_interior", []) if isinstance(g, bmesh.types.BMVert)]
+    if interior:
+        bmesh.ops.delete(bm, geom=interior, context="VERTS")
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = bpy.data.objects.new(name, mesh)
+    bpy.context.collection.objects.link(obj)
+    set_material(obj, material)
+    shade_flat(obj)
+    if bevel_width > 0:
+        bevel(obj, bevel_width, 1)
+    return obj
+
+
+def create_sculpted_rock(
+    rng: random.Random,
+    location: Sequence[float],
+    scale: float = 0.26,
+    *,
+    warm: bool = False,
+    tall: bool = False,
+) -> bpy.types.Object:
+    mats = world_materials()
+    x, y, z = location
+    sx = scale * rng.uniform(0.85, 1.25)
+    sy = scale * rng.uniform(0.72, 1.18)
+    sz = scale * rng.uniform(1.05 if tall else 0.62, 1.65 if tall else 1.20)
+    points = []
+    # Flat grounding ring plus asymmetrical crown points.
+    for i in range(7):
+        a = TAU * i / 7.0 + rng.uniform(-0.18, 0.18)
+        r = rng.uniform(0.72, 1.0)
+        points.append((x + math.cos(a) * sx * r, y + math.sin(a) * sy * r, z + 0.015))
+    for _ in range(11):
+        a = rng.uniform(0, TAU)
+        radial = rng.uniform(0.15, 0.88)
+        h = rng.uniform(0.20, 1.0)
+        points.append((x + math.cos(a) * sx * radial, y + math.sin(a) * sy * radial, z + sz * h))
+    obj = create_convex_hull("VAE_Rock_Sculpted", points, mats["stone_warm" if warm else "stone"], scale * 0.025)
+    obj.rotation_euler[2] = rng.uniform(0, TAU)
+    return obj
+
+
+def create_branch(name: str, start: Vector, end: Vector, base_radius: float, top_radius: float, material, sides: int = 8) -> bpy.types.Object:
+    direction = end - start
+    length = max(direction.length, 0.001)
+    midpoint = (start + end) * 0.5
+    bpy.ops.mesh.primitive_cone_add(vertices=sides, radius1=base_radius, radius2=top_radius, depth=length, location=midpoint)
+    obj = bpy.context.object
+    obj.name = name
+    obj.rotation_mode = "QUATERNION"
+    obj.rotation_quaternion = Vector((0.0, 0.0, 1.0)).rotation_difference(direction.normalized())
+    obj.rotation_mode = "XYZ"
+    set_material(obj, material)
+    shade_flat(obj)
+    bevel(obj, base_radius * 0.08, 1)
+    return obj
+
+
+def _foliage_blob(rng: random.Random, name: str, center: Sequence[float], radii: Sequence[float], material) -> bpy.types.Object:
+    cx, cy, cz = center
+    rx, ry, rz = radii
+    pts = []
+    # A convex but intentionally asymmetric 16-20 point canopy mass.
+    for _ in range(18):
+        theta = rng.uniform(0, TAU)
+        phi = math.acos(rng.uniform(-1.0, 1.0))
+        wobble = rng.uniform(0.76, 1.18)
+        pts.append((
+            cx + math.sin(phi) * math.cos(theta) * rx * wobble,
+            cy + math.sin(phi) * math.sin(theta) * ry * wobble,
+            cz + math.cos(phi) * rz * wobble,
+        ))
+    return create_convex_hull(name, pts, material, min(rx, ry, rz) * 0.025)
+
+
+def create_tree(rng: random.Random, location: Sequence[float], species: str = "broadleaf_round", scale: float = 1.0) -> list[bpy.types.Object]:
+    mats = world_materials()
+    x, y, z = location
+    objects: list[bpy.types.Object] = []
+    lean_x = rng.uniform(-0.10, 0.10) * scale
+    lean_y = rng.uniform(-0.08, 0.08) * scale
+    if species == "wind_bent":
+        lean_x += rng.choice((-1, 1)) * 0.20 * scale
+    height = {
+        "broadleaf_round": rng.uniform(0.92, 1.15),
+        "broadleaf_columnar": rng.uniform(1.05, 1.30),
+        "conifer": rng.uniform(1.15, 1.45),
+        "wind_bent": rng.uniform(0.78, 1.02),
+    }.get(species, 1.0) * scale
+    root = Vector((x, y, z))
+    trunk_top = Vector((x + lean_x, y + lean_y, z + height * 0.68))
+    objects.append(create_branch("VAE_Tree_Trunk", root, trunk_top, 0.105 * scale, 0.055 * scale, mats["trunk"], 8))
+
+    branch_count = 4 if species != "conifer" else 3
+    branch_tips = []
+    for i in range(branch_count):
+        a = TAU * (i / branch_count) + rng.uniform(-0.35, 0.35)
+        start = Vector((x + lean_x * 0.65, y + lean_y * 0.65, z + height * rng.uniform(0.43, 0.62)))
+        length = rng.uniform(0.25, 0.40) * scale
+        tip = Vector((start.x + math.cos(a) * length, start.y + math.sin(a) * length, start.z + rng.uniform(0.14, 0.30) * scale))
+        branch_tips.append(tip)
+        objects.append(create_branch("VAE_Tree_Branch", start, tip, 0.045 * scale, 0.018 * scale, mats["trunk"], 7))
+
+    foliage = {
+        "broadleaf_round": mats["forest_warm"] if rng.random() < 0.62 else mats["forest"],
+        "broadleaf_columnar": mats["forest_light"] if rng.random() < 0.55 else mats["forest"],
+        "conifer": mats["forest_cool"],
+        "wind_bent": mats["forest_warm"],
+    }.get(species, mats["forest"])
+
+    # A few subtle root flares visually weld the trunk to the terrain.
+    for root_i in range(3):
+        a = TAU * root_i / 3.0 + rng.uniform(-0.32, 0.32)
+        root_end = Vector((x + math.cos(a) * 0.18 * scale, y + math.sin(a) * 0.18 * scale, z + 0.012))
+        root_start = Vector((x, y, z + 0.055 * scale))
+        objects.append(create_branch("VAE_Tree_RootFlare", root_start, root_end, 0.035 * scale, 0.012 * scale, mats["trunk"], 6))
+
+    if species == "conifer":
+        # Stacked irregular masses with visible gaps; explicitly not cones.
+        for i, width in enumerate((0.40, 0.32, 0.23)):
+            cz = z + height * (0.48 + i * 0.18)
+            _foliage_blob(rng, "VAE_Tree_ConiferMass", (x + lean_x * 0.7, y + lean_y * 0.7, cz), (width * scale, width * 0.84 * scale, 0.24 * scale), foliage)
+    else:
+        count = 5 if species == "broadleaf_round" else 4
+        centers = [trunk_top] + branch_tips[: max(0, count - 1)]
+        for i, c in enumerate(centers):
+            if species == "broadleaf_columnar":
+                radii = (0.28 * scale, 0.24 * scale, 0.39 * scale)
+            elif species == "wind_bent":
+                radii = (0.38 * scale, 0.27 * scale, 0.28 * scale)
+            else:
+                radii = (0.34 * scale, 0.31 * scale, 0.31 * scale)
+            _foliage_blob(rng, "VAE_Tree_FoliageMass", (c.x, c.y, c.z + 0.10 * scale), radii, foliage)
+    return objects
+
+
+def create_grass_clump(rng: random.Random, location: Sequence[float], scale: float = 1.0, dry: bool = False) -> list[bpy.types.Object]:
+    mats = world_materials()
+    material = mats["plains"] if dry else mats["meadow"]
+    x, y, z = location
+    objects = []
+    for i in range(rng.randint(3, 6)):
+        a = rng.uniform(0, TAU)
+        h = rng.uniform(0.08, 0.16) * scale
+        offset = rng.uniform(0.01, 0.07) * scale
+        start = Vector((x + math.cos(a) * offset, y + math.sin(a) * offset, z))
+        end = Vector((start.x + math.cos(a) * 0.025 * scale, start.y + math.sin(a) * 0.025 * scale, z + h))
+        objects.append(create_branch("VAE_Grass_Blade", start, end, 0.008 * scale, 0.0025 * scale, material, 5))
+    return objects
+
+
+def create_flower_cluster(rng: random.Random, location: Sequence[float], scale: float = 1.0) -> list[bpy.types.Object]:
+    mats = world_materials()
+    x, y, z = location
+    result = []
+    flower_mat = rng.choice((mats["flower_gold"], mats["flower_blue"], mats["flower_ivory"]))
+    for _ in range(rng.randint(2, 4)):
+        dx, dy = rng.uniform(-0.055, 0.055) * scale, rng.uniform(-0.055, 0.055) * scale
+        stem_start = Vector((x + dx, y + dy, z))
+        stem_end = Vector((x + dx, y + dy, z + 0.07 * scale))
+        result.append(create_branch("VAE_Flower_Stem", stem_start, stem_end, 0.004 * scale, 0.002 * scale, mats["forest"], 5))
+        # Tiny low-poly blossom.
+        bpy.ops.mesh.primitive_circle_add(vertices=6, radius=0.022 * scale, fill_type="TRIFAN", location=(x + dx, y + dy, z + 0.071 * scale))
+        blossom = bpy.context.object
+        blossom.name = "VAE_Flower_Blossom"
+        set_material(blossom, flower_mat)
+        result.append(blossom)
+    return result
+
+
+def create_ridge_mass(
+    rng: random.Random,
+    name: str,
+    location: Sequence[float],
+    *,
+    length: float,
+    width: float,
+    height: float,
+    sections: int,
+    material,
+    direction_rad: float | None = None,
+    asymmetry: float = 0.20,
+) -> bpy.types.Object:
+    """Build a directional ridge with shoulders and shelves instead of a radial cone."""
+    x0, y0, z0 = location
+    direction = rng.uniform(0, TAU) if direction_rad is None else direction_rad
+    tangent = Vector((math.cos(direction), math.sin(direction), 0.0))
+    side = Vector((-math.sin(direction), math.cos(direction), 0.0))
+    verts = []
+    for i in range(sections):
+        t = i / (sections - 1)
+        longitudinal = (t - 0.5) * length
+        envelope = math.sin(math.pi * t) ** 0.72
+        curve = math.sin(t * math.pi * 1.4 + rng.uniform(-0.25, 0.25)) * length * 0.055
+        centre = Vector((x0, y0, z0)) + tangent * longitudinal + side * curve
+        local_h = height * envelope * rng.uniform(0.86, 1.10)
+        local_w = width * (0.55 + 0.45 * envelope) * rng.uniform(0.90, 1.08)
+        crest_bias = rng.uniform(-asymmetry, asymmetry) * local_w
+        across = (-1.0, -0.48, 0.0, 0.48, 1.0)
+        levels = (0.03, 0.46, 1.0, 0.53, 0.03)
+        for a, level in zip(across, levels):
+            p = centre + side * (a * local_w + crest_bias * (1.0 - abs(a)))
+            verts.append((p.x, p.y, p.z + local_h * level))
+    faces = []
+    row = 5
+    for s in range(sections - 1):
+        for a in range(4):
+            v = s * row + a
+            faces.append((v, v + 1, v + row + 1, v + row))
+    # close ends and bottom loosely to prevent holes in oblique render.
+    faces.append(tuple(range(4, -1, -1)))
+    end = (sections - 1) * row
+    faces.append(tuple(end + i for i in range(5)))
+    obj = make_mesh(name, verts, faces)
+    set_material(obj, material)
+    shade_flat(obj)
+    bevel(obj, min(width, height) * 0.025, 1)
+    return obj
+
+
+def create_hill_formation(rng: random.Random, location: Sequence[float], scale: float = 1.0, direction_rad: float | None = None) -> list[bpy.types.Object]:
+    mats = world_materials()
+    direction = rng.uniform(0, TAU) if direction_rad is None else direction_rad
+    main = create_ridge_mass(rng, "VAE_Hill_Ridge", location, length=1.65 * scale, width=0.62 * scale, height=0.48 * scale, sections=6, material=mats["plains"], direction_rad=direction)
+    result = [main]
+    # Exposed stone shelf gives the hill a readable non-round silhouette.
+    shelf_loc = Vector(location) + Vector((math.cos(direction + math.pi / 2), math.sin(direction + math.pi / 2), 0)) * 0.30 * scale
+    result.append(create_ridge_mass(rng, "VAE_Hill_StoneShelf", shelf_loc, length=0.72 * scale, width=0.20 * scale, height=0.19 * scale, sections=4, material=mats["stone_warm"], direction_rad=direction + 0.10))
+    return result
+
+
+def create_mountain_formation(rng: random.Random, location: Sequence[float], scale: float = 1.0, peak: bool = False, direction_rad: float | None = None) -> list[bpy.types.Object]:
+    mats = world_materials()
+    x, y, z = location
+    direction = rng.uniform(0, TAU) if direction_rad is None else direction_rad
+    height = (1.72 if peak else 1.30) * scale
+    width = (0.62 if peak else 0.72) * scale
+    length = (1.55 if peak else 1.85) * scale
+    result = [create_ridge_mass(rng, "VAE_Mountain_MainRidge", (x, y, z), length=length, width=width, height=height, sections=7, material=mats["stone"], direction_rad=direction, asymmetry=0.27)]
+    # Secondary spur is deliberately offset and lower.
+    side_dir = direction + rng.choice((-1, 1)) * rng.uniform(0.65, 0.95)
+    spur_loc = (x + math.cos(direction) * 0.12 * scale, y + math.sin(direction) * 0.12 * scale, z)
+    result.append(create_ridge_mass(rng, "VAE_Mountain_Spur", spur_loc, length=1.00 * scale, width=0.42 * scale, height=height * 0.58, sections=5, material=mats["stone_warm"], direction_rad=side_dir, asymmetry=0.32))
+    # A low buttress and pale ledge create readable geological hierarchy at 100-125%.
+    buttress_dir = direction - rng.choice((-1, 1)) * rng.uniform(0.38, 0.58)
+    buttress_loc = (x - math.cos(direction) * 0.18 * scale, y - math.sin(direction) * 0.18 * scale, z)
+    result.append(create_ridge_mass(rng, "VAE_Mountain_Buttress", buttress_loc, length=0.68 * scale, width=0.28 * scale, height=height * 0.30, sections=4, material=mats["stone"], direction_rad=buttress_dir, asymmetry=0.24))
+    ledge_loc = (x + math.cos(side_dir) * 0.20 * scale, y + math.sin(side_dir) * 0.20 * scale, z + height * 0.24)
+    result.append(create_ridge_mass(rng, "VAE_Mountain_LitLedge", ledge_loc, length=0.46 * scale, width=0.13 * scale, height=height * 0.13, sections=4, material=mats["stone_light"], direction_rad=direction + 0.08, asymmetry=0.14))
+    # Talus rocks at the base.
+    for _ in range(4 if peak else 5):
+        a = rng.uniform(0, TAU)
+        r = rng.uniform(0.55, 0.92) * scale
+        result.append(create_sculpted_rock(rng, (x + math.cos(a) * r, y + math.sin(a) * r, z + 0.02), scale=rng.uniform(0.10, 0.18) * scale, warm=rng.random() < 0.35))
+    if peak:
+        # Snow only on upper directional crest, not a generic white cap.
+        snow_loc = (x + math.cos(direction) * 0.05 * scale, y + math.sin(direction) * 0.05 * scale, z + height * 0.58)
+        result.append(create_ridge_mass(rng, "VAE_Peak_SnowRidge", snow_loc, length=0.62 * scale, width=0.25 * scale, height=height * 0.34, sections=4, material=mats["snow"], direction_rad=direction, asymmetry=0.18))
+    return result
+
+
+def hex_edge_points(edge_index: int, radius: float = HEX_RADIUS) -> tuple[Vector, Vector]:
+    a = Vector(_hex_point(radius, edge_index, GROUND_Z))
+    b = Vector(_hex_point(radius, (edge_index + 1) % 6, GROUND_Z))
+    return a, b
+
+
+def _strip_quad(name: str, a: Vector, b: Vector, inward: float, z: float, material) -> bpy.types.Object:
+    midpoint = (a + b) * 0.5
+    inward_vec = Vector((-midpoint.x, -midpoint.y, 0.0)).normalized() * inward
+    verts = [tuple(a + Vector((0, 0, z))), tuple(b + Vector((0, 0, z))), tuple(b + inward_vec + Vector((0, 0, z))), tuple(a + inward_vec + Vector((0, 0, z)))]
+    obj = make_mesh(name, verts, [(0, 1, 2, 3)])
+    set_material(obj, material)
+    return obj
+
+
+def create_ribbon(name: str, a: Vector, b: Vector, half_width: float, z: float, material) -> bpy.types.Object:
+    direction = (b - a).normalized()
+    normal = Vector((-direction.y, direction.x, 0.0)) * half_width
+    verts = [tuple(a + normal + Vector((0, 0, z))), tuple(b + normal + Vector((0, 0, z))), tuple(b - normal + Vector((0, 0, z))), tuple(a - normal + Vector((0, 0, z)))]
+    obj = make_mesh(name, verts, [(0, 1, 2, 3)])
+    set_material(obj, material)
+    return obj
+
+
+def _poly_strip(name: str, outer: Sequence[Vector], inner: Sequence[Vector], z: float, material) -> bpy.types.Object:
+    """Create a quad strip between two equal-length polylines.
+
+    The strip is intentionally made from quads instead of one n-gon so mildly concave
+    shoreline shapes remain stable and predictable in Eevee.
+    """
+    if len(outer) != len(inner) or len(outer) < 2:
+        raise ValueError("poly strip requires equal polyline lengths >= 2")
+    verts = [tuple(v + Vector((0.0, 0.0, z))) for v in outer] + [tuple(v + Vector((0.0, 0.0, z))) for v in inner]
+    n = len(outer)
+    faces = [(i, i + 1, n + i + 1, n + i) for i in range(n - 1)]
+    obj = make_mesh(name, verts, faces)
+    set_material(obj, material)
+    shade_flat(obj)
+    return obj
+
+
+def _coast_curves(
+    edge_index: int,
+    rng: random.Random,
+    morphology: int = 0,
+    samples: int = 11,
+) -> tuple[list[Vector], list[Vector], list[Vector], list[Vector]]:
+    """Build stitch-safe shoreline curves with authored morphology.
+
+    `morphology` is semantic, not merely another random seed:
+      0 = gentle sandy shelf,
+      1 = mixed sand/stone shore,
+      2 = narrow eroded/shingle-like shore.
+
+    All variants share exact logical edge endpoints. The authored profiles change beach
+    depth, pocket rhythm and rock likelihood while preserving identical gameplay meaning.
+    """
+    profiles = {
+        0: {"wash": 0.050, "wet": 0.115, "dry": 0.235, "grass": 0.330, "amp": 1.00},
+        1: {"wash": 0.045, "wet": 0.095, "dry": 0.180, "grass": 0.260, "amp": 1.18},
+        2: {"wash": 0.038, "wet": 0.072, "dry": 0.125, "grass": 0.185, "amp": 1.35},
+    }
+    profile = profiles[morphology % 3]
+    a, b = hex_edge_points(edge_index, HEX_RADIUS)
+    tangent = b - a
+    phase = rng.uniform(-math.pi, math.pi)
+    phase2 = rng.uniform(-math.pi, math.pi)
+    water_wash: list[Vector] = []
+    wet: list[Vector] = []
+    dry: list[Vector] = []
+    grass: list[Vector] = []
+
+    for i in range(samples):
+        t = i / (samples - 1)
+        base = a + tangent * t
+        radial_in = Vector((-base.x, -base.y, 0.0)).normalized()
+        envelope = math.sin(math.pi * t)
+        broad = math.sin(t * math.tau + phase) * envelope
+        secondary = math.sin(t * math.tau * 2.0 + phase2) * envelope
+        local = rng.uniform(-1.0, 1.0) * envelope
+        amp = float(profile["amp"])
+
+        # Pocket factor deliberately pinches beaches in places so the coast never reads
+        # as a constant-width path. Morphology 0 remains broadest and calmest.
+        pocket = max(0.20, 0.72 + broad * 0.23 * amp + secondary * 0.12 * amp)
+        wash_d = float(profile["wash"]) + envelope * (0.012 + broad * 0.010 * amp + local * 0.006)
+        wet_d = float(profile["wet"]) + envelope * (0.024 * pocket + broad * 0.014 * amp + local * 0.009)
+        dry_d = float(profile["dry"]) + envelope * (0.050 * pocket + broad * 0.026 * amp + local * 0.014)
+        grass_d = float(profile["grass"]) + envelope * (0.062 * pocket + broad * 0.032 * amp + local * 0.018)
+
+        water_wash.append(base + radial_in * wash_d)
+        wet.append(base + radial_in * wet_d)
+        dry.append(base + radial_in * dry_d)
+        grass.append(base + radial_in * grass_d)
+    return water_wash, wet, dry, grass
+
+
+def _coast_foam_segment(name: str, points: Sequence[Vector], start_idx: int, end_idx: int, material) -> bpy.types.Object:
+    selected = list(points[start_idx:end_idx + 1])
+    if len(selected) < 2:
+        selected = list(points[:2])
+    outer: list[Vector] = []
+    inner: list[Vector] = []
+    for i, p in enumerate(selected):
+        if i == 0:
+            direction = (selected[1] - p).normalized()
+        elif i == len(selected) - 1:
+            direction = (p - selected[i - 1]).normalized()
+        else:
+            direction = (selected[i + 1] - selected[i - 1]).normalized()
+        normal = Vector((-direction.y, direction.x, 0.0)).normalized()
+        width = 0.006 + 0.0025 * math.sin(i * 1.7)
+        outer.append(p + normal * width)
+        inner.append(p - normal * width)
+    return _poly_strip(name, outer, inner, 0.031, material)
+
+
+def create_coast_edge(edge_index: int, rng: random.Random, morphology: int = 0) -> list[bpy.types.Object]:
+    """Create one Coast System v4 edge from a semantic finite morphology library.
+
+    The beach is deliberately narrower than the earlier road-like ribbon system. Sand
+    depth changes along the edge, foam is sparse and morphology 1/2 use controlled stone
+    punctuation so three runtime variants remain visibly authored without implying rules.
+    """
+    mats = world_materials()
+    edge = list(hex_edge_points(edge_index, HEX_RADIUS))
+    wash, wet, dry, grass = _coast_curves(edge_index, rng, morphology=morphology)
+
+    result: list[bpy.types.Object] = [
+        _poly_strip("VAE_Coast_WaterWash", edge, wash, 0.024, mats["water_shallow"]),
+        _poly_strip("VAE_Coast_WetSand", wash, wet, 0.026, mats["sand_wet"]),
+        _poly_strip("VAE_Coast_DrySand", wet, dry, 0.027, mats["sand"]),
+        _poly_strip("VAE_Coast_GrassFade", dry, grass, 0.028, mats["shore_transition"]),
+    ]
+
+    foam_chance = (0.78, 0.66, 0.54)[morphology % 3]
+    if rng.random() < foam_chance:
+        options = [(1, 3), (4, 6), (7, 9)]
+        first = rng.choice(options)
+        result.append(_coast_foam_segment("VAE_Coast_Foam", wash, first[0], first[1], mats["foam"]))
+        if morphology == 0 and rng.random() < 0.16:
+            choices = [o for o in options if o != first]
+            second = rng.choice(choices)
+            result.append(_coast_foam_segment("VAE_Coast_Foam", wash, second[0], second[1], mats["foam"]))
+
+    rock_chance = (0.14, 0.52, 0.72)[morphology % 3]
+    if rng.random() < rock_chance:
+        count = 1 if morphology == 0 else (1 + int(rng.random() < (0.32 if morphology == 1 else 0.58)))
+        candidate_indices = [2, 4, 6, 8]
+        rng.shuffle(candidate_indices)
+        for anchor_idx in candidate_indices[:count]:
+            p = grass[anchor_idx]
+            radial_in = Vector((-p.x, -p.y, 0.0)).normalized()
+            q = p + radial_in * rng.uniform(0.015, 0.070)
+            result.append(create_sculpted_rock(rng, (q.x, q.y, 0.030), scale=rng.uniform(0.055, 0.095), warm=True))
+    return result
+
+
+def create_coast_corner(corner_index: int, rng: random.Random) -> list[bpy.types.Object]:
+    """Legacy compatibility hook; Coast System v4 has no visible corner patches."""
+    return []
+
+def create_water_highlights(rng: random.Random, open_sea: bool = False, count: int = 4) -> list[bpy.types.Object]:
+    """Create restrained two-segment painterly water glints.
+
+    v0.3 produced long ruler-like bars. These short broken glints keep directionality but
+    read as reflected light rather than geometry placed on top of the sea.
+    """
+    mats = world_materials()
+    result = []
+    effective_count = max(2, count - (1 if open_sea else 0))
+    for _ in range(effective_count):
+        x, y = random_xy(rng, HEX_SAFE_RADIUS * 0.90)
+        total = rng.uniform(0.20, 0.38) * (1.15 if open_sea else 1.0)
+        width = rng.uniform(0.007, 0.014)
+        angle = rng.uniform(-0.30, 0.30)
+        direction = Vector((math.cos(angle), math.sin(angle), 0.0))
+        normal = Vector((-direction.y, direction.x, 0.0))
+        center = Vector((x, y, 0.028))
+        p0 = center - direction * (total * 0.5)
+        kink = center + normal * rng.uniform(-0.025, 0.025)
+        p2 = center + direction * (total * 0.5)
+        result.append(create_ribbon("VAE_Water_Glint", p0, kink, width, 0.0, mats["water_highlight"]))
+        if rng.random() < 0.78:
+            result.append(create_ribbon("VAE_Water_Glint", kink + direction * 0.025, p2, width * 0.82, 0.0, mats["water_highlight"]))
+    return result
+
+def create_trama_waystone(rng: random.Random, location: Sequence[float], scale: float = 1.0) -> list[bpy.types.Object]:
+    mats = world_materials()
+    x, y, z = location
+    points = [
+        (x - 0.14 * scale, y - 0.11 * scale, z), (x + 0.14 * scale, y - 0.11 * scale, z),
+        (x + 0.12 * scale, y + 0.10 * scale, z), (x - 0.11 * scale, y + 0.12 * scale, z),
+        (x - 0.10 * scale, y - 0.08 * scale, z + 0.48 * scale), (x + 0.08 * scale, y - 0.07 * scale, z + 0.53 * scale),
+        (x + 0.07 * scale, y + 0.06 * scale, z + 0.50 * scale), (x - 0.08 * scale, y + 0.07 * scale, z + 0.47 * scale),
+    ]
+    stone = create_convex_hull("VAE_Trama_Waystone", points, mats["stone_warm"], 0.012 * scale)
+    # Three shallow route marks as gold-neutral stone insets; not faction-coloured.
+    bands = []
+    for dz in (0.18, 0.25, 0.32):
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, y - 0.112 * scale, z + dz * scale))
+        line = bpy.context.object
+        line.name = "VAE_Trama_WaystoneMark"
+        line.scale = (0.055 * scale, 0.006 * scale, 0.010 * scale)
+        set_material(line, mats["stone_light"])
+        bands.append(line)
+    return [stone, *bands]
+
+
+def create_trama_beacon_broken(rng: random.Random, location: Sequence[float], scale: float = 1.0) -> list[bpy.types.Object]:
+    mats = world_materials()
+    x, y, z = location
+    result = []
+    # Three-legged stone base echoes the Trama without creating a gameplay affordance.
+    for a in (0, TAU / 3, 2 * TAU / 3):
+        px, py = x + math.cos(a) * 0.18 * scale, y + math.sin(a) * 0.18 * scale
+        result.append(create_sculpted_rock(rng, (px, py, z), 0.16 * scale, warm=True, tall=True))
+    result.append(create_sculpted_rock(rng, (x + 0.15 * scale, y - 0.05 * scale, z), 0.22 * scale, warm=True, tall=True))
+    return result

@@ -1,0 +1,27 @@
+{
+  "checked": 1,
+  "errors": [],
+  "warnings": [],
+  "assets": [
+    {
+      "asset_id": "terrain_plains_00",
+      "family": "terrain",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        37,
+        27,
+        219,
+        128
+      ],
+      "mean_alpha": 0.4350621840533088,
+      "nonzero_fraction": 0.452789306640625,
+      "semitransparent_fraction": 0.03485107421875,
+      "bbox_fraction": 0.56097412109375
+    }
+  ],
+  "six_facing_groups": {},
+  "passed": true
+}

@@ -1,0 +1,110 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v3-premium",
+  "asset_id": "review_city_brasal_stage_2",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.0,
+    "projection": "orthographic",
+    "target_z": 0.52,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      512,
+      256
+    ],
+    "logical": [
+      256,
+      128
+    ],
+    "work": [
+      1024,
+      512
+    ]
+  },
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "faction": "brasal",
+  "faction_brief": {
+    "forbidden_shortcuts": [
+      "skull overload",
+      "spike forest",
+      "chaotic junk pile",
+      "evil-orc shorthand",
+      "red everywhere"
+    ],
+    "id": "brasal",
+    "material_language": "weathered timber, stone footing, charcoal iron, copper repair accents, restrained moss",
+    "planning_language": "adaptive work settlement organized around longhouse/workshop, yard, storage and repair",
+    "recurring_motifs": [
+      "ascending iron bars",
+      "kiln",
+      "hooked work standard",
+      "repair band",
+      "field pack/tool rack"
+    ],
+    "silhouette_language": "broad grounded roofs, practical tools, reinforced timber and low work structures"
+  },
+  "family": "city",
+  "generator_version": "0.3.2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      512,
+      256
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2/final_2x/review_city_brasal_stage_2_2x.png",
+    "output_sha256": "b62c79a91b7c251e893103665d146326053415683f1e89bdcf7da084707a7c7b",
+    "shadow_output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2/shadows_2x/review_city_brasal_stage_2_shadow_2x.png",
+    "shadow_sha256": "6bb92acb10c1afb12a7dc4a648bd0d247c0655221503b831d4c72f1676827d90",
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2/raw_4x/review_city_brasal_stage_2_4x.png",
+    "source_sha256": "9803d10292ac36e190e8ef15c6231b0b5c9bfa64beb987632f22676f85ebba47"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "review_slice": true,
+  "seed": 8284844231960801045,
+  "source_script": "vaelora_faction_kit.py",
+  "source_sha256": {
+    "vaelora_composition.py": "c188073143b4426ac294a38143314d9976559f05c7f0f092ed6e308d7708ca7a",
+    "vaelora_contract.py": "85a1a2bea41b6fac0617e293b9618be87ab87537104ff3d83be8bd3bae5aed41",
+    "vaelora_faction_kit.py": "6e109371800e67e6b95d6114fb97fa58442d2571fa7ce158f75118134e899b23",
+    "vaelora_geometry.py": "88b100eeb65db71d74ba8d98d4a0d21cf2e647cc070fbb765aeaa9eaed617220",
+    "vaelora_materials.py": "4b0b9d90b450ba4b2bac67a97d3f415b4226479470ca0ec806877582c688a948",
+    "vaelora_render.py": "15fee384910e165477113bbe7925777b7adc80ad00976ede8c0caf3f0df2b04e",
+    "vaelora_style.py": "a7411d04eb42b050537dc7b9deadda4bc5ba2498b95f81a5691ef8d4db7d0a10"
+  },
+  "statistics": {
+    "objects": 65,
+    "triangles_estimate": 754,
+    "vertices": 516
+  },
+  "world_bounds": {
+    "max": [
+      1.1592365503311157,
+      0.8836479783058167,
+      0.9900000095367432
+    ],
+    "min": [
+      -1.1810826063156128,
+      -0.9644937515258789,
+      0.019999995827674866
+    ]
+  }
+}

@@ -10,7 +10,13 @@ Vaelora is a 2D, turn-based fantasy strategy game in preproduction. You explore 
 
 The game is set on the continent of Vaelora, where generations of political disputes and neglected infrastructure have weakened **the Trama**: an old network of roads and signal beacons. The human **Auren League** and the orc **Brasal clans** are the first civilizations competing to restore, control, or replace it.
 
-> **Current status:** the Godot project foundation and initial GUT test runner are in place. Gameplay implementation and final-quality game assets have not started yet. The first prototype must use final-quality visual assets; placeholder art is out of scope.
+> **Current status:** the Godot project foundation and initial GUT test runner are in place. [Terrain Visual Language v1](docs/game-design/TERRAIN_VISUAL_LANGUAGE_V1.md) is closed as an art-direction baseline at Terrain Suite `v6.2-rc1`; production PNG export, Godot runtime acceptance, gameplay implementation, and the full representative visual slice remain open. The first prototype must use final-quality visual assets; placeholder art is out of scope.
+
+### Terrain Visual Language v1 — review preview
+
+The image below shows the approved `v6.2-rc1` 36-hex Blender review render. It is a source-context preview, **not** a final 2D game export or a Godot runtime screenshot. See the [closure record](docs/game-design/TERRAIN_VISUAL_LANGUAGE_V1.md) for Mountain and Peak renders and the remaining QA gates.
+
+![Terrain Suite v6.2-rc1 benchmark36 Blender review render](game/assets/terrain/generated-terrain-suite-v62/review/terrain_suite_v62_benchmark36_1920x1080.png)
 
 > **Rights:** Vaelora's original materials are proprietary and all rights are reserved by Iván de Paz Delgado. See [LICENSE](LICENSE). This public repository can still be viewed and forked through GitHub's platform permissions; the notice does not grant broader reuse rights.
 
@@ -73,6 +79,7 @@ Start with the [documentation index](docs/README.md), then use the document that
 - [Game Design Document](docs/game-design/game-design-document.md) — canonical gameplay baseline and system rules.
 - [World and civilizations](docs/game-design/world-and-civilizations.md) — Vaelora, the Trama, and civilization direction.
 - [Open design decisions](docs/game-design/open-decisions.md) — unresolved questions and balance values that still need decisions.
+- [Terrain Visual Language v1](docs/game-design/TERRAIN_VISUAL_LANGUAGE_V1.md) — approved terrain appearance, scope, evidence, and remaining production gates.
 
 ### Engineering and delivery
 

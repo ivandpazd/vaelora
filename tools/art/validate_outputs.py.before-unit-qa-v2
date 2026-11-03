@@ -1,0 +1,196 @@
+"""Automated image-level QA for Vaelora generated sprites v0.3.2-r2.
+
+This gate catches production mistakes and records measurable evidence. Human art/game
+review is still mandatory for acceptance.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+from PIL import Image, ImageStat
+
+BLENDER_DIR = Path(__file__).resolve().parents[1] / "blender"
+if str(BLENDER_DIR) not in sys.path:
+    sys.path.insert(0, str(BLENDER_DIR))
+from vaelora_style import CANVAS_SAFE_MARGIN_PX  # noqa: E402
+
+EXPECTED = {
+    "terrain": (256, 128),
+    "overlay": (256, 128),
+    "unit": (256, 128),
+    "city": (512, 256),
+    "hero_prop": (256, 128),
+}
+
+
+def alpha_metrics(image: Image.Image) -> dict[str, object]:
+    alpha = image.getchannel("A")
+    bbox = alpha.getbbox()
+    stat = ImageStat.Stat(alpha)
+    mean_alpha = stat.mean[0] / 255.0
+    histogram = alpha.histogram()
+    total = image.width * image.height
+    nonzero = total - histogram[0]
+    semitransparent = sum(histogram[1:255])
+    if bbox:
+        l, t, r, b = bbox
+        bbox_area = (r - l) * (b - t)
+    else:
+        bbox_area = 0
+    return {
+        "bbox": bbox,
+        "mean_alpha": mean_alpha,
+        "nonzero_fraction": nonzero / total,
+        "semitransparent_fraction": semitransparent / total,
+        "bbox_fraction": bbox_area / total,
+    }
+
+
+def inspect(manifest_path: Path) -> tuple[list[str], list[str], dict[str, object]]:
+    data = json.loads(manifest_path.read_text(encoding="utf-8"))
+    asset_id = data["asset_id"]
+    family = data["family"]
+    root = manifest_path.parent.parent
+    png = root / "final_2x" / f"{asset_id}_2x.png"
+    errors: list[str] = []
+    warnings: list[str] = []
+    metrics: dict[str, object] = {"asset_id": asset_id, "family": family}
+
+    if not png.exists():
+        return [f"{asset_id}: missing {png}"], [], metrics
+
+    image = Image.open(png).convert("RGBA")
+    metrics["size"] = list(image.size)
+    if image.size != EXPECTED[family]:
+        errors.append(f"{asset_id}: wrong dimensions {image.size}; expected {EXPECTED[family]}")
+
+    am = alpha_metrics(image)
+    metrics.update(am)
+    bbox = am["bbox"]
+    if bbox is None:
+        errors.append(f"{asset_id}: image is fully transparent")
+        return errors, warnings, metrics
+
+    l, t, r, b = bbox
+    w, h = image.size
+    if family in {"unit", "city", "hero_prop"}:
+        margin = CANVAS_SAFE_MARGIN_PX[family]
+        if l < margin or t < margin or r > w - margin or b > h - margin:
+            errors.append(f"{asset_id}: alpha bbox violates {margin}px safety margin; bbox={bbox}")
+        shadow = root / "shadows_2x" / f"{asset_id}_shadow_2x.png"
+        if not shadow.exists():
+            errors.append(f"{asset_id}: missing modular contact shadow")
+        else:
+            simage = Image.open(shadow).convert("RGBA")
+            if simage.size != image.size:
+                errors.append(f"{asset_id}: shadow size {simage.size} != sprite {image.size}")
+            s_alpha = simage.getchannel("A")
+            metrics["shadow_mean_alpha"] = ImageStat.Stat(s_alpha).mean[0] / 255.0
+            if metrics["shadow_mean_alpha"] > 0.20:
+                warnings.append(f"{asset_id}: contact shadow mean alpha unusually high")
+
+    bbox_fraction = float(am["bbox_fraction"])
+    nonzero_fraction = float(am["nonzero_fraction"])
+    if bbox_fraction < 0.035:
+        warnings.append(f"{asset_id}: occupied bbox only {bbox_fraction:.1%}; inspect camera/scale")
+    if family == "unit" and bbox_fraction > 0.58:
+        warnings.append(f"{asset_id}: unit bbox unusually large ({bbox_fraction:.1%})")
+    if family == "terrain" and bbox_fraction < 0.30:
+        errors.append(f"{asset_id}: terrain appears underframed ({bbox_fraction:.1%})")
+    if family in {"unit", "hero_prop"} and nonzero_fraction < 0.02:
+        warnings.append(f"{asset_id}: very low alpha occupancy ({nonzero_fraction:.1%}); overdraw risk")
+    if family == "city" and nonzero_fraction < 0.045:
+        warnings.append(f"{asset_id}: city alpha occupancy only {nonzero_fraction:.1%}; verify framing")
+
+    # Terrain should reach its lower/side registration region; a tile floating inside the
+    # canvas usually means camera/scale drift.
+    if family == "terrain" and b < round(h * 0.80):
+        warnings.append(f"{asset_id}: terrain alpha ends high in canvas (bottom={b}/{h})")
+
+    return errors, warnings, metrics
+
+
+def six_facing_metrics(asset_metrics: list[dict[str, object]]) -> tuple[list[str], dict[str, object]]:
+    """Check perceived scale/anchor consistency across six-facing unit groups."""
+    groups: dict[str, list[dict[str, object]]] = {}
+    for item in asset_metrics:
+        if item.get("family") != "unit":
+            continue
+        aid = str(item.get("asset_id", ""))
+        if "_f" not in aid:
+            continue
+        prefix, suffix = aid.rsplit("_f", 1)
+        if not suffix.isdigit():
+            continue
+        groups.setdefault(prefix, []).append(item)
+
+    errors: list[str] = []
+    report: dict[str, object] = {}
+    for prefix, items in sorted(groups.items()):
+        if len(items) != 6:
+            continue
+        bboxes = [i.get("bbox") for i in items]
+        if any(not b for b in bboxes):
+            continue
+        heights = [b[3] - b[1] for b in bboxes]  # type: ignore[index]
+        widths = [b[2] - b[0] for b in bboxes]  # type: ignore[index]
+        bottoms = [b[3] for b in bboxes]  # type: ignore[index]
+        height_ratio = max(heights) / max(1, min(heights))
+        width_ratio = max(widths) / max(1, min(widths))
+        bottom_span = max(bottoms) - min(bottoms)
+        report[prefix] = {
+            "height_px": heights,
+            "width_px": widths,
+            "bottom_px": bottoms,
+            "height_ratio": height_ratio,
+            "width_ratio": width_ratio,
+            "bottom_span_px": bottom_span,
+        }
+        if height_ratio > 1.18:
+            errors.append(f"{prefix}: six-facing bbox height ratio {height_ratio:.3f} exceeds 1.18")
+        # Width changes naturally as shield/spear turn edge-on; only flag extreme drift.
+        if width_ratio > 2.70:
+            errors.append(f"{prefix}: six-facing bbox width ratio {width_ratio:.3f} exceeds 2.70")
+        if bottom_span > 8:
+            errors.append(f"{prefix}: six-facing bottom-anchor span {bottom_span}px exceeds 8px")
+    return errors, report
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("roots", nargs="+", type=Path)
+    parser.add_argument("--json", dest="json_path", type=Path)
+    args = parser.parse_args()
+    all_errors: list[str] = []
+    all_warnings: list[str] = []
+    asset_metrics: list[dict[str, object]] = []
+    checked = 0
+    for root in args.roots:
+        for manifest in sorted((root / "manifests").glob("*.json")):
+            checked += 1
+            errors, warnings, metrics = inspect(manifest)
+            all_errors.extend(errors)
+            all_warnings.extend(warnings)
+            asset_metrics.append(metrics)
+    facing_errors, facing_report = six_facing_metrics(asset_metrics)
+    all_errors.extend(facing_errors)
+    report = {
+        "checked": checked,
+        "errors": all_errors,
+        "warnings": all_warnings,
+        "assets": asset_metrics,
+        "six_facing_groups": facing_report,
+        "passed": not all_errors,
+    }
+    if args.json_path:
+        args.json_path.parent.mkdir(parents=True, exist_ok=True)
+        args.json_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    print(json.dumps(report, indent=2))
+    raise SystemExit(1 if all_errors else 0)
+
+
+if __name__ == "__main__":
+    main()

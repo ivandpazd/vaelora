@@ -1,0 +1,99 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "terrain_plains_00",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.0,
+    "projection": "orthographic",
+    "target_z": 0.2,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      256,
+      128
+    ],
+    "logical": [
+      128,
+      64
+    ],
+    "work": [
+      512,
+      256
+    ]
+  },
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "family": "terrain",
+  "generator_version": "0.3.2-r2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      256,
+      128
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/terrain/generated-v0.3.2-r2-terrain-v2/final_2x/terrain_plains_00_2x.png",
+    "output_sha256": "f8d39f07fe03921a07d161c387bc553bbfa2ccda042f3340f34dbed4b0126aa5",
+    "shadow_output": null,
+    "shadow_sha256": null,
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/terrain/generated-v0.3.2-r2-terrain-v2/raw_4x/terrain_plains_00_4x.png",
+    "source_sha256": "e7f6fbcf9bd768ce3cdf2f7f7569b4a1beb41c290b4540c1346fe8a42282d767"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "seed": 22000,
+  "source_script": "vaelora_artkit.py",
+  "source_sha256": {
+    "vaelora_artkit.py": "a93da0b6a271f60363441c1d500ddd2dcc81f63a905333d91f81e6b5421d9bff",
+    "vaelora_composition.py": "71a785d4f5d235b3fb81d11fcdce5d71e182de5cd6bb2def3633967f8ab3e3f8",
+    "vaelora_contract.py": "b892240fa00bf07cb14f4d15eed81e628a17cd07846eb489d179e202992b334f",
+    "vaelora_geometry.py": "30af3f605e888b4363585598998afc2cfd100b909053250d05957730eef15517",
+    "vaelora_materials.py": "dc75d39ba40d18cc124dd0c0ee5755a217e690aa0e78880d93381010f296775f",
+    "vaelora_render.py": "707c1a4e4608b5d337996bcbea041dba7547e7c738445c98fa89438e1c0d1636",
+    "vaelora_style.py": "67cda00242b4e326b6d49ab2caf5826de617417b6380cc8bb7b8f02f2d3f7571"
+  },
+  "statistics": {
+    "objects": 40,
+    "triangles_estimate": 815,
+    "vertices": 520
+  },
+  "terrain_kind": "plains",
+  "terrain_system": 2,
+  "variant": 0,
+  "visual_brief": {
+    "forbidden_read": "recolored meadow",
+    "id": "plains",
+    "macro_shape": "horizontal dry bands",
+    "material_read": "olive-gold + exposed earth",
+    "movement_read": "open/easy",
+    "negative_space": "broad clear centre"
+  },
+  "world_bounds": {
+    "max": [
+      1.7320507764816284,
+      2.0,
+      0.20399054884910583
+    ],
+    "min": [
+      -1.7320507764816284,
+      -2.0,
+      -0.6299999952316284
+    ]
+  }
+}

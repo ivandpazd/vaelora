@@ -1,0 +1,973 @@
+"""Vaelora Sculpted Diorama terrain/environment generator v0.3.2-r2.
+
+The generator produces review assets, not automatic final art. Accepted assets require
+visual review plus the host-side QA gate described in docs/game-design/visual-quality-gate.md.
+"""
+from __future__ import annotations
+
+import argparse
+import math
+import random
+import sys
+from pathlib import Path
+
+import bpy
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import vaelora_geometry as geo
+import vaelora_render as render
+from vaelora_style import (
+    COAST_VARIANT_COUNT,
+    HEX_AXIAL_X_STEP,
+    HEX_AXIAL_Y_STEP,
+    HERO_PROPS,
+    TERRAIN_VARIANTS,
+    TERRAIN_SYSTEM_VERSION,
+    TERRAIN_SYSTEM_REVISION,
+    TERRAIN_RELEASE_CANDIDATE,
+    TERRAIN_SCATTER_DENSITY_TARGET,
+    TERRAIN_PROP_DENSITY,
+    TERRAIN_PROP_FOOTPRINT,
+    TERRAIN_PROP_SHADOW_PADDING,
+    TERRAIN_V3_KINDS,
+    TERRAIN_V4_KINDS,
+)
+from vaelora_contract import (
+    REVIEW_SEEDS,
+    TERRAIN_BRIEFS,
+    city_asset_seed,
+    coast_asset_seed,
+    coast_variant_for_tile,
+    derive_seed,
+    terrain_asset_seed,
+    unit_asset_seed,
+)
+from vaelora_terrain_profiles import terrain_profile, terrain_variation_context
+from vaelora_composition import (
+    BENCHMARK_LAYOUT_19,
+    FOREST_TEMPLATES,
+    HILL_DIRECTIONS_DEG,
+    MEADOW_TEMPLATES,
+    MEADOW_SURFACE_SWATCHES,
+    MOUNTAIN_DIRECTIONS_DEG,
+    PEAK_DIRECTIONS_DEG,
+    PLAINS_TEMPLATES,
+    PLAINS_SURFACE_SWATCHES,
+)
+
+
+AXIAL_EDGE = {
+    (0, 1): 0,
+    (-1, 1): 1,
+    (-1, 0): 2,
+    (0, -1): 3,
+    (1, -1): 4,
+    (1, 0): 5,
+}
+SEA_KINDS = {"shallow_sea", "open_sea"}
+
+
+def _ground_z(surface, x: float, y: float, lift: float = 0.018) -> float:
+    return geo.surface_z_at(surface, x, y, 0.0) + lift
+
+
+def _scatter_distance_ok(
+    x: float,
+    y: float,
+    occupied: list[tuple[float, float, float]],
+    footprint: float,
+) -> bool:
+    """Keep composed props readable without creating a rigid Poisson grid."""
+    for ox, oy, other_footprint in occupied:
+        required = (footprint + other_footprint) * 0.72
+        if (x - ox) ** 2 + (y - oy) ** 2 < required ** 2:
+            return False
+    return True
+
+
+def _terrain_prop_clearance(role: str, scale: float) -> float:
+    """Conservative clip-safe radius including a small shadow/readability pad."""
+    return (
+        TERRAIN_PROP_FOOTPRINT[role] * scale
+        + TERRAIN_PROP_SHADOW_PADDING[role]
+    )
+
+
+def _pick_meadow_v50_point(
+    rng: random.Random,
+    surface,
+    ring: str,
+    occupied: list[tuple[float, float, float]],
+    *,
+    role: str,
+    scale: float,
+    quiet_angle: float,
+    prefer: str = "any",
+) -> tuple[float, float] | None:
+    """Pick one deterministic, footprint-safe scatter point.
+
+    The entire conservative prop footprint must fit inside the canonical hex. This
+    fixes the v4.3 failure mode where the origin was legal but blades/fragments
+    crossed the tile silhouette.
+    """
+    clearance = _terrain_prop_clearance(role, scale)
+    footprint = TERRAIN_PROP_FOOTPRINT[role] * scale
+    for attempt in range(180):
+        point = geo.random_hex_ring_point(rng, ring, clearance=clearance)
+        if point is None:
+            return None
+        x, y = point
+        angle = math.atan2(y, x)
+        delta = abs(math.atan2(math.sin(angle - quiet_angle), math.cos(angle - quiet_angle)))
+        # Preserve moving negative space, but weaken the exclusion late in the search.
+        if delta < 0.46 and rng.random() < (0.68 if attempt < 110 else 0.28):
+            continue
+        if not _scatter_distance_ok(x, y, occupied, footprint):
+            continue
+        z = geo.surface_z_at(surface, x, y, 0.0)
+        if prefer == "low" and z > 0.31 and attempt < 130:
+            continue
+        if prefer == "high" and z < 0.07 and attempt < 130:
+            continue
+        return x, y
+    return None
+
+
+def _scaled_budget(base_count: int, role: str, minimum: int = 0) -> int:
+    return max(minimum, int(round(base_count * TERRAIN_PROP_DENSITY[role])))
+
+
+def _decorate_meadow_v50rc2(seed: int, variant: int, surface) -> None:
+    """Terrain v5.0-rc2: keep rc1 clip-safe density, polish painterly staging.
+
+    rc2 intentionally preserves the accepted 70% density target, deterministic
+    clip-safe placement and edge-aware scatter from rc1. The only compositional
+    tweak is slightly less automatic contact clutter around rocks so the richer
+    painterly surface can breathe.
+    """
+    rng = random.Random(derive_seed(seed, "terrain-v50rc2-scatter", variant))
+    variation = terrain_variation_context("meadow", variant, seed)
+    quiet_angle = variation.scatter_phase_rad
+    occupied: list[tuple[float, float, float]] = []
+
+    def place(role: str, ring: str, scale: float, *, prefer: str = "any") -> bool:
+        point = _pick_meadow_v50_point(
+            rng, surface, ring, occupied,
+            role=role, scale=scale, quiet_angle=quiet_angle, prefer=prefer,
+        )
+        # If a large prop cannot fit an outer request, degrade its ring rather than
+        # forcing it across the border. Small props keep true outer-ring presence.
+        if point is None and ring == "outer" and role in {"rock_garden", "hero_grass"}:
+            point = _pick_meadow_v50_point(
+                rng, surface, "mid", occupied,
+                role=role, scale=scale, quiet_angle=quiet_angle, prefer=prefer,
+            )
+        if point is None:
+            return False
+        x, y = point
+        footprint = TERRAIN_PROP_FOOTPRINT[role] * scale
+        occupied.append((x, y, footprint))
+        ground = _ground_z(surface, x, y, 0.010)
+
+        if role == "hero_grass":
+            geo.create_terrain_grass_tuft_v4(rng, (x, y, ground), scale, hero=True)
+        elif role == "medium_clump":
+            geo.create_terrain_ground_clump_v41(rng, (x, y, ground), scale)
+        elif role == "groundcover":
+            geo.create_groundcover_patch_v41(
+                rng, (x, y, _ground_z(surface, x, y, 0.006)), scale
+            )
+        elif role == "rock_garden":
+            geo.create_terrain_rock_cluster(
+                rng, (x, y, _ground_z(surface, x, y, 0.012)), scale, warm=True
+            )
+            # Contact vegetation is allowed only when its own footprint also fits.
+            a = rng.uniform(-0.9, 0.9) + variation.scatter_phase_rad * 0.15
+            contact_scale = scale * 0.44
+            ox = x + math.cos(a) * 0.18 * scale
+            oy = y + math.sin(a) * 0.18 * scale
+            contact_clearance = _terrain_prop_clearance("medium_clump", contact_scale)
+            if rng.random() < 0.65 and geo.hex_contains_disc(ox, oy, contact_clearance):
+                geo.create_terrain_ground_clump_v41(
+                    rng,
+                    (ox, oy, _ground_z(surface, ox, oy, 0.008)),
+                    contact_scale,
+                )
+        elif role == "flower":
+            geo.create_flower_cluster(
+                rng, (x, y, _ground_z(surface, x, y, 0.024)), scale=scale * 1.08
+            )
+        return True
+
+    # Base v4.3 budgets were roughly 2 rock gardens / 4 hero tufts / 7 medium
+    # clumps / 8 groundcover / 4 flowers. v5.0-rc1 keeps the focal rocks but cuts
+    # repeated vegetation so the total scene reads at about 70% of prior density.
+    rock_count = _scaled_budget(2, "rock_garden", minimum=2)
+    hero_count = _scaled_budget(4, "hero_grass", minimum=2)
+    medium_count = _scaled_budget(7, "medium_clump", minimum=4)
+    ground_count = _scaled_budget(8, "groundcover", minimum=4)
+    flower_count = _scaled_budget(4, "flower", minimum=2)
+
+    # Rocks: one composed mid anchor and one smaller edge-capable cluster.
+    if rock_count >= 1:
+        place("rock_garden", "mid", rng.uniform(0.88, 1.04), prefer="high")
+    if rock_count >= 2:
+        place("rock_garden", rng.choice(("mid", "outer")), rng.uniform(0.70, 0.86), prefer="high")
+
+    hero_ring_cycle = ["outer", "mid", "inner", "mid"]
+    rng.shuffle(hero_ring_cycle)
+    for ring in hero_ring_cycle[:hero_count]:
+        place("hero_grass", ring, rng.uniform(0.76, 0.98), prefer="low")
+
+    medium_ring_cycle = ["outer", "mid", "mid", "inner", "outer", "mid", "inner"]
+    rng.shuffle(medium_ring_cycle)
+    for ring in medium_ring_cycle[:medium_count]:
+        place("medium_clump", ring, rng.uniform(0.64, 0.88), prefer="low")
+
+    ground_ring_cycle = ["outer", "outer", "mid", "mid", "inner", "outer", "mid", "inner"]
+    rng.shuffle(ground_ring_cycle)
+    for ring in ground_ring_cycle[:ground_count]:
+        place("groundcover", ring, rng.uniform(0.58, 0.82), prefer="low")
+
+    flower_ring_cycle = ["outer", "mid", "inner", "outer"]
+    rng.shuffle(flower_ring_cycle)
+    for ring in flower_ring_cycle[:flower_count]:
+        place("flower", ring, rng.uniform(0.62, 0.84), prefer="low")
+
+
+def _decorate_open_terrain_v3(rng: random.Random, kind: str, variant: int, surface) -> None:
+    """Compose authored open-terrain detail for Terrain v3/v4 profiles."""
+    mats = geo.world_materials()
+    profile = terrain_profile(kind)
+    v = profile.variants[variant % len(profile.variants)]
+
+    # Terrain v4 integrates colour/erosion into the surface material itself. Older v3
+    # profiles retain conforming swatches for backwards-compatible Plains iteration.
+    if profile.system_version < 4:
+        for i, swatch in enumerate(v.swatches):
+            x = swatch.x + rng.uniform(-0.018, 0.018)
+            y = swatch.y + rng.uniform(-0.018, 0.018)
+            geo.create_surface_swatch(
+                rng,
+                f"VAE_TerrainV3_{kind}_Swatch_{variant}_{i}",
+                surface,
+                (x, y, _ground_z(surface, x, y, swatch.lift)),
+                radius_x=swatch.radius_x,
+                radius_y=swatch.radius_y,
+                material=mats[swatch.material_key],
+                rotation_deg=swatch.rotation_deg + rng.uniform(-3.0, 3.0),
+                points=16,
+                lift=swatch.lift,
+            )
+
+    for i, anchor in enumerate(v.scatter):
+        x = anchor.x + rng.uniform(-0.018 if profile.system_version >= 4 else -0.025, 0.018 if profile.system_version >= 4 else 0.025)
+        y = anchor.y + rng.uniform(-0.018 if profile.system_version >= 4 else -0.025, 0.018 if profile.system_version >= 4 else 0.025)
+        ground = _ground_z(surface, x, y, 0.010)
+        if anchor.role == "hero_grass":
+            if profile.system_version >= 4 and kind == "meadow":
+                geo.create_terrain_grass_tuft_v4(rng, (x, y, ground), anchor.scale, hero=True)
+            else:
+                geo.create_terrain_grass_tuft(rng, (x, y, ground), anchor.scale, dry=anchor.dry, hero=True)
+        elif anchor.role == "grass":
+            if profile.system_version >= 4 and kind == "meadow":
+                geo.create_terrain_grass_tuft_v4(rng, (x, y, ground), anchor.scale, hero=False)
+            else:
+                geo.create_terrain_grass_tuft(rng, (x, y, ground), anchor.scale, dry=anchor.dry, hero=False)
+        elif anchor.role == "medium_clump":
+            geo.create_terrain_ground_clump_v41(
+                rng, (x, y, ground), anchor.scale
+            )
+        elif anchor.role == "groundcover":
+            geo.create_groundcover_patch_v41(
+                rng, (x, y, _ground_z(surface, x, y, 0.006)), anchor.scale
+            )
+        elif anchor.role == "rock_cluster":
+            geo.create_terrain_rock_cluster(
+                rng, (x, y, _ground_z(surface, x, y, 0.012)), anchor.scale,
+                warm=(kind == "plains" or anchor.dry),
+            )
+        elif anchor.role == "rock_garden":
+            geo.create_terrain_rock_cluster(
+                rng, (x, y, _ground_z(surface, x, y, 0.012)), anchor.scale, warm=True,
+            )
+            # Designed contact vegetation welds the stone cluster into the ground.
+            a = rng.uniform(-0.8, 0.8)
+            ox = x + math.cos(a) * 0.20 * anchor.scale
+            oy = y + math.sin(a) * 0.20 * anchor.scale
+            geo.create_terrain_grass_tuft_v4(
+                rng, (ox, oy, _ground_z(surface, ox, oy, 0.010)), anchor.scale * 0.72, hero=False
+            )
+            geo.create_ground_leaf_patch(
+                rng, (x - math.sin(a) * 0.13, y + math.cos(a) * 0.13, _ground_z(surface, x, y, 0.006)),
+                anchor.scale * 0.94, dry=False,
+            )
+            bx = x + math.sin(a) * 0.16
+            by = y - math.cos(a) * 0.16
+            geo.create_groundcover_patch_v41(
+                rng, (bx, by, _ground_z(surface, bx, by, 0.006)), anchor.scale * 0.58
+            )
+        elif anchor.role == "flower":
+            geo.create_flower_cluster(
+                rng, (x, y, _ground_z(surface, x, y, 0.024)),
+                scale=anchor.scale * (1.25 if kind == "meadow" else 0.95),
+            )
+        elif anchor.role == "leaf_patch":
+            geo.create_ground_leaf_patch(
+                rng, (x, y, _ground_z(surface, x, y, 0.006)), anchor.scale, dry=anchor.dry,
+            )
+
+
+def _decorate_meadow(rng: random.Random, variant: int, surface, seed: int | None = None) -> None:
+    if TERRAIN_SYSTEM_REVISION >= 4 and seed is not None:
+        _decorate_meadow_v50rc2(seed, variant, surface)
+    elif TERRAIN_SYSTEM_REVISION >= 3 and seed is not None:
+        # Backward-compatibility path retained for old manifests/tests.
+        _decorate_meadow_v50rc2(seed, variant, surface)
+    else:
+        _decorate_open_terrain_v3(rng, "meadow", variant, surface)
+
+
+def _decorate_plains(rng: random.Random, variant: int, surface) -> None:
+    _decorate_open_terrain_v3(rng, "plains", variant, surface)
+
+def _decorate_forest(rng: random.Random, variant: int, surface) -> None:
+    anchors = FOREST_TEMPLATES[variant % len(FOREST_TEMPLATES)]
+    species_pool = ["broadleaf_round", "broadleaf_columnar", "conifer"]
+    for i, anchor in enumerate(anchors):
+        jitter = 0.055 if anchor.role == "hero" else 0.075
+        species = species_pool[(i + variant) % len(species_pool)]
+        x = anchor.x + rng.uniform(-jitter, jitter)
+        y = anchor.y + rng.uniform(-jitter, jitter)
+        geo.create_tree(
+            rng,
+            (x, y, _ground_z(surface, x, y, 0.008)),
+            species,
+            scale=anchor.scale * rng.uniform(0.96, 1.04),
+        )
+    for _ in range(4):
+        x, y = geo.random_xy(rng, 1.30)
+        if y < -0.55 and abs(x) < 0.50:
+            continue
+        geo.create_grass_clump(rng, (x, y, _ground_z(surface, x, y)), scale=0.8)
+    if variant >= 2:
+        x, y = -0.22, 0.58
+        geo.create_sculpted_rock(rng, (x, y, _ground_z(surface, x, y, 0.010)), 0.12, warm=True)
+
+
+def _decorate_hills(rng: random.Random, variant: int, surface) -> None:
+    x, y = 0.0, 0.05
+    base_deg = HILL_DIRECTIONS_DEG[variant % len(HILL_DIRECTIONS_DEG)]
+    direction = math.radians(base_deg + rng.uniform(-5.0, 5.0))
+    geo.create_hill_formation(rng, (x, y, _ground_z(surface, x, y, 0.005)), scale=0.92 + variant * 0.03, direction_rad=direction)
+    for _ in range(4):
+        x, y = geo.random_xy(rng, 1.45)
+        if abs(x) + abs(y) > 1.0:
+            geo.create_grass_clump(rng, (x, y, _ground_z(surface, x, y)), 0.82, dry=True)
+
+
+def _decorate_mountain(rng: random.Random, variant: int, surface, peak: bool = False) -> None:
+    x, y = 0.0, 0.04
+    directions = PEAK_DIRECTIONS_DEG if peak else MOUNTAIN_DIRECTIONS_DEG
+    base_deg = directions[variant % len(directions)]
+    direction = math.radians(base_deg + rng.uniform(-4.0, 4.0))
+    geo.create_mountain_formation(rng, (x, y, _ground_z(surface, x, y, 0.003)), scale=0.88 + variant * 0.035, peak=peak, direction_rad=direction)
+    if not peak:
+        for _ in range(2):
+            x, y = geo.random_xy(rng, 1.35)
+            if x * x + y * y > 0.95:
+                geo.create_grass_clump(rng, (x, y, _ground_z(surface, x, y)), 0.7, dry=True)
+
+
+def _decorate_water(rng: random.Random, surface, open_sea: bool) -> None:
+    # Highlights remain presentation-only and deliberately sparse; their small Z lift
+    # is evaluated from the local sculpted water plane so they cannot sink into it.
+    geo.create_water_highlights(rng, open_sea=open_sea, count=3 if open_sea else 4)
+    if not open_sea and rng.random() < 0.55:
+        for _ in range(2):
+            x, y = geo.random_xy(rng, 1.20)
+            z = geo.surface_z_at(surface, x, y, 0.0) - 0.04
+            rock = geo.create_sculpted_rock(rng, (x, y, z), scale=rng.uniform(0.07, 0.11), warm=True)
+            rock.scale.z *= 0.55
+
+
+def build_terrain(kind: str, variant: int, seed: int) -> None:
+    rng = random.Random(seed)
+    # Coast overlays are a finite shared runtime library. Keep coast-base relief subtle
+    # enough that every accepted shoreline variant sits cleanly on every coast-base variant.
+    coast_sculpt = 0.014 if kind == "coast_base" else None
+    parts = geo.create_hex_base(kind, rng, sculpt_amount=coast_sculpt, variant=variant, terrain_seed=seed)
+    surface = parts[-1]
+    if kind == "meadow":
+        _decorate_meadow(rng, variant, surface, seed)
+    elif kind == "plains":
+        _decorate_plains(rng, variant, surface)
+    elif kind == "forest":
+        _decorate_forest(rng, variant, surface)
+    elif kind == "hills":
+        _decorate_hills(rng, variant, surface)
+    elif kind == "mountain":
+        _decorate_mountain(rng, variant, surface, peak=False)
+    elif kind == "peak":
+        _decorate_mountain(rng, variant, surface, peak=True)
+    elif kind == "coast_base":
+        _decorate_open_terrain_v3(rng, "meadow", variant, surface)
+    elif kind == "shallow_sea":
+        _decorate_water(rng, surface, open_sea=False)
+    elif kind == "open_sea":
+        _decorate_water(rng, surface, open_sea=True)
+
+def build_coast_overlay(edge: int, corner: int | None, seed: int, morphology: int = 0) -> None:
+    rng = random.Random(seed)
+    geo.create_coast_edge(edge, rng, morphology=morphology)
+    # Coast System v5 analytically stitches adjacent edges; corner is accepted only
+    # for CLI backwards compatibility and deliberately produces no standalone patch.
+
+
+def build_hero_prop(prop: str, seed: int) -> None:
+    rng = random.Random(seed)
+    if prop == "trama_waystone":
+        geo.create_trama_waystone(rng, (0, 0, 0), 1.0)
+    elif prop in {"trama_beacon_broken", "trama_signal_base"}:
+        geo.create_trama_beacon_broken(rng, (0, 0, 0), 1.0 if prop == "trama_beacon_broken" else 0.78)
+    else:
+        raise ValueError(prop)
+
+
+def _render_asset(asset_id: str, family: str, seed: int, output: Path, strict: bool, extra: dict | None = None) -> None:
+    render.assert_blender_version(strict)
+    render.setup_master_camera(family)
+    render.setup_lighting()
+    raw_path = output / "raw_4x" / f"{asset_id}_4x.png"
+    render.render_png(family, raw_path)
+    render.save_blend(output / "source" / f"{asset_id}.blend")
+    render.write_manifest(output / "manifests" / f"{asset_id}.json", asset_id=asset_id, seed=seed, family=family, source_script="vaelora_artkit.py", dependencies=(), extra=extra)
+
+
+def generate_one(kind: str, variant: int, seed: int, output: Path, strict: bool) -> None:
+    render.reset_scene()
+    build_terrain(kind, variant, seed)
+    profile = terrain_profile(kind) if kind in {*TERRAIN_V3_KINDS, *TERRAIN_V4_KINDS} else None
+    extra = {
+        "terrain_kind": kind,
+        "variant": variant,
+        "visual_brief": TERRAIN_BRIEFS[kind].__dict__,
+        "terrain_system": profile.system_version if profile is not None else 1,
+    }
+    if kind in TERRAIN_V3_KINDS:
+        extra["terrain_revision"] = TERRAIN_SYSTEM_REVISION
+    if kind == "meadow" and TERRAIN_SYSTEM_REVISION >= 4:
+        extra["terrain_candidate"] = TERRAIN_RELEASE_CANDIDATE
+        extra["scatter_density_target"] = TERRAIN_SCATTER_DENSITY_TARGET
+        extra["clip_safe_scatter"] = True
+    if kind in {"shallow_sea", "open_sea"}:
+        extra["water_system"] = 2
+    _render_asset(f"terrain_{kind}_{variant:02d}", "terrain", seed, output, strict, extra)
+
+
+def generate_coasts(seed: int, output: Path, strict: bool) -> None:
+    """Export the exact finite shoreline vocabulary used by runtime and benchmarks."""
+    for variant in range(COAST_VARIANT_COUNT):
+        for edge in range(6):
+            render.reset_scene()
+            local_seed = coast_asset_seed(seed, variant, edge)
+            build_coast_overlay(edge, None, local_seed, morphology=variant)
+            _render_asset(
+                f"coast_v{variant}_edge_{edge}",
+                "overlay",
+                local_seed,
+                output,
+                strict,
+                {"coast_system": 5, "coast_revision": 1, "coast_variant": variant, "coast_morphology": variant % 3, "edge": edge},
+            )
+
+def generate_hero_props(seed: int, output: Path, strict: bool) -> None:
+    for idx, prop in enumerate(HERO_PROPS):
+        render.reset_scene()
+        local_seed = derive_seed(seed, "hero-prop", prop, idx)
+        build_hero_prop(prop, local_seed)
+        _render_asset(f"hero_{prop}_01", "hero_prop", local_seed, output, strict)
+
+
+def _world_pos(q: int, r: int) -> tuple[float, float]:
+    # Pointy-top axial grid with R=2: x = sqrt(3)R(q+r/2), y = 3Rr/2.
+    # v0.3.x accidentally halved y again, causing overlapping rows and false
+    # water/land triangles in review scenes.
+    return HEX_AXIAL_X_STEP * (q + r / 2.0), HEX_AXIAL_Y_STEP * r
+
+
+def _add_coast_edges_for_neighbors(
+    q: int,
+    r: int,
+    terrain_map: dict[tuple[int, int], str],
+    coast_seed_root: int,
+    forced_variant: int | None = None,
+) -> None:
+    """Compose the same finite shoreline assets that runtime will use.
+
+    One coast tile selects one of six authored shoreline variants (two per semantic
+    morphology) and reuses that full variant on all sea-facing edges. This preserves coherent beach character at multi-edge coast tiles while
+    keeping the runtime library finite and deterministic.
+    """
+    variant = (
+        forced_variant % COAST_VARIANT_COUNT
+        if forced_variant is not None
+        else coast_variant_for_tile(coast_seed_root, q, r, COAST_VARIANT_COUNT)
+    )
+    for (dq, dr), edge in AXIAL_EDGE.items():
+        neighbor = terrain_map.get((q + dq, r + dr))
+        if neighbor in SEA_KINDS:
+            local_seed = coast_asset_seed(coast_seed_root, variant, edge)
+            geo.create_coast_edge(edge, random.Random(local_seed), morphology=variant)
+
+
+def _translate_new_objects(before: set, q: int, r: int, z: float = 0.0) -> None:
+    x, y = _world_pos(q, r)
+    for obj in [o for o in bpy.context.scene.objects if o not in before]:
+        obj.location.x += x
+        obj.location.y += y
+        obj.location.z += z
+
+
+def build_benchmark(seed: int) -> None:
+    """Build the 19-hex source-context benchmark from the finite runtime library.
+
+    No benchmark-only terrain/city/unit morphology is allowed: every visible tile,
+    city and soldier uses the same canonical seed namespace as an exportable sprite.
+    """
+    import vaelora_faction_kit as faction
+
+    terrain_map = BENCHMARK_LAYOUT_19
+    for idx, ((q, r), kind) in enumerate(terrain_map.items()):
+        variant = idx % TERRAIN_VARIANTS[kind]
+        local_seed = terrain_asset_seed(seed, kind, variant)
+        before = set(bpy.context.scene.objects)
+        build_terrain(kind, variant, local_seed)
+        if kind == "coast_base":
+            _add_coast_edges_for_neighbors(q, r, terrain_map, REVIEW_SEEDS["coast_stress"])
+        _translate_new_objects(before, q, r)
+
+    before = set(bpy.context.scene.objects)
+    faction.create_city("auren", 2, city_asset_seed(REVIEW_SEEDS["faction_slice"], "auren", 2))
+    _translate_new_objects(before, -1, 1, 0.05)
+
+    before = set(bpy.context.scene.objects)
+    faction.create_city("brasal", 2, city_asset_seed(REVIEW_SEEDS["faction_slice"], "brasal", 2))
+    _translate_new_objects(before, -1, -1, 0.05)
+
+    before = set(bpy.context.scene.objects)
+    faction.create_basic_soldier("auren", 5, unit_asset_seed(REVIEW_SEEDS["faction_slice"], "auren", "basic_soldier", 5))
+    _translate_new_objects(before, -2, 1, 0.06)
+
+    before = set(bpy.context.scene.objects)
+    faction.create_basic_soldier("brasal", 1, unit_asset_seed(REVIEW_SEEDS["faction_slice"], "brasal", "basic_soldier", 1))
+    _translate_new_objects(before, 0, -2, 0.06)
+
+
+def generate_benchmark(seed: int, output: Path, strict: bool) -> None:
+    render.reset_scene()
+    build_benchmark(seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 17.2
+    render.setup_lighting()
+    # Benchmark is review evidence, not an importable game sprite.
+    review_path = output / "review" / "terrain_benchmark_1920x1080.png"
+    (output / "review").mkdir(parents=True, exist_ok=True)
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1920
+    scene.render.resolution_y = 1080
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(output / "review" / "terrain_benchmark.blend")
+
+
+def build_coast_stress(seed: int) -> None:
+    """Authored compact stress scene using only finite runtime coastline variants."""
+    terrain_map = {
+        (-1, 0): "meadow",
+        (-1, 1): "coast_base",
+        (0, 1): "coast_base",
+        (0, 0): "coast_base",
+        (1, 0): "shallow_sea",
+        (1, -1): "shallow_sea",
+        (0, -1): "open_sea",
+    }
+    # Force all three semantic shoreline morphologies into one review image. The
+    # runtime still chooses morphology deterministically; the stress scene is evidence.
+    coast_stress_variants = {(-1, 1): 0, (0, 1): 1, (0, 0): 2}
+    for idx, ((q, r), kind) in enumerate(terrain_map.items()):
+        variant = idx % TERRAIN_VARIANTS[kind]
+        local_seed = terrain_asset_seed(seed, kind, variant)
+        before = set(bpy.context.scene.objects)
+        build_terrain(kind, variant, local_seed)
+        if kind == "coast_base":
+            _add_coast_edges_for_neighbors(
+                q, r, terrain_map, seed, forced_variant=coast_stress_variants[(q, r)]
+            )
+        _translate_new_objects(before, q, r)
+
+
+def generate_coast_stress(seed: int, output: Path, strict: bool) -> None:
+    render.reset_scene()
+    build_coast_stress(seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 10.6
+    render.setup_lighting()
+    review_path = output / "review" / "coast_stress_1920x1080.png"
+    review_path.parent.mkdir(parents=True, exist_ok=True)
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1920
+    scene.render.resolution_y = 1080
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(output / "review" / "coast_stress.blend")
+
+
+
+
+REPETITION_FLOWER = ((0, 0), (1, 0), (1, -1), (0, -1), (-1, 0), (-1, 1), (0, 1))
+
+
+def build_repetition_flower(kind: str, seed: int) -> None:
+    """Build a 7-hex same-family flower from the finite runtime variant library.
+
+    Repeated variants are intentional when the family has fewer than seven members: the
+    point is to expose cloning/repetition, not hide it with benchmark-only uniqueness.
+    """
+    count = TERRAIN_VARIANTS[kind]
+    for idx, (q, r) in enumerate(REPETITION_FLOWER):
+        variant = idx % count
+        local_seed = terrain_asset_seed(seed, kind, variant)
+        before = set(bpy.context.scene.objects)
+        build_terrain(kind, variant, local_seed)
+        _translate_new_objects(before, q, r)
+
+
+def generate_terrain_v3_stress(seed: int, output: Path, strict: bool) -> None:
+    """Render Meadow/Plains repetition evidence for Terrain v3."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    for kind in TERRAIN_V3_KINDS:
+        render.reset_scene()
+        build_repetition_flower(kind, seed)
+        render.assert_blender_version(strict)
+        camera = render.setup_master_camera("terrain")
+        camera.data.ortho_scale = 11.4
+        render.setup_lighting()
+        review_path = review_dir / f"terrain_v3_{kind}_repetition_1920x1080.png"
+        render.configure_render("terrain", review_path, transparent=False)
+        scene = bpy.context.scene
+        scene.render.resolution_x = 1920
+        scene.render.resolution_y = 1080
+        scene.render.resolution_percentage = 100
+        bpy.ops.render.render(write_still=True)
+        render.save_blend(review_dir / f"terrain_v3_{kind}_repetition.blend")
+
+
+def generate_terrain_v3_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution isolated Meadow/Plains art-direction reviews.
+
+    These are review evidence only. Runtime assets retain the canonical 256x128 final
+    canvas, so every hero review must later be paired with the real downsample check.
+    """
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    for idx, kind in enumerate(TERRAIN_V3_KINDS):
+        render.reset_scene()
+        local_seed = terrain_asset_seed(seed, kind, 0)
+        build_terrain(kind, 0, local_seed)
+        render.assert_blender_version(strict)
+        camera = render.setup_master_camera("terrain")
+        camera.data.ortho_scale = 5.15
+        render.setup_lighting()
+        review_path = review_dir / f"terrain_v3_{kind}_hero_1024.png"
+        render.configure_render("terrain", review_path, transparent=False)
+        scene = bpy.context.scene
+        scene.render.resolution_x = 1024
+        scene.render.resolution_y = 1024
+        scene.render.resolution_percentage = 100
+        bpy.ops.render.render(write_still=True)
+        render.save_blend(review_dir / f"terrain_v3_{kind}_hero.blend")
+
+
+def generate_terrain_v4_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution Meadow v4 sculpted-surface review."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    local_seed = terrain_asset_seed(seed, "meadow", 0)
+    build_terrain("meadow", 0, local_seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 4.95
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v4_meadow_hero_1280.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 1280
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v4_meadow_hero.blend")
+
+
+def generate_terrain_v41_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution Meadow v4.1 painterly-surface review."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    local_seed = terrain_asset_seed(seed, "meadow", 0)
+    build_terrain("meadow", 0, local_seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 4.95
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v41_meadow_hero_1280.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 1280
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v41_meadow_hero.blend")
+
+
+def generate_terrain_v42_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution Meadow v4.2 authored-surface-breakup review."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    local_seed = terrain_asset_seed(seed, "meadow", 0)
+    build_terrain("meadow", 0, local_seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 4.95
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v42_meadow_hero_1280.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 1280
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v42_meadow_hero.blend")
+
+
+def generate_terrain_v43_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution Meadow v4.3 review for one canonical production seed."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    local_seed = terrain_asset_seed(seed, "meadow", 0)
+    build_terrain("meadow", 0, local_seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 4.95
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v43_meadow_hero_1280.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 1280
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v43_meadow_hero.blend")
+
+
+def generate_terrain_v43_variation(seed: int, output: Path, strict: bool) -> None:
+    """Seven-tile evidence that seed/variant changes composition, including edges."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    for idx, (q, r) in enumerate(REPETITION_FLOWER):
+        variant = idx % TERRAIN_VARIANTS["meadow"]
+        # Distinct seed roots intentionally exercise seed-derived macro transforms.
+        local_seed = derive_seed(seed, "terrain-v43-variation", idx, variant)
+        before = set(bpy.context.scene.objects)
+        build_terrain("meadow", variant, local_seed)
+        _translate_new_objects(before, q, r)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 11.4
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v43_meadow_variation_1920x1080.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1920
+    scene.render.resolution_y = 1080
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v43_meadow_variation.blend")
+
+
+
+def generate_terrain_v50rc2_hero(seed: int, output: Path, strict: bool) -> None:
+    """High-resolution Meadow review after final painterly-richness pass."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    local_seed = terrain_asset_seed(seed, "meadow", 0)
+    build_terrain("meadow", 0, local_seed)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 4.95
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v50rc2_meadow_hero_1280.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1280
+    scene.render.resolution_y = 1280
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v50rc2_meadow_hero.blend")
+
+
+def generate_terrain_v50rc2_variation(seed: int, output: Path, strict: bool) -> None:
+    """Seven-tile evidence for clip safety, 70% density and painterly richness."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    render.reset_scene()
+    for idx, (q, r) in enumerate(REPETITION_FLOWER):
+        variant = idx % TERRAIN_VARIANTS["meadow"]
+        local_seed = derive_seed(seed, "terrain-v50rc2-variation", idx, variant)
+        before = set(bpy.context.scene.objects)
+        build_terrain("meadow", variant, local_seed)
+        _translate_new_objects(before, q, r)
+    render.assert_blender_version(strict)
+    camera = render.setup_master_camera("terrain")
+    camera.data.ortho_scale = 11.4
+    render.setup_lighting()
+    review_path = review_dir / "terrain_v50rc2_meadow_variation_1920x1080.png"
+    render.configure_render("terrain", review_path, transparent=False)
+    scene = bpy.context.scene
+    scene.render.resolution_x = 1920
+    scene.render.resolution_y = 1080
+    scene.render.resolution_percentage = 100
+    bpy.ops.render.render(write_still=True)
+    render.save_blend(review_dir / "terrain_v50rc2_meadow_variation.blend")
+
+
+def generate_terrain_v50rc1_hero(seed: int, output: Path, strict: bool) -> None:
+    """Backward-compatible alias to the final rc2 hero review."""
+    generate_terrain_v50rc2_hero(seed, output, strict)
+
+
+def generate_terrain_v50rc1_variation(seed: int, output: Path, strict: bool) -> None:
+    """Backward-compatible alias to the final rc2 variation review."""
+    generate_terrain_v50rc2_variation(seed, output, strict)
+
+
+def generate_terrain_v2_stress(seed: int, output: Path, strict: bool) -> None:
+    """Backward-compatible alias while v3 rollout is in progress."""
+    generate_terrain_v3_stress(seed, output, strict)
+
+
+def generate_repetition_stress(seed: int, output: Path, strict: bool) -> None:
+    """Render authored same-family repetition evidence for high-value terrain groups."""
+    review_dir = output / "review"
+    review_dir.mkdir(parents=True, exist_ok=True)
+    for kind in ("meadow", "plains", "forest", "hills", "mountain"):
+        render.reset_scene()
+        build_repetition_flower(kind, seed)
+        render.assert_blender_version(strict)
+        camera = render.setup_master_camera("terrain")
+        camera.data.ortho_scale = 11.4
+        render.setup_lighting()
+        review_path = review_dir / f"repetition_{kind}_1920x1080.png"
+        render.configure_render("terrain", review_path, transparent=False)
+        scene = bpy.context.scene
+        scene.render.resolution_x = 1920
+        scene.render.resolution_y = 1080
+        scene.render.resolution_percentage = 100
+        bpy.ops.render.render(write_still=True)
+        render.save_blend(review_dir / f"repetition_{kind}.blend")
+
+
+def generate_quality_suite(seed: int, output: Path, strict: bool) -> None:
+    """Render the complete terrain/coast candidate library plus integration scenes.
+
+    Premium variant-authorship cannot be scored from one representative per family.
+    This suite therefore renders all 32 terrain variants and all 18 shoreline overlays
+    before the fixed integration scenes. Run it only after the small regression gates pass.
+    """
+    for kind, count in TERRAIN_VARIANTS.items():
+        for variant in range(count):
+            generate_one(kind, variant, terrain_asset_seed(seed, kind, variant), output, strict)
+    generate_coasts(REVIEW_SEEDS["coast_stress"], output, strict)
+    generate_benchmark(seed, output, strict)
+    generate_coast_stress(REVIEW_SEEDS["coast_stress"], output, strict)
+    generate_repetition_stress(seed, output, strict)
+
+
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--asset", default="all", choices=["all", "terrain", "coasts", "hero-props", "benchmark", "coast-stress", "terrain-v2-stress", "terrain-v3-stress", "terrain-v3-hero", "terrain-v4-hero", "terrain-v41-hero", "terrain-v42-hero", "terrain-v43-hero", "terrain-v43-variation", "terrain-v50rc1-hero", "terrain-v50rc1-variation", "terrain-v50rc2-hero", "terrain-v50rc2-variation", "terrain-suite-v5-all", "terrain-suite-v5-benchmark36", "terrain-suite-v5-meadow", "terrain-suite-v5-plains", "terrain-suite-v5-forest", "terrain-suite-v5-hills", "terrain-suite-v5-mountain", "terrain-suite-v5-peak", "terrain-suite-v5-desert", "terrain-suite-v5-snow", "terrain-suite-v5-water", "terrain-suite-v5-coast", "repetition-stress", "quality-suite", *TERRAIN_VARIANTS.keys()])
+    parser.add_argument("--variant", type=int, default=0)
+    parser.add_argument("--seed", type=int, default=20000)
+    parser.add_argument("--output", type=Path, default=Path("game/assets/terrain/generated-v0.3.2-r2"))
+    parser.add_argument("--strict-blender-version", action="store_true")
+    return parser.parse_args(argv)
+
+
+def main() -> None:
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    args = parse_args(argv)
+    output = args.output.resolve()
+
+    if args.asset.startswith("terrain-suite-v5-"):
+        import vaelora_terrain_suite_v5 as suite_v5
+        if args.asset == "terrain-suite-v5-all":
+            suite_v5.generate_all_family_reviews(args.seed, output, args.strict_blender_version, build_terrain)
+        elif args.asset == "terrain-suite-v5-benchmark36":
+            suite_v5.generate_benchmark36(args.seed, output, args.strict_blender_version, build_terrain)
+        else:
+            family = args.asset.removeprefix("terrain-suite-v5-")
+            suite_v5.generate_family_review(family, args.seed, output, args.strict_blender_version, build_terrain)
+        return
+    if args.asset in TERRAIN_VARIANTS:
+        generate_one(args.asset, args.variant, args.seed, output, args.strict_blender_version)
+        return
+    if args.asset in {"all", "terrain"}:
+        for kind, count in TERRAIN_VARIANTS.items():
+            for variant in range(count):
+                generate_one(kind, variant, terrain_asset_seed(args.seed, kind, variant), output, args.strict_blender_version)
+    if args.asset in {"all", "coasts"}:
+        generate_coasts(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "hero-props"}:
+        generate_hero_props(derive_seed(args.seed, "hero-props"), output, args.strict_blender_version)
+    if args.asset in {"all", "benchmark"}:
+        generate_benchmark(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "coast-stress"}:
+        generate_coast_stress(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v2-stress", "terrain-v3-stress"}:
+        generate_terrain_v3_stress(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v3-hero"}:
+        generate_terrain_v3_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v4-hero"}:
+        generate_terrain_v4_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v41-hero"}:
+        generate_terrain_v41_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v42-hero"}:
+        generate_terrain_v42_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v43-hero"}:
+        generate_terrain_v43_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v43-variation"}:
+        generate_terrain_v43_variation(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v50rc1-hero", "terrain-v50rc2-hero"}:
+        generate_terrain_v50rc2_hero(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "terrain-v50rc1-variation", "terrain-v50rc2-variation"}:
+        generate_terrain_v50rc2_variation(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "repetition-stress"}:
+        generate_repetition_stress(args.seed, output, args.strict_blender_version)
+    if args.asset == "quality-suite":
+        generate_quality_suite(args.seed, output, args.strict_blender_version)
+
+
+if __name__ == "__main__":
+    main()

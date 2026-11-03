@@ -1,0 +1,108 @@
+# Vaelora — Art Performance and Memory Budget Framework v0.3
+
+This document defines what to measure. Numerical hard limits are not invented before representative Stage-2 hardware measurements.
+
+## 1. Why art performance is a design concern
+
+Vaelora targets Android, Web and desktop with maps up to 80×50. The art pipeline must therefore control:
+
+- texture memory;
+- alpha overdraw;
+- texture switches/draw calls;
+- visible instance count;
+- shader complexity;
+- animation texture footprint;
+- load time;
+- package size.
+
+## 2. Metrics recorded per family
+
+- source PNG bytes;
+- imported texture memory;
+- atlas dimensions if packed;
+- alpha occupied percentage;
+- average/max transparent padding;
+- number of variants;
+- animation frames/facings;
+- visible instance count in benchmark camera;
+- draw calls/batches;
+- frame time contribution;
+- peak memory during largest-map scene;
+- loading time.
+
+## 3. Texture-memory estimation
+
+Final 2× RGBA art is high quality but can be expensive when decoded. Review tools should estimate uncompressed RGBA memory as `width × height × 4`, with mipmap overhead shown separately when enabled.
+
+This estimate is not a substitute for Godot’s importer/runtime measurement.
+
+## 4. Variant discipline
+
+Variants exist to defeat repetition, not to maximize content count.
+
+Initial target counts are deliberately modest:
+
+- open terrains: 4;
+- forest/hills: 4;
+- mountain: 3;
+- peak: 2;
+- coast base: 3 plus 18 reusable shoreline edges (3 morphology variants × 6 directions);
+- shallow/open sea: 4 each.
+
+Add a variant only when a repetition test demonstrates a visible problem that composition/material jitter cannot solve safely.
+
+## 5. Animation cost
+
+A six-facing, six-frame animation can multiply sprite footprint quickly. Before animating every role, calculate:
+
+`frame size × 6 facings × frames × factions × actions`.
+
+Animation is therefore reserved for high-value actions first.
+
+## 6. Overdraw profile
+
+Large transparent Sprite2D canvases can consume fill rate. Review report should flag:
+
+- units/props with very low alpha occupancy;
+- effect textures covering multiple tiles;
+- stacked fog/territory/selection layers with full-screen transparency;
+- city canvases dominated by empty space.
+
+## 7. Performance profiles
+
+Vaelora may expose presentation profiles without changing gameplay truth:
+
+### Full
+
+Accepted art, optional water highlight motion, normal feedback effects.
+
+### Reduced motion
+
+Static water/environmental motion and reduced non-essential effects.
+
+### Constrained target
+
+Same sprites and gameplay information, but optional cosmetic animation/effects disabled. Do not remove critical information or downgrade terrain identity.
+
+## 8. Representative benchmark scenes
+
+Measure at minimum:
+
+1. 19-hex visual slice;
+2. dense city/units view;
+3. forest-heavy view;
+4. coast/archipelago view;
+5. largest 80×50 generated map at overview zoom;
+6. worst-case UI + fog + territory + units visible.
+
+## 9. Platform evidence
+
+Record on representative Stage-2 devices/browsers:
+
+- Android low-end floor candidate;
+- Web browser/OS combinations;
+- Windows baseline;
+- macOS baseline;
+- Linux baseline.
+
+Hard art budgets are approved only after those measurements exist.

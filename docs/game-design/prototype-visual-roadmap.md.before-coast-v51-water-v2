@@ -1,0 +1,157 @@
+# Vaelora — Prototype Visual Production Roadmap v0.3
+
+## Phase 0 — freeze the visual benchmark
+
+### 0.1 Plains benchmark
+
+Generate seed `22000`. Validate extracted-hex geology, surface sculpt, material, light, camera, alpha and downsample.
+
+### 0.2 Mixed environment benchmark
+
+Generate 19-hex scene seed `22100`. Validate forest/open terrain, relief, coast, water and repetition.
+
+### 0.3 Faction slice
+
+Generate seed `23000`. Validate Stage-2 Auren/Brasal and Basic Soldiers.
+
+### 0.4 Coast stress
+
+Seed `23100`. Test multiple adjacent shoreline directions/joins and shallow/open sea.
+
+**Exit:** explicit acceptance of style direction. Do not scale production before this.
+
+## Phase 1 — complete shared environment
+
+- finish 32 terrain-base variants;
+- 3 morphology variants × 6 coast edges;
+- curated reusable rocks/trees/grass/shrub language;
+- three Trama props;
+- family repetition sheets;
+- Godot import proof.
+
+## Phase 2 — roads and improvements
+
+### Road
+
+Build six half-segments + centre merge language. Test every logical connection mask through composition, not 64 hand-authored images.
+
+### Farm
+
+Field pattern that preserves Meadow/Plains read.
+
+### Lumber facility
+
+Work platform/logs while Forest remains legible.
+
+### Mine
+
+Entrance/support that preserves Hills/Mountain read.
+
+### Port
+
+Directional land/sea connection with both faction adaptations.
+
+**Exit:** every improvement readable at 75% and compatible with roads.
+
+## Phase 3 — city system
+
+- Auren Stage 1/2/3;
+- Brasal Stage 1/2/3;
+- modular Granary/Barracks/Academy attachments for each faction;
+- modular Walls overlay for each faction;
+- combinations stress test;
+- capture/ownership visual state test.
+
+Avoid combinatorial prebakes.
+
+## Phase 4 — unit roster
+
+Idle models/poses first:
+
+1. Basic Soldier baseline already established;
+2. Worker;
+3. Settler;
+4. Explorer;
+5. Patrol Ship.
+
+For each:
+
+- both factions;
+- six facings;
+- grayscale and terrain-background tests;
+- animation only after idle silhouette accepted.
+
+## Phase 5 — fog, territory and interaction
+
+Implement in Godot with accessibility-aware presentation:
+
+- unexplored;
+- explored/not visible;
+- selected;
+- territory;
+- legal move;
+- target/attack;
+- claim candidate;
+- contextual rejection.
+
+Validate on all major terrain values.
+
+## Phase 6 — UI and iconography
+
+Design from gameplay tasks, not decorative fantasy framing.
+
+Order:
+
+1. HUD tokens/resources/actions;
+2. unit/city panel;
+3. city production;
+4. territory claim;
+5. research tree;
+6. setup/civilization selection;
+7. standings;
+8. save/load;
+9. settings/accessibility;
+10. tutorial/codex;
+11. end-of-match.
+
+## Phase 7 — VFX/feedback
+
+Add only effects that improve action comprehension. Reduced-motion variants are mandatory for non-essential movement.
+
+## Phase 8 — integrated visual vertical slice
+
+Create an actual Godot scenario with:
+
+- both civilizations;
+- terrain variety;
+- roads/improvements;
+- city stages/buildings;
+- units;
+- fog/territory/selection;
+- representative UI.
+
+Test compact/standard/wide viewports and platform targets.
+
+## Phase 9 — performance art pass
+
+Profile largest map and dense scenes. Decide atlas/mipmap/import settings from evidence. Do not reduce quality globally before finding the actual bottleneck.
+
+## Phase 10 — commercial presentation
+
+Once gameplay art is stable:
+
+- key art composition;
+- logo/capsule system;
+- Steam screenshots;
+- library art;
+- store icon set.
+
+Validate current Steamwork dimensions/templates at production time.
+
+## Deferred
+
+- future civilization accepted art;
+- seasonal biome themes;
+- campaign-specific visual sets;
+- major environmental animation;
+- cinematic character rendering unrelated to gameplay.

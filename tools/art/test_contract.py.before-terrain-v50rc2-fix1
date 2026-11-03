@@ -1,0 +1,116 @@
+"""Fast host-side invariants for the Vaelora v0.3.2-r2 visual contract."""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+BLENDER_DIR = Path(__file__).resolve().parents[1] / "blender"
+sys.path.insert(0, str(BLENDER_DIR))
+
+from vaelora_contract import (  # noqa: E402
+    FACTION_BRIEFS,
+    TERRAIN_BRIEFS,
+    city_asset_seed,
+    coast_asset_seed,
+    coast_variant_for_tile,
+    derive_seed,
+    terrain_asset_seed,
+    unit_asset_seed,
+)
+from vaelora_composition import (  # noqa: E402
+    FOREST_TEMPLATES,
+    HILL_DIRECTIONS_DEG,
+    MEADOW_TEMPLATES,
+    MEADOW_SURFACE_SWATCHES,
+    MOUNTAIN_DIRECTIONS_DEG,
+    PEAK_DIRECTIONS_DEG,
+    PLAINS_TEMPLATES,
+    PLAINS_SURFACE_SWATCHES,
+)
+from vaelora_terrain_profiles import TERRAIN_PROFILES, terrain_variation_context  # noqa: E402
+from vaelora_style import (  # noqa: E402
+    ART_STYLE_ID,
+    CAMERA_FRAME_Z_OFFSET,
+    CAMERA_ORTHO_UNIT,
+    CANVAS,
+    COAST_VARIANT_COUNT,
+    GENERATOR_VERSION,
+    HEX_AXIAL_X_STEP,
+    HEX_AXIAL_Y_STEP,
+    HEX_RADIUS,
+    QUALITY_AVERAGE_TARGET,
+    QUALITY_SCORE_TARGET,
+    TERRAIN_VARIANTS,
+    TERRAIN_SYSTEM_VERSION,
+    TERRAIN_SYSTEM_REVISION,
+    TERRAIN_RELEASE_CANDIDATE,
+    TERRAIN_SCATTER_DENSITY_TARGET,
+    TERRAIN_PROP_DENSITY,
+    TERRAIN_PROP_FOOTPRINT,
+    TERRAIN_V3_KINDS,
+    TERRAIN_V4_KINDS,
+    UNIT_WORLD_SCALE,
+)
+
+
+def main() -> None:
+    assert set(TERRAIN_VARIANTS) == set(TERRAIN_BRIEFS)
+    assert set(FACTION_BRIEFS) == {"auren", "brasal"}
+    assert ART_STYLE_ID == "vaelora-sculpted-diorama-v2"  # preserve accepted identity contract
+    assert GENERATOR_VERSION == "0.3.2-r2"
+    assert CANVAS["terrain"]["work"][0] == CANVAS["terrain"]["final"][0] * 2
+    assert CANVAS["terrain"]["final"][0] == CANVAS["terrain"]["logical"][0] * 2
+    a = derive_seed(22000, "terrain", "plains", 0)
+    b = derive_seed(22000, "terrain", "plains", 0)
+    c = derive_seed(22000, "terrain", "plains", 1)
+    assert a == b and a != c
+    assert terrain_asset_seed(22100, "forest", 2) == terrain_asset_seed(22100, "forest", 2)
+    assert city_asset_seed(23000, "auren", 2) != city_asset_seed(23000, "brasal", 2)
+    assert unit_asset_seed(23000, "auren", "basic_soldier", 0) != unit_asset_seed(23000, "auren", "basic_soldier", 1)
+    assert sum(TERRAIN_VARIANTS.values()) == 32
+    assert TERRAIN_SYSTEM_VERSION == 4
+    assert TERRAIN_SYSTEM_REVISION == 4
+    assert TERRAIN_V3_KINDS == ("plains",)
+    assert TERRAIN_V4_KINDS == ("meadow",)
+    assert TERRAIN_RELEASE_CANDIDATE == "5.0-rc2"
+    assert abs(TERRAIN_SCATTER_DENSITY_TARGET - 0.70) < 1e-9
+    assert set(TERRAIN_PROP_DENSITY) == {"rock_garden", "hero_grass", "medium_clump", "groundcover", "flower"}
+    assert set(TERRAIN_PROP_FOOTPRINT) == set(TERRAIN_PROP_DENSITY)
+    assert all(0.0 < value <= 1.0 for value in TERRAIN_PROP_DENSITY.values())
+    assert TERRAIN_PROP_DENSITY["flower"] < TERRAIN_PROP_DENSITY["rock_garden"]
+    assert set(TERRAIN_PROFILES) == set(TERRAIN_V3_KINDS) | set(TERRAIN_V4_KINDS)
+    assert all(len(TERRAIN_PROFILES[k].variants) == TERRAIN_VARIANTS[k] for k in (*TERRAIN_V3_KINDS, *TERRAIN_V4_KINDS))
+    assert TERRAIN_PROFILES["meadow"].system_version == 4
+    assert TERRAIN_PROFILES["plains"].system_version == 3
+    v_a = terrain_variation_context("meadow", 0, 22000)
+    v_b = terrain_variation_context("meadow", 0, 22001)
+    assert v_a == terrain_variation_context("meadow", 0, 22000)
+    assert v_a != v_b
+    assert 0.90 <= v_a.macro_scale <= 1.10
+    assert 0.88 <= v_a.height_scale <= 1.12
+    assert len(MEADOW_TEMPLATES) == TERRAIN_VARIANTS["meadow"]
+    assert len(MEADOW_SURFACE_SWATCHES) == TERRAIN_VARIANTS["meadow"]
+    assert len(PLAINS_TEMPLATES) == TERRAIN_VARIANTS["plains"]
+    assert len(PLAINS_SURFACE_SWATCHES) == TERRAIN_VARIANTS["plains"]
+    assert len(FOREST_TEMPLATES) == TERRAIN_VARIANTS["forest"]
+    assert len(HILL_DIRECTIONS_DEG) == TERRAIN_VARIANTS["hills"]
+    assert len(MOUNTAIN_DIRECTIONS_DEG) == TERRAIN_VARIANTS["mountain"]
+    assert len(PEAK_DIRECTIONS_DEG) == TERRAIN_VARIANTS["peak"]
+    assert COAST_VARIANT_COUNT == 6
+    assert COAST_VARIANT_COUNT * 6 == 36
+    coast_seeds = {coast_asset_seed(23100, variant, edge) for variant in range(COAST_VARIANT_COUNT) for edge in range(6)}
+    assert len(coast_seeds) == COAST_VARIANT_COUNT * 6
+    assert 0 <= coast_variant_for_tile(23100, 2, -3, COAST_VARIANT_COUNT) < COAST_VARIANT_COUNT
+    assert 0 <= a < (1 << 63)
+    assert abs(CAMERA_FRAME_Z_OFFSET["unit"] - 0.08) < 1e-9
+    assert abs(CAMERA_ORTHO_UNIT - 4.35) < 1e-9
+    assert abs(UNIT_WORLD_SCALE - 0.80) < 1e-9
+    assert abs(HEX_AXIAL_X_STEP - (3 ** 0.5) * HEX_RADIUS) < 1e-9
+    assert abs(HEX_AXIAL_Y_STEP - 1.5 * HEX_RADIUS) < 1e-9
+    assert QUALITY_SCORE_TARGET >= 9.0
+    assert QUALITY_AVERAGE_TARGET >= QUALITY_SCORE_TARGET
+    print("Vaelora v0.3.2-r2 contract invariants: PASS")
+
+
+if __name__ == "__main__":
+    main()

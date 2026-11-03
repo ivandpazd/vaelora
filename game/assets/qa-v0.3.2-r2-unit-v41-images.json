@@ -1,0 +1,337 @@
+{
+  "checked": 14,
+  "errors": [],
+  "warnings": [
+    "review_unit_auren_basic_soldier: six-facing equipped silhouette height ratio 1.200 exceeds preferred 1.18; review weapon/shield projection visually",
+    "review_unit_brasal_basic_soldier: six-facing equipped silhouette height ratio 1.214 exceeds preferred 1.18; review weapon/shield projection visually"
+  ],
+  "assets": [
+    {
+      "asset_id": "review_city_auren_stage_2",
+      "family": "city",
+      "size": [
+        512,
+        256
+      ],
+      "bbox": [
+        157,
+        69,
+        370,
+        217
+      ],
+      "mean_alpha": 0.12229285146675858,
+      "nonzero_fraction": 0.13144683837890625,
+      "semitransparent_fraction": 0.01865386962890625,
+      "bbox_fraction": 0.240509033203125,
+      "shadow_mean_alpha": 0.008287856158088235
+    },
+    {
+      "asset_id": "review_city_brasal_stage_2",
+      "family": "city",
+      "size": [
+        512,
+        256
+      ],
+      "bbox": [
+        141,
+        88,
+        385,
+        224
+      ],
+      "mean_alpha": 0.13962519028607537,
+      "nonzero_fraction": 0.1480712890625,
+      "semitransparent_fraction": 0.01677703857421875,
+      "bbox_fraction": 0.253173828125,
+      "shadow_mean_alpha": 0.009212000229779412
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f0",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        111,
+        47,
+        145,
+        117
+      ],
+      "mean_alpha": 0.03131534352022059,
+      "nonzero_fraction": 0.041748046875,
+      "semitransparent_fraction": 0.021759033203125,
+      "bbox_fraction": 0.0726318359375,
+      "shadow_mean_alpha": 0.0016468721277573528
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f1",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        114,
+        47,
+        142,
+        118
+      ],
+      "mean_alpha": 0.026014021331188724,
+      "nonzero_fraction": 0.035919189453125,
+      "semitransparent_fraction": 0.019134521484375,
+      "bbox_fraction": 0.0606689453125,
+      "shadow_mean_alpha": 0.0013510311351102942
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f2",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        102,
+        45,
+        155,
+        116
+      ],
+      "mean_alpha": 0.039071236404718136,
+      "nonzero_fraction": 0.054931640625,
+      "semitransparent_fraction": 0.03057861328125,
+      "bbox_fraction": 0.114837646484375,
+      "shadow_mean_alpha": 0.0020893171721813727
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f3",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        111,
+        35,
+        145,
+        119
+      ],
+      "mean_alpha": 0.03355282054227941,
+      "nonzero_fraction": 0.04571533203125,
+      "semitransparent_fraction": 0.02410888671875,
+      "bbox_fraction": 0.087158203125,
+      "shadow_mean_alpha": 0.0017398609834558825
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f4",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        113,
+        35,
+        142,
+        117
+      ],
+      "mean_alpha": 0.02522559072457108,
+      "nonzero_fraction": 0.03582763671875,
+      "semitransparent_fraction": 0.0196533203125,
+      "bbox_fraction": 0.07257080078125,
+      "shadow_mean_alpha": 0.0013528262867647058
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f5",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        101,
+        43,
+        154,
+        114
+      ],
+      "mean_alpha": 0.037596698835784315,
+      "nonzero_fraction": 0.053192138671875,
+      "semitransparent_fraction": 0.029754638671875,
+      "bbox_fraction": 0.114837646484375,
+      "shadow_mean_alpha": 0.002001594094669118
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f0",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        111,
+        47,
+        149,
+        118
+      ],
+      "mean_alpha": 0.03526850681678922,
+      "nonzero_fraction": 0.0469970703125,
+      "semitransparent_fraction": 0.023590087890625,
+      "bbox_fraction": 0.08233642578125,
+      "shadow_mean_alpha": 0.0018379959405637255
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f1",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        113,
+        47,
+        145,
+        119
+      ],
+      "mean_alpha": 0.028811944699754902,
+      "nonzero_fraction": 0.039642333984375,
+      "semitransparent_fraction": 0.020904541015625,
+      "bbox_fraction": 0.0703125,
+      "shadow_mean_alpha": 0.0014942842371323528
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f2",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        97,
+        44,
+        158,
+        117
+      ],
+      "mean_alpha": 0.04467354568780637,
+      "nonzero_fraction": 0.06121826171875,
+      "semitransparent_fraction": 0.031463623046875,
+      "bbox_fraction": 0.135894775390625,
+      "shadow_mean_alpha": 0.0022863051470588236
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f3",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        107,
+        35,
+        145,
+        120
+      ],
+      "mean_alpha": 0.037161913105085785,
+      "nonzero_fraction": 0.051239013671875,
+      "semitransparent_fraction": 0.02716064453125,
+      "bbox_fraction": 0.09857177734375,
+      "shadow_mean_alpha": 0.0019179400275735293
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f4",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        111,
+        35,
+        143,
+        119
+      ],
+      "mean_alpha": 0.028529866536458334,
+      "nonzero_fraction": 0.0400390625,
+      "semitransparent_fraction": 0.022247314453125,
+      "bbox_fraction": 0.08203125,
+      "shadow_mean_alpha": 0.0014966777726715687
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f5",
+      "family": "unit",
+      "size": [
+        256,
+        128
+      ],
+      "bbox": [
+        98,
+        45,
+        159,
+        115
+      ],
+      "mean_alpha": 0.04381965188419118,
+      "nonzero_fraction": 0.0599365234375,
+      "semitransparent_fraction": 0.030853271484375,
+      "bbox_fraction": 0.13031005859375,
+      "shadow_mean_alpha": 0.0023362103630514704
+    }
+  ],
+  "six_facing_groups": {
+    "review_unit_auren_basic_soldier": {
+      "height_px": [
+        70,
+        71,
+        71,
+        84,
+        82,
+        71
+      ],
+      "width_px": [
+        34,
+        28,
+        53,
+        34,
+        29,
+        53
+      ],
+      "bottom_px": [
+        117,
+        118,
+        116,
+        119,
+        117,
+        114
+      ],
+      "height_ratio": 1.2,
+      "width_ratio": 1.8928571428571428,
+      "bottom_span_px": 5
+    },
+    "review_unit_brasal_basic_soldier": {
+      "height_px": [
+        71,
+        72,
+        73,
+        85,
+        84,
+        70
+      ],
+      "width_px": [
+        38,
+        32,
+        61,
+        38,
+        32,
+        61
+      ],
+      "bottom_px": [
+        118,
+        119,
+        117,
+        120,
+        119,
+        115
+      ],
+      "height_ratio": 1.2142857142857142,
+      "width_ratio": 1.90625,
+      "bottom_span_px": 5
+    }
+  },
+  "passed": true
+}

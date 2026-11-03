@@ -1,0 +1,124 @@
+# Vaelora Blender Art Pipeline v0.3.2-r2
+
+## Production requirement
+
+Acceptance candidates: Blender **5.2.3 LTS** with `--strict-blender-version`.
+
+This revision preserves `vaelora-sculpted-diorama-v2`; it reconciles implementation and QA rather than inventing a new visual identity.
+
+## Fixed review roots
+
+- Plains continuity: `22000`
+- 19-hex terrain library/benchmark: `22100`
+- Auren/Brasal faction slice: `23000`
+- Coast morphology/stress: `23100`
+
+## Minimal regression sequence
+
+```bash
+blender --background --python tools/blender/vaelora_artkit.py -- \
+  --asset plains --variant 0 --seed 22000 \
+  --output game/assets/terrain/generated-v0.3.2-r2 \
+  --strict-blender-version
+
+blender --background --python tools/blender/vaelora_artkit.py -- \
+  --asset coasts --seed 23100 \
+  --output game/assets/terrain/generated-v0.3.2-r2 \
+  --strict-blender-version
+
+blender --background --python tools/blender/vaelora_artkit.py -- \
+  --asset coast-stress --seed 23100 \
+  --output game/assets/terrain/generated-v0.3.2-r2 \
+  --strict-blender-version
+
+blender --background --python tools/blender/vaelora_artkit.py -- \
+  --asset benchmark --seed 22100 \
+  --output game/assets/terrain/generated-v0.3.2-r2 \
+  --strict-blender-version
+
+blender --background --python tools/blender/vaelora_faction_kit.py -- \
+  --asset representative --seed 23000 \
+  --output game/assets/factions/generated-v0.3.2-r2 \
+  --strict-blender-version
+```
+
+Do not generate the entire catalog until these regression views are accepted.
+
+## Premium quality suite
+
+Complete terrain/coast candidate library plus integration scenes:
+
+```bash
+blender --background --python tools/blender/vaelora_artkit.py -- \
+  --asset quality-suite --seed 22100 \
+  --output game/assets/terrain/generated-v0.3.2-r2 \
+  --strict-blender-version
+```
+
+All city stages:
+
+```bash
+blender --background --python tools/blender/vaelora_faction_kit.py -- \
+  --asset cities --seed 23000 \
+  --output game/assets/factions/generated-v0.3.2-r2 \
+  --strict-blender-version
+```
+
+## Finite coastline contract
+
+Runtime exports **18** shoreline sprites: 3 morphology variants × 6 world directions. A coast tile deterministically chooses one morphology variant and uses it on every sea-facing edge. Review scenes use the same seed vocabulary; benchmark-only coastline morphology is prohibited.
+
+## Host-side gate
+
+```bash
+python -m pip install -r tools/art/requirements-art.txt
+python tools/art/run_gate.py \
+  game/assets/terrain/generated-v0.3.2-r2 \
+  game/assets/factions/generated-v0.3.2-r2 \
+  --review-output game/assets/art-review-v0.3.2-r2.jpg \
+  --qa-dir game/assets/qa-v0.3.2-r2
+```
+
+This performs:
+
+- premultiplied-alpha Lanczos downsample;
+- modular contact-shadow generation;
+- manifest schema/current-source/Blender-pin validation;
+- image/canvas/alpha QA;
+- six-facing unit scale/anchor QA;
+- decoded texture-budget estimate with/without mipmaps;
+- complete wrapped color/grayscale/320px/75-100-125% review sheets.
+
+Passing automation does **not** mark art accepted.
+
+## Human premium gate
+
+Create and manually fill:
+
+```bash
+python tools/art/create_quality_scorecard.py \
+  --output game/assets/qa-v0.3.2-r2/quality-scorecard.json
+```
+
+Validate integrity/thresholds:
+
+```bash
+python tools/art/validate_quality_scorecard.py \
+  game/assets/qa-v0.3.2-r2/quality-scorecard.json
+```
+
+Thresholds: every area >=9.0, average >=9.3, no Blocker/Major. A real Godot runtime-composition screenshot is also mandatory before visual lock.
+
+## Source roles
+
+- `vaelora_style.py`: immutable visual/runtime constants.
+- `vaelora_contract.py`: semantic briefs + deterministic finite-library seeds.
+- `vaelora_composition.py`: authored layouts/templates.
+- `vaelora_materials.py`: procedural painterly material factories.
+- `vaelora_geometry.py`: sculpted constructors and surface grounding.
+- `vaelora_render.py`: master camera/light/render/manifests.
+- `vaelora_artkit.py`: terrain/coast/Trama generation and source-context review scenes.
+- `vaelora_faction_kit.py`: city progression + Basic Soldier benchmarks.
+- `OPENCODE_PROMPT.md`: AI/MCP operating contract.
+
+Do not duplicate these contracts inside ad-hoc prompts or scripts.

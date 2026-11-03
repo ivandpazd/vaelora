@@ -1,0 +1,282 @@
+"""Procedural painterly materials for Vaelora Sculpted Diorama.
+
+The material system intentionally avoids photo textures. Variation is generated from
+object-space noise, surface orientation and restrained AO so assets feel authored
+rather than uniformly flat while remaining readable at strategy scale.
+"""
+from __future__ import annotations
+
+
+import bpy
+
+from vaelora_style import FACTION_PALETTE_HEX, PALETTE_HEX
+
+_CACHE: dict[str, bpy.types.Material] = {}
+
+
+def hex_rgba(value: str) -> tuple[float, float, float, float]:
+    value = value.lstrip("#")
+    rgb = tuple(int(value[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+    return (*rgb, 1.0)
+
+
+def _rgb(value: str):
+    return hex_rgba(value)
+
+
+def _clear_nodes(mat: bpy.types.Material):
+    mat.use_nodes = True
+    nodes = mat.node_tree.nodes
+    for node in list(nodes):
+        nodes.remove(node)
+    return mat.node_tree.nodes, mat.node_tree.links
+
+
+def _principled(nodes, base_color, roughness: float, metallic: float = 0.0):
+    bsdf = nodes.new("ShaderNodeBsdfPrincipled")
+    bsdf.location = (430, 60)
+    bsdf.inputs["Base Color"].default_value = base_color
+    bsdf.inputs["Roughness"].default_value = roughness
+    bsdf.inputs["Metallic"].default_value = metallic
+    return bsdf
+
+
+def create_painterly_material(
+    name: str,
+    shadow_hex: str,
+    base_hex: str,
+    light_hex: str,
+    *,
+    scale: float = 3.2,
+    detail: float = 2.0,
+    roughness: float = 0.82,
+    bump_strength: float = 0.10,
+    bump_distance: float = 0.10,
+    metallic: float = 0.0,
+) -> bpy.types.Material:
+    if name in _CACHE:
+        return _CACHE[name]
+    mat = bpy.data.materials.new(name)
+    nodes, links = _clear_nodes(mat)
+    out = nodes.new("ShaderNodeOutputMaterial")
+    out.location = (680, 60)
+    bsdf = _principled(nodes, _rgb(base_hex), roughness, metallic)
+
+    tex = nodes.new("ShaderNodeTexCoord")
+    tex.location = (-760, 20)
+    noise = nodes.new("ShaderNodeTexNoise")
+    noise.location = (-550, 20)
+    noise.inputs["Scale"].default_value = scale
+    noise.inputs["Detail"].default_value = detail
+    noise.inputs["Roughness"].default_value = 0.52
+
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-290, 80)
+    ramp.color_ramp.elements.remove(ramp.color_ramp.elements[1])
+    e0 = ramp.color_ramp.elements[0]
+    e0.position = 0.26
+    e0.color = _rgb(shadow_hex)
+    e1 = ramp.color_ramp.elements.new(0.56)
+    e1.color = _rgb(base_hex)
+    e2 = ramp.color_ramp.elements.new(0.80)
+    e2.color = _rgb(light_hex)
+
+    geo = nodes.new("ShaderNodeNewGeometry")
+    geo.location = (-530, -260)
+    sep = nodes.new("ShaderNodeSeparateXYZ")
+    sep.location = (-310, -260)
+    orient = nodes.new("ShaderNodeMapRange")
+    orient.location = (-80, -250)
+    orient.inputs["From Min"].default_value = -0.2
+    orient.inputs["From Max"].default_value = 1.0
+    orient.inputs["To Min"].default_value = 0.82
+    orient.inputs["To Max"].default_value = 1.04
+    orient.clamp = True
+
+    multiply = nodes.new("ShaderNodeMixRGB")
+    multiply.blend_type = "MULTIPLY"
+    multiply.inputs[0].default_value = 1.0
+    multiply.location = (150, 100)
+
+    bump = nodes.new("ShaderNodeBump")
+    bump.location = (180, -135)
+    bump.inputs["Strength"].default_value = bump_strength
+    bump.inputs["Distance"].default_value = bump_distance
+
+    links.new(tex.outputs["Generated"], noise.inputs["Vector"])
+    links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(geo.outputs["Normal"], sep.inputs["Vector"])
+    links.new(sep.outputs["Z"], orient.inputs["Value"])
+    links.new(ramp.outputs["Color"], multiply.inputs[1])
+    links.new(orient.outputs["Result"], multiply.inputs[2])
+    links.new(multiply.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+
+    _CACHE[name] = mat
+    return mat
+
+
+def create_wood_material(name: str, dark_hex: str, base_hex: str, light_hex: str) -> bpy.types.Material:
+    if name in _CACHE:
+        return _CACHE[name]
+    mat = create_painterly_material(name, dark_hex, base_hex, light_hex, scale=4.5, detail=1.4, roughness=0.86, bump_strength=0.07)
+    nodes = mat.node_tree.nodes
+    links = mat.node_tree.links
+    bsdf = next(n for n in nodes if n.bl_idname == "ShaderNodeBsdfPrincipled")
+    # Add very broad banding; it must not read as realistic grain at gameplay scale.
+    wave = nodes.new("ShaderNodeTexWave")
+    wave.wave_type = "BANDS"
+    wave.bands_direction = "Z"
+    wave.inputs["Scale"].default_value = 2.4
+    wave.inputs["Distortion"].default_value = 2.2
+    wave.inputs["Detail"].default_value = 1.2
+    wave.location = (-510, -470)
+    coord = next(n for n in nodes if n.bl_idname == "ShaderNodeTexCoord")
+    bump = nodes.new("ShaderNodeBump")
+    bump.location = (160, -320)
+    bump.inputs["Strength"].default_value = 0.045
+    bump.inputs["Distance"].default_value = 0.055
+    links.new(coord.outputs["Generated"], wave.inputs["Vector"])
+    links.new(wave.outputs["Color"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    return mat
+
+
+def create_water_material(
+    name: str,
+    deep_hex: str,
+    shallow_hex: str,
+    light_hex: str,
+    *,
+    scale: float = 2.1,
+    detail: float = 2.0,
+    roughness: float = 0.30,
+    bump_strength: float = 0.12,
+    bump_distance: float = 0.06,
+) -> bpy.types.Material:
+    """Painterly water with tunable broad-vs-local variation.
+
+    Water v2 deliberately separates shallow and open-sea frequency ranges: shallow
+    water carries a little more local colour movement, while open sea is broader,
+    deeper and calmer so the two tile classes remain readable at strategy scale.
+    """
+    if name in _CACHE:
+        return _CACHE[name]
+    mat = bpy.data.materials.new(name)
+    nodes, links = _clear_nodes(mat)
+    out = nodes.new("ShaderNodeOutputMaterial")
+    out.location = (650, 0)
+    bsdf = _principled(nodes, _rgb(shallow_hex), roughness, 0.0)
+
+    coord = nodes.new("ShaderNodeTexCoord")
+    coord.location = (-720, 0)
+    noise_a = nodes.new("ShaderNodeTexNoise")
+    noise_a.location = (-520, 80)
+    noise_a.inputs["Scale"].default_value = scale
+    noise_a.inputs["Detail"].default_value = detail
+    noise_a.inputs["Roughness"].default_value = 0.44
+    noise_b = nodes.new("ShaderNodeTexNoise")
+    noise_b.location = (-520, -120)
+    noise_b.inputs["Scale"].default_value = scale * 4.0
+    noise_b.inputs["Detail"].default_value = max(0.8, detail * 0.55)
+    noise_b.inputs["Roughness"].default_value = 0.34
+
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.location = (-250, 90)
+    ramp.color_ramp.elements[0].position = 0.24
+    ramp.color_ramp.elements[0].color = _rgb(deep_hex)
+    ramp.color_ramp.elements[1].position = 0.80
+    ramp.color_ramp.elements[1].color = _rgb(light_hex)
+
+    bump = nodes.new("ShaderNodeBump")
+    bump.location = (130, -100)
+    bump.inputs["Strength"].default_value = bump_strength
+    bump.inputs["Distance"].default_value = bump_distance
+
+    links.new(coord.outputs["Generated"], noise_a.inputs["Vector"])
+    links.new(coord.outputs["Generated"], noise_b.inputs["Vector"])
+    links.new(noise_a.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+    links.new(noise_b.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], bsdf.inputs["Normal"])
+    links.new(bsdf.outputs["BSDF"], out.inputs["Surface"])
+    _CACHE[name] = mat
+    return mat
+
+
+def create_flat_material(name: str, hex_color: str, roughness: float = 0.82, metallic: float = 0.0) -> bpy.types.Material:
+    if name in _CACHE:
+        return _CACHE[name]
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes.get("Principled BSDF")
+    if bsdf:
+        bsdf.inputs["Base Color"].default_value = _rgb(hex_color)
+        bsdf.inputs["Roughness"].default_value = roughness
+        bsdf.inputs["Metallic"].default_value = metallic
+    mat.diffuse_color = _rgb(hex_color)
+    _CACHE[name] = mat
+    return mat
+
+
+def world_materials() -> dict[str, bpy.types.Material]:
+    p = PALETTE_HEX
+    return {
+        "meadow": create_painterly_material("VAE_Meadow", p["meadow_shadow"], p["meadow"], p["meadow_light"], scale=3.4, detail=2.1, roughness=0.90, bump_strength=0.06),
+        "plains": create_painterly_material("VAE_Plains", p["plains_shadow"], p["plains"], p["plains_light"], scale=3.0, detail=1.7, roughness=0.91, bump_strength=0.055),
+        "forest": create_painterly_material("VAE_Foliage", p["forest_shadow"], p["forest"], p["forest_light"], scale=2.4, detail=2.0, roughness=0.86, bump_strength=0.08),
+        "forest_warm": create_painterly_material("VAE_FoliageWarm", "#31513A", "#4C7445", "#6F9556", scale=2.7, detail=1.8, roughness=0.88, bump_strength=0.07),
+        "forest_cool": create_painterly_material("VAE_FoliageCool", "#203F35", "#355B48", "#50745A", scale=2.2, detail=2.1, roughness=0.87, bump_strength=0.075),
+        "forest_light": create_painterly_material("VAE_FoliageLight", "#3A5A3B", "#63834A", "#86A65A", scale=2.9, detail=1.7, roughness=0.89, bump_strength=0.065),
+        "moss": create_painterly_material("VAE_Moss", p["forest_shadow"], p["moss"], p["meadow_light"], scale=4.0, detail=1.5, roughness=0.93, bump_strength=0.08),
+        "earth": create_painterly_material("VAE_Earth", p["earth_dark"], p["earth"], p["earth_light"], scale=4.2, detail=2.0, roughness=0.95, bump_strength=0.11),
+        "clay": create_painterly_material("VAE_Clay", p["earth"], p["clay"], p["earth_light"], scale=3.0, detail=1.3, roughness=0.94, bump_strength=0.08),
+        "sand": create_painterly_material("VAE_Sand", p["sand_shadow"], p["sand"], p["sand_light"], scale=5.0, detail=1.0, roughness=0.96, bump_strength=0.04),
+        "sand_wet": create_painterly_material("VAE_SandWet", "#7B6747", p["sand_shadow"], "#B89A63", scale=5.5, detail=1.0, roughness=0.88, bump_strength=0.025),
+        "shore_transition": create_painterly_material("VAE_ShoreTransition", "#5C775A", "#7F9667", "#A7AE78", scale=4.0, detail=1.4, roughness=0.92, bump_strength=0.035),
+        "stone": create_painterly_material("VAE_Stone", p["stone_dark"], p["stone"], p["stone_light"], scale=2.1, detail=2.4, roughness=0.83, bump_strength=0.16),
+        "stone_warm": create_painterly_material("VAE_StoneWarm", p["stone_dark"], p["stone_warm"], p["stone_light"], scale=2.4, detail=2.0, roughness=0.85, bump_strength=0.13),
+        "stone_light": create_painterly_material("VAE_StoneLight", p["stone"], p["stone_light"], "#A9B0B0", scale=2.8, detail=1.5, roughness=0.84, bump_strength=0.08),
+        "snow": create_painterly_material("VAE_Snow", p["snow_shadow"], p["snow"], "#F6F8F3", scale=3.4, detail=1.2, roughness=0.72, bump_strength=0.04),
+        "trunk": create_wood_material("VAE_Trunk", p["trunk_dark"], p["trunk"], p["trunk_light"]),
+        "water_shallow": create_water_material(
+            "VAE_WaterShallow", p["water_open"], p["water_shallow"], p["water_shallow_light"],
+            scale=2.65, detail=2.15, roughness=0.34, bump_strength=0.10, bump_distance=0.045,
+        ),
+        "water_open": create_water_material(
+            "VAE_WaterOpen", p["water_deep"], p["water_open"], p["water_open_light"],
+            scale=1.45, detail=1.55, roughness=0.31, bump_strength=0.075, bump_distance=0.075,
+        ),
+        "foam": create_flat_material("VAE_Foam", p["foam"], roughness=0.64),
+        "water_highlight_shallow": create_flat_material("VAE_WaterHighlightShallow", p["water_shallow_light"], roughness=0.48),
+        "water_highlight_open": create_flat_material("VAE_WaterHighlightOpen", p["water_open_light"], roughness=0.50),
+        "flower_gold": create_flat_material("VAE_FlowerGold", p["flower_gold"], roughness=0.82),
+        "flower_blue": create_flat_material("VAE_FlowerBlue", p["flower_blue"], roughness=0.82),
+        "flower_ivory": create_flat_material("VAE_FlowerIvory", p["flower_ivory"], roughness=0.82),
+    }
+
+
+def faction_materials() -> dict[str, bpy.types.Material]:
+    p = FACTION_PALETTE_HEX
+    return {
+        "auren_blue": create_painterly_material("VAE_AurenBlue", "#102B4C", p["auren_blue"], p["auren_blue_light"], scale=4.0, detail=1.4, roughness=0.78, bump_strength=0.04),
+        "auren_gold": create_flat_material("VAE_AurenGold", p["auren_gold"], roughness=0.52, metallic=0.12),
+        "auren_ivory": create_painterly_material("VAE_AurenIvory", "#C7B994", p["auren_ivory"], "#FFF4D8", scale=4.0, detail=1.5, roughness=0.90, bump_strength=0.08),
+        "auren_stone": create_painterly_material("VAE_AurenStone", "#827762", p["auren_stone"], "#D3C6A5", scale=3.3, detail=1.8, roughness=0.90, bump_strength=0.10),
+        "auren_red": create_flat_material("VAE_AurenRed", p["auren_red"], roughness=0.80),
+        "brasal_charcoal": create_painterly_material("VAE_BrasalCharcoal", "#15171A", p["brasal_charcoal"], "#41454A", scale=3.0, detail=2.0, roughness=0.80, bump_strength=0.10),
+        "brasal_roof": create_painterly_material("VAE_BrasalRoof", "#17191C", "#30343A", "#4B5055", scale=2.3, detail=1.8, roughness=0.84, bump_strength=0.07),
+        "brasal_roof_patch": create_painterly_material("VAE_BrasalRoofPatch", "#4B332A", "#765344", "#986A50", scale=3.8, detail=1.2, roughness=0.88, bump_strength=0.055),
+        "brasal_red": create_painterly_material("VAE_BrasalRed", "#733128", p["brasal_red"], "#D36A52", scale=4.0, detail=1.3, roughness=0.82, bump_strength=0.05),
+        "brasal_copper": create_flat_material("VAE_BrasalCopper", p["brasal_copper"], roughness=0.59, metallic=0.20),
+        "brasal_bone": create_painterly_material("VAE_BrasalBone", "#A89777", p["brasal_bone"], "#E9D9B9", scale=4.2, detail=1.1, roughness=0.88, bump_strength=0.05),
+        "brasal_moss": create_painterly_material("VAE_BrasalMoss", "#273A2D", p["brasal_moss"], "#64745B", scale=3.7, detail=1.6, roughness=0.90, bump_strength=0.07),
+        "brasal_wood": create_wood_material("VAE_BrasalWood", "#4B3328", p["brasal_wood"], p["brasal_wood_light"]),
+        "brasal_wood_light": create_wood_material("VAE_BrasalWoodLight", p["brasal_wood"], p["brasal_wood_light"], "#B98A62"),
+        "steel": create_painterly_material("VAE_Steel", "#4B555B", "#77838A", "#A4ADB0", scale=5.5, detail=1.2, roughness=0.57, bump_strength=0.04, metallic=0.20),
+        "leather": create_painterly_material("VAE_Leather", "#3D2A22", "#654936", "#8C674B", scale=6.0, detail=1.3, roughness=0.88, bump_strength=0.06),
+        "orc_skin": create_painterly_material("VAE_OrcSkin", "#40543A", "#657752", "#839167", scale=5.5, detail=1.4, roughness=0.88, bump_strength=0.04),
+        "human_skin": create_painterly_material("VAE_HumanSkin", "#B98D6D", "#D8AC84", "#E9C39D", scale=6.5, detail=1.0, roughness=0.84, bump_strength=0.025),
+    }

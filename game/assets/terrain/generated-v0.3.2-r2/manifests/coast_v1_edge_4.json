@@ -1,0 +1,78 @@
+{
+  "acceptance_state": "rendered_review_only",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "coast_v1_edge_4",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.0,
+    "projection": "orthographic",
+    "target_z": 0.2,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      256,
+      128
+    ],
+    "logical": [
+      128,
+      64
+    ],
+    "work": [
+      512,
+      256
+    ]
+  },
+  "coast_system": 4,
+  "coast_variant": 1,
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "edge": 4,
+  "family": "overlay",
+  "generator_version": "0.3.2-r2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "seed": 7041263820160413527,
+  "source_script": "vaelora_artkit.py",
+  "source_sha256": {
+    "vaelora_artkit.py": "44cf97e7d57c30f7cf2732008001a804d2b858271a0f5e2164323ee9b6819571",
+    "vaelora_composition.py": "c567c5a481b2c2cd137bb3fd601d149041b3629cefbc1f4a2376d722892921e1",
+    "vaelora_contract.py": "b892240fa00bf07cb14f4d15eed81e628a17cd07846eb489d179e202992b334f",
+    "vaelora_geometry.py": "df4a9f330a5b15421217283840223f491659b2d7f26a35308b4ffde9f9e7fcf1",
+    "vaelora_materials.py": "d05aa4f3f6e5891588e9486e207b0082f2d951cfef0337e6e08229c6b09597b1",
+    "vaelora_render.py": "707c1a4e4608b5d337996bcbea041dba7547e7c738445c98fa89438e1c0d1636",
+    "vaelora_style.py": "9649b3a36b387728290772de6f170c65fee1abad14728215b7a2822fbe08e63b"
+  },
+  "statistics": {
+    "objects": 4,
+    "triangles_estimate": 80,
+    "vertices": 88
+  },
+  "world_bounds": {
+    "max": [
+      1.7320507764816284,
+      -0.8700000047683716,
+      0.02800000086426735
+    ],
+    "min": [
+      -3.6739402930577075e-16,
+      -2.0,
+      0.024000000208616257
+    ]
+  }
+}

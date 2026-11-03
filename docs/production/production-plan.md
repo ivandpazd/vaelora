@@ -8,6 +8,7 @@
 - Track each unresolved product decision as an issue with acceptance criteria; accepted decisions update their canonical documentation.
 - Deliver complete two-player gameplay systems for the first prototype rather than a reduced rules demo.
 - Use final-quality art throughout the prototype; placeholder visuals are not acceptable.
+- Treat [Terrain Visual Language v1](../game-design/TERRAIN_VISUAL_LANGUAGE_V1.md) as the closed terrain art-direction baseline, not as completion of issue #17's exported-asset, Godot runtime, or integrated-slice evidence gates.
 - Keep Android, Windows, macOS, Linux, and Web exportable throughout development. Prioritize runtime checks for Web and Android during bootstrap; run Windows, macOS, and Linux launch checks when packaged builds are available. Deferred desktop runtime checks do not block the engine/renderer decision in issue #19; they remain part of the vertical-slice platform gate.
 - Add the remaining four planned civilizations only after the prototype passes the final test battery.
 

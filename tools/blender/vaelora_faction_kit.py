@@ -1,0 +1,663 @@
+"""Auren/Brasal city and unit generator for Vaelora Sculpted Diorama v0.3.2-r2.
+
+Cities and units are authored as independent sprites. No terrain is baked into them.
+"""
+from __future__ import annotations
+
+import argparse
+import math
+import random
+import sys
+from pathlib import Path
+from typing import Sequence
+
+import bpy
+from mathutils import Vector
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import vaelora_geometry as geo
+import vaelora_render as render
+from vaelora_materials import faction_materials
+from vaelora_composition import AUREN_CITY_ANCHORS, BRASAL_CITY_ANCHORS
+from vaelora_contract import (
+    FACTION_BRIEFS,
+    city_asset_seed,
+    unit_asset_seed,
+)
+from vaelora_style import UNIT_WORLD_SCALE
+
+TAU = math.tau
+
+
+def sculpted_block(name: str, location: Sequence[float], half_size: Sequence[float], height: float, material, taper: float = 0.88, skew: tuple[float, float] = (0.0, 0.0)) -> bpy.types.Object:
+    x, y, z = location
+    hx, hy = half_size
+    tx, ty = hx * taper, hy * taper
+    sx, sy = skew
+    verts = [
+        (x - hx, y - hy, z), (x + hx, y - hy, z), (x + hx, y + hy, z), (x - hx, y + hy, z),
+        (x - tx + sx, y - ty + sy, z + height), (x + tx + sx, y - ty + sy, z + height),
+        (x + tx + sx, y + ty + sy, z + height), (x - tx + sx, y + ty + sy, z + height),
+    ]
+    faces = [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)]
+    obj = geo.make_mesh(name, verts, faces)
+    geo.set_material(obj, material)
+    geo.shade_flat(obj)
+    geo.bevel(obj, min(hx, hy) * 0.07, 2)
+    return obj
+
+
+def gable_roof(name: str, location: Sequence[float], width: float, depth: float, height: float, material, rotation: float = 0.0, crooked: float = 0.0) -> bpy.types.Object:
+    verts = [
+        (-width, -depth, 0), (width, -depth, 0), (width, depth, 0), (-width, depth, 0),
+        (crooked, -depth, height), (crooked, depth, height),
+    ]
+    faces = [(0, 1, 4), (3, 5, 2), (0, 4, 5, 3), (1, 2, 5, 4)]
+    obj = geo.make_mesh(name, verts, faces)
+    obj.location = tuple(location)
+    obj.rotation_euler[2] = rotation
+    geo.set_material(obj, material)
+    geo.shade_flat(obj)
+    geo.bevel(obj, min(width, depth) * 0.035, 1)
+    return obj
+
+
+def hip_roof(name: str, location: Sequence[float], width: float, depth: float, height: float, material) -> bpy.types.Object:
+    x, y, z = location
+    verts = [(x - width, y - depth, z), (x + width, y - depth, z), (x + width, y + depth, z), (x - width, y + depth, z), (x, y, z + height)]
+    obj = geo.make_mesh(name, verts, [(0, 1, 4), (1, 2, 4), (2, 3, 4), (3, 0, 4)])
+    geo.set_material(obj, material)
+    geo.shade_flat(obj)
+    geo.bevel(obj, min(width, depth) * 0.035, 1)
+    return obj
+
+
+def create_inset_panel(name: str, location: Sequence[float], scale: Sequence[float], material) -> bpy.types.Object:
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=location)
+    obj = bpy.context.object
+    obj.name = name
+    obj.scale = tuple(scale)
+    geo.set_material(obj, material)
+    geo.bevel(obj, min(scale) * 0.18, 1)
+    return obj
+
+
+def create_auren_building(rng: random.Random, location: Sequence[float], scale: float = 1.0, civic: bool = False) -> list[bpy.types.Object]:
+    m = faction_materials()
+    x, y, z = location
+    result: list[bpy.types.Object] = []
+    w = (0.39 if civic else rng.uniform(0.27, 0.34)) * scale
+    d = (0.34 if civic else rng.uniform(0.24, 0.30)) * scale
+    h = (0.66 if civic else rng.uniform(0.42, 0.54)) * scale
+
+    # A visible fitted-stone plinth grounds the building and avoids the "box on ground" read.
+    result.append(sculpted_block("VAE_Auren_Plinth", (x, y, z), (w * 1.06, d * 1.06), 0.075 * scale, m["auren_stone"], taper=0.97))
+    wall_z = z + 0.060 * scale
+    result.append(sculpted_block("VAE_Auren_Wall", (x, y, wall_z), (w, d), h, m["auren_ivory"], taper=0.91))
+    roof_z = wall_z + h
+    result.append(hip_roof("VAE_Auren_Roof", (x, y, roof_z), w * 1.10, d * 1.10, h * (0.32 if civic else 0.26), m["auren_blue"]))
+
+    # Deep doorway and two small civic apertures add scale without micro-noise.
+    result.append(create_inset_panel("VAE_Auren_Door", (x, y - d - 0.009 * scale, wall_z + h * 0.25), (w * 0.18, 0.015 * scale, h * 0.23), m["auren_blue"]))
+    for sx in (-0.44, 0.44):
+        if civic or rng.random() < 0.72:
+            result.append(create_inset_panel("VAE_Auren_Window", (x + sx * w, y - d - 0.012 * scale, wall_z + h * 0.56), (w * 0.095, 0.010 * scale, h * 0.095), m["auren_blue"]))
+    result.append(create_inset_panel("VAE_Auren_GoldLintel", (x, y - d - 0.020 * scale, wall_z + h * 0.49), (w * 0.20, 0.012 * scale, 0.018 * scale), m["auren_gold"]))
+    result.append(create_inset_panel("VAE_Auren_TramaStrand", (x + w * 0.72, y - d - 0.014 * scale, wall_z + h * 0.50), (0.015 * scale, 0.010 * scale, h * 0.29), m["auren_gold"]))
+
+    # Roof ridge marker strengthens Auren's ordered silhouette without gold overload.
+    ridge_start = Vector((x - w * 0.42, y, roof_z + h * 0.17))
+    ridge_end = Vector((x + w * 0.42, y, roof_z + h * 0.17))
+    result.append(geo.create_branch("VAE_Auren_RoofRidge", ridge_start, ridge_end, 0.012 * scale, 0.012 * scale, m["auren_gold"], 6))
+
+    if civic:
+        # Tiered public beacon: a civic landmark rather than a fantasy tower.
+        result.append(sculpted_block("VAE_Auren_BeaconPlinth", (x, y, roof_z + h * 0.30), (0.105 * scale, 0.105 * scale), 0.11 * scale, m["auren_stone"], taper=0.82))
+        result.append(sculpted_block("VAE_Auren_BeaconCap", (x, y, roof_z + h * 0.30 + 0.10 * scale), (0.065 * scale, 0.065 * scale), 0.19 * scale, m["auren_gold"], taper=0.58))
+    return result
+
+def create_auren_arch(location: Sequence[float], scale: float = 1.0) -> list[bpy.types.Object]:
+    m = faction_materials()
+    x, y, z = location
+    result = []
+    for sx in (-1, 1):
+        result.append(sculpted_block("VAE_Auren_ArchPier", (x + sx * 0.17 * scale, y, z), (0.055 * scale, 0.065 * scale), 0.45 * scale, m["auren_stone"], taper=0.94))
+    # Three keystone-like blocks make the arch read as masonry instead of one cube.
+    for sx, dz in ((-0.10, 0.46), (0.0, 0.50), (0.10, 0.46)):
+        result.append(sculpted_block("VAE_Auren_ArchStone", (x + sx * scale, y, z + dz * scale), (0.07 * scale, 0.07 * scale), 0.09 * scale, m["auren_stone"], taper=0.96))
+    return result
+
+
+def create_auren_plaza(rng: random.Random, stage: int) -> list[bpy.types.Object]:
+    m = faction_materials()
+    result: list[bpy.types.Object] = []
+    # Stage progression is visible in the civic ground plan, not only in building count.
+    radius = {1: 0.54, 2: 0.72, 3: 0.82}[stage]
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=radius, depth=0.035, location=(0, 0, 0.02))
+    plaza = bpy.context.object
+    plaza.name = "VAE_Auren_Plaza"
+    geo.set_material(plaza, m["auren_stone"])
+    geo.bevel(plaza, 0.018, 1)
+    result.append(plaza)
+
+    # Stage 2 preserves the three-strand composition already liked in the baseline.
+    angles = (0, math.pi) if stage == 1 else (0, TAU / 3, 2 * TAU / 3)
+    strand_end = {1: 0.43, 2: 0.62, 3: 0.70}[stage]
+    for a in angles:
+        start = Vector((math.cos(a) * 0.12, math.sin(a) * 0.12, 0.045))
+        end = Vector((math.cos(a) * strand_end, math.sin(a) * strand_end, 0.045))
+        result.append(geo.create_branch("VAE_Auren_PlazaStrand", start, end, 0.025, 0.025, m["auren_gold"], 6))
+
+    if stage == 3:
+        # A restrained inner civic ring makes the mature city read as expanded public
+        # infrastructure without turning the plaza into ornamental noise.
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.34, minor_radius=0.018, major_segments=12, minor_segments=5, location=(0, 0, 0.048))
+        ring = bpy.context.object
+        ring.name = "VAE_Auren_PlazaRing"
+        geo.set_material(ring, m["auren_gold"])
+        result.append(ring)
+    return result
+
+
+def create_brasal_lodge(rng: random.Random, location: Sequence[float], scale: float = 1.0, workshop: bool = False) -> list[bpy.types.Object]:
+    m = faction_materials()
+    x, y, z = location
+    result: list[bpy.types.Object] = []
+    w = (0.46 if workshop else rng.uniform(0.33, 0.42)) * scale
+    d = (0.34 if workshop else rng.uniform(0.27, 0.35)) * scale
+    h = (0.46 if workshop else rng.uniform(0.35, 0.45)) * scale
+    result.append(sculpted_block("VAE_Brasal_Footing", (x, y, z), (w * 1.04, d * 1.04), 0.12 * scale, m["brasal_charcoal"], taper=0.96, skew=(rng.uniform(-0.02, 0.02), 0)))
+    result.append(sculpted_block("VAE_Brasal_Lodge", (x, y, z + 0.10 * scale), (w, d), h, m["brasal_wood_light"], taper=0.94, skew=(rng.uniform(-0.035, 0.035), rng.uniform(-0.02, 0.02))))
+    rot = rng.choice((0.0, math.pi / 2))
+    roof = gable_roof("VAE_Brasal_Roof", (x, y, z + 0.10 * scale + h), w * 1.13, d * 1.12, h * 0.42, m["brasal_roof"], rotation=rot, crooked=rng.uniform(-0.035, 0.035) * scale)
+    result.append(roof)
+
+    # Visible repair logic: sparse iron straps and one mismatched roof patch, never junk clutter.
+    for sx in (-1, 1):
+        if rng.random() < 0.78:
+            result.append(create_inset_panel("VAE_Brasal_IronRepair", (x + sx * w * 0.82, y - d - 0.012 * scale, z + 0.10 * scale + h * rng.uniform(0.35, 0.65)), (0.022 * scale, 0.010 * scale, h * 0.22), m["steel"]))
+    if rng.random() < 0.62:
+        result.append(create_inset_panel("VAE_Brasal_RoofPatch", (x + w * rng.uniform(-0.40, 0.40), y - d * 0.18, z + 0.10 * scale + h + h * 0.19), (w * 0.22, d * 0.10, 0.018 * scale), m["brasal_roof_patch"]))
+    result.append(create_inset_panel("VAE_Brasal_Door", (x, y - d - 0.014 * scale, z + 0.10 * scale + h * 0.25), (w * 0.19, 0.014 * scale, h * 0.23), m["brasal_charcoal"]))
+
+    if workshop:
+        result.append(sculpted_block("VAE_Brasal_KilnStack", (x + w * 0.58, y + d * 0.48, z + 0.10 * scale + h * 0.66), (0.07 * scale, 0.07 * scale), 0.38 * scale, m["brasal_copper"], taper=0.74, skew=(0.012 * scale, 0)))
+        # Low awning makes the workshop read by silhouette and function.
+        post_a = Vector((x - w * 0.70, y - d * 1.22, z + 0.10))
+        post_b = Vector((x + w * 0.70, y - d * 1.22, z + 0.10))
+        for post in (post_a, post_b):
+            result.append(geo.create_branch("VAE_Brasal_AwningPost", post, post + Vector((0, 0, 0.30 * scale)), 0.025 * scale, 0.020 * scale, m["brasal_wood"], 6))
+        result.append(sculpted_block("VAE_Brasal_Awning", (x, y - d * 1.10, z + 0.36 * scale), (w * 0.78, d * 0.26), 0.045 * scale, m["brasal_roof_patch"], taper=0.96, skew=(0.025 * scale, 0)))
+    return result
+
+def create_brasal_workyard(rng: random.Random, stage: int) -> list[bpy.types.Object]:
+    m = faction_materials()
+    result: list[bpy.types.Object] = []
+    # The yard grows by function rather than becoming a denser random pile.
+    crate_positions = {
+        1: ((-0.18, 0.08), (0.15, -0.03)),
+        2: ((-0.22, 0.10), (0.08, -0.02), (0.28, 0.13)),
+        3: ((-0.22, 0.10), (0.08, -0.02), (0.28, 0.13), (0.36, -0.16)),
+    }[stage]
+    for i, (x, y) in enumerate(crate_positions):
+        result.append(sculpted_block("VAE_Brasal_Crate", (x, y, 0.02 + i * 0.008), (0.12, 0.10), 0.13, m["brasal_wood"], taper=0.92, skew=(rng.uniform(-0.015, 0.015), 0)))
+
+    if stage >= 2:
+        # Stage 2 deliberately preserves the rack + kiln language liked in v0.3.1.
+        rack_a = Vector((-0.42, -0.18, 0.05))
+        rack_b = Vector((-0.42, -0.18, 0.34))
+        rack_c = Vector((-0.12, -0.18, 0.05))
+        rack_d = Vector((-0.12, -0.18, 0.34))
+        result.append(geo.create_branch("VAE_Brasal_RackPost", rack_a, rack_b, 0.022, 0.018, m["brasal_wood"], 6))
+        result.append(geo.create_branch("VAE_Brasal_RackPost", rack_c, rack_d, 0.022, 0.018, m["brasal_wood"], 6))
+        result.append(geo.create_branch("VAE_Brasal_RackBeam", rack_b, rack_d, 0.020, 0.018, m["brasal_wood"], 6))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=9, radius=0.16, depth=0.22, location=(-0.04, 0.32, 0.13))
+        kiln = bpy.context.object
+        kiln.name = "VAE_Brasal_Kiln"
+        geo.set_material(kiln, m["brasal_charcoal"])
+        geo.bevel(kiln, 0.015, 1)
+        result.append(kiln)
+
+    if stage == 3:
+        # Mature Brasal settlement gains covered storage, not decorative fortification.
+        for x in (-0.30, 0.02):
+            result.append(geo.create_branch("VAE_Brasal_YardCanopyPost", Vector((x, -0.38, 0.04)), Vector((x, -0.38, 0.31)), 0.020, 0.016, m["brasal_wood"], 6))
+        result.append(sculpted_block("VAE_Brasal_YardCanopy", (-0.14, -0.38, 0.29), (0.24, 0.13), 0.040, m["brasal_roof_patch"], taper=0.95, skew=(0.02, 0.0)))
+    return result
+
+
+def create_banner(location: Sequence[float], faction: str, height: float = 0.88) -> list[bpy.types.Object]:
+    m = faction_materials()
+    x, y, z = location
+    pole = m["auren_gold"] if faction == "auren" else m["brasal_copper"]
+    cloth = m["auren_blue"] if faction == "auren" else m["brasal_red"]
+    result = [geo.create_branch(f"VAE_{faction}_BannerPole", Vector((x, y, z)), Vector((x, y, z + height)), 0.017, 0.014, pole, 7)]
+    verts = [(x, y, z + height), (x + 0.28, y, z + height - 0.07), (x + 0.235, y, z + height - 0.30), (x, y, z + height - 0.27)]
+    flag = geo.make_mesh(f"VAE_{faction}_Banner", verts, [(0, 1, 2, 3)])
+    geo.set_material(flag, cloth)
+    result.append(flag)
+    return result
+
+
+def create_city(faction: str, stage: int, seed: int) -> None:
+    rng = random.Random(seed)
+    if stage not in (1, 2, 3):
+        raise ValueError(f"invalid city stage: {stage}")
+    if faction == "auren":
+        create_auren_plaza(rng, stage)
+        for anchor in AUREN_CITY_ANCHORS[stage]:
+            create_auren_building(
+                rng,
+                (anchor.x, anchor.y, 0.04),
+                anchor.scale,
+                civic=anchor.role == "civic",
+            )
+        if stage >= 2:
+            create_auren_arch((0.0, -0.77, 0.04), 0.82 if stage == 2 else 0.90)
+        create_banner((-0.22, 0.17, 0.05), "auren", {1: 0.78, 2: 0.96, 3: 1.06}[stage])
+    elif faction == "brasal":
+        create_brasal_workyard(rng, stage)
+        for anchor in BRASAL_CITY_ANCHORS[stage]:
+            create_brasal_lodge(
+                rng,
+                (anchor.x, anchor.y, 0.04),
+                anchor.scale,
+                workshop=anchor.role == "workshop",
+            )
+        create_banner((0.33, 0.08, 0.05), "brasal", {1: 0.76, 2: 0.94, 3: 1.02}[stage])
+    else:
+        raise ValueError(faction)
+
+def _capsule_limb(name: str, start: Vector, end: Vector, radius: float, material) -> bpy.types.Object:
+    # Bevelled 8-sided tapered segment reads organically at sprite scale without excessive polygons.
+    return geo.create_branch(name, start, end, radius, radius * 0.76, material, 8)
+
+
+def _faceted_body_mass(
+    name: str,
+    center_xy: tuple[float, float],
+    bottom_z: float,
+    top_z: float,
+    lower_half_width: float,
+    upper_half_width: float,
+    lower_half_depth: float,
+    upper_half_depth: float,
+    material,
+) -> bpy.types.Object:
+    """Three-ring faceted body volume: sculpted, readable and never a four-sided box."""
+    cx, cy = center_xy
+    segments = 8
+    mid_z = (bottom_z + top_z) * 0.5
+    rings = (
+        (bottom_z, lower_half_width, lower_half_depth),
+        (mid_z, max(lower_half_width, upper_half_width) * 1.035, max(lower_half_depth, upper_half_depth) * 1.02),
+        (top_z, upper_half_width, upper_half_depth),
+    )
+    verts = []
+    for z, hw, hd in rings:
+        for i in range(segments):
+            a = TAU * i / segments + math.pi / 8.0
+            verts.append((cx + math.cos(a) * hw, cy + math.sin(a) * hd, z))
+    faces = []
+    for ring in range(2):
+        a0 = ring * segments
+        b0 = (ring + 1) * segments
+        for i in range(segments):
+            j = (i + 1) % segments
+            faces.append((a0 + i, a0 + j, b0 + j, b0 + i))
+    faces.append(tuple(range(segments - 1, -1, -1)))
+    top0 = 2 * segments
+    faces.append(tuple(top0 + i for i in range(segments)))
+    obj = geo.make_mesh(name, verts, faces)
+    geo.set_material(obj, material)
+    geo.shade_flat(obj)
+    geo.bevel(obj, min(lower_half_depth, upper_half_depth) * 0.055, 1)
+    return obj
+
+
+def _boot_mass(name: str, center: Vector, scale: float, material) -> bpy.types.Object:
+    """Low faceted boot with a toe/heel read instead of a rectangular foot block."""
+    x, y, z = center
+    w = 0.072 * scale
+    heel = 0.070 * scale
+    toe = 0.135 * scale
+    h = 0.070 * scale
+    pts = [
+        (x - w, y + heel, z), (x + w, y + heel, z),
+        (x + w * 1.04, y - toe, z), (x - w * 1.04, y - toe, z),
+        (x - w * 0.88, y + heel * 0.82, z + h), (x + w * 0.88, y + heel * 0.82, z + h),
+        (x + w * 0.94, y - toe * 0.88, z + h * 0.78), (x - w * 0.94, y - toe * 0.88, z + h * 0.78),
+    ]
+    obj = geo.create_convex_hull(name, pts, material, 0.006 * scale)
+    return obj
+
+
+def _shoulder_guard(name: str, center: Vector, side: float, scale: float, material, broad: bool = False) -> bpy.types.Object:
+    x, y, z = center
+    w = (0.095 if broad else 0.082) * scale
+    d = (0.135 if broad else 0.120) * scale
+    h = 0.105 * scale
+    outer = x + side * w * 0.35
+    pts = [
+        (x - w, y - d, z), (x + w, y - d, z), (x + w, y + d, z), (x - w, y + d, z),
+        (outer - w * 0.58, y - d * 0.72, z + h), (outer + w * 0.58, y - d * 0.72, z + h),
+        (outer + w * 0.50, y + d * 0.66, z + h * 0.82), (outer - w * 0.50, y + d * 0.66, z + h * 0.82),
+    ]
+    return geo.create_convex_hull(name, pts, material, 0.005 * scale)
+
+
+def _head(name: str, center: Sequence[float], scale: float, material) -> bpy.types.Object:
+    """Authored stylized head planes: jaw, temples and crown instead of a random hull."""
+    x, y, z = center
+    rings = (
+        (-0.105, 0.070, 0.064),  # chin / lower jaw
+        (-0.050, 0.100, 0.084),  # jaw
+        (0.045, 0.110, 0.095),   # temples / cheek mass
+        (0.112, 0.086, 0.080),   # crown under helmet
+    )
+    segments = 8
+    pts = []
+    for dz, rx, ry in rings:
+        for i in range(segments):
+            a = TAU * i / segments + math.pi / 8.0
+            pts.append((x + math.cos(a) * rx * scale, y + math.sin(a) * ry * scale, z + dz * scale))
+    return geo.create_convex_hull(name, pts, material, 0.004 * scale)
+
+
+def _hand_mass(name: str, center: Vector, scale: float, material) -> bpy.types.Object:
+    """Small tapered hand mass sized for strategy readability, not finger detail."""
+    x, y, z = center
+    w = 0.050 * scale
+    d = 0.038 * scale
+    h = 0.060 * scale
+    pts = [
+        (x - w, y - d, z - h * 0.45), (x + w, y - d, z - h * 0.45),
+        (x + w * 0.86, y + d, z - h * 0.38), (x - w * 0.86, y + d, z - h * 0.38),
+        (x - w * 0.78, y - d * 0.82, z + h * 0.50), (x + w * 0.78, y - d * 0.82, z + h * 0.50),
+        (x + w * 0.66, y + d * 0.78, z + h * 0.42), (x - w * 0.66, y + d * 0.78, z + h * 0.42),
+    ]
+    return geo.create_convex_hull(name, pts, material, 0.003 * scale)
+
+def _helmet_shell(name: str, center: Sequence[float], scale: float, material, *, broad: bool = False) -> bpy.types.Object:
+    """Low-poly helmet mass with a rounded faceted silhouette instead of a box."""
+    x, y, z = center
+    rx = 0.125 * scale * (1.10 if broad else 1.0)
+    ry = 0.108 * scale * (1.08 if broad else 1.0)
+    base_z = z - 0.045 * scale
+    crown_z = z + 0.105 * scale
+    points = []
+    for i in range(8):
+        a = TAU * i / 8.0
+        points.append((x + math.cos(a) * rx, y + math.sin(a) * ry, base_z + (0.012 if i % 2 else 0.0)))
+    for i in range(6):
+        a = TAU * i / 6.0 + 0.18
+        points.append((x + math.cos(a) * rx * 0.62, y + math.sin(a) * ry * 0.62, crown_z))
+    return geo.create_convex_hull(name, points, material, 0.004 * scale)
+
+
+def create_shield(faction: str, location: Sequence[float], scale: float, rotation: float = 0.0) -> bpy.types.Object:
+    """Create a shallow sculpted shield with real thickness and faction-specific silhouette."""
+    m = faction_materials()
+    if faction == "auren":
+        front = [(-0.13, 0, 0.18), (0.13, 0, 0.18), (0.12, 0, -0.10), (0, 0, -0.22), (-0.12, 0, -0.10)]
+        material = m["auren_blue"]
+    else:
+        front = [(-0.17, 0, 0.16), (0.17, 0, 0.16), (0.19, 0, -0.09), (0.08, 0, -0.20), (-0.10, 0, -0.22), (-0.19, 0, -0.08)]
+        material = m["brasal_charcoal"]
+    thickness = 0.036 * scale
+    verts = [(x, -thickness * 0.5, z) for x, _, z in front] + [(x, thickness * 0.5, z) for x, _, z in front]
+    n = len(front)
+    faces = [tuple(range(n)), tuple(range(2 * n - 1, n - 1, -1))]
+    for i in range(n):
+        j = (i + 1) % n
+        faces.append((i, j, n + j, n + i))
+    obj = geo.make_mesh(f"VAE_{faction}_Shield", verts, faces)
+    obj.location = tuple(location)
+    obj.rotation_euler[2] = rotation
+    geo.set_material(obj, material)
+    geo.bevel(obj, 0.012 * scale, 1)
+    return obj
+
+def create_basic_soldier(faction: str, facing: int, seed: int) -> None:
+    """Create Basic Soldier Body v4.1 for the premium strategic benchmark.
+
+    The role stays shared, but anatomy, stance and equipment silhouette communicate culture.
+    Limbs are articulated as upper/lower segments; the spear is deliberately angled and
+    angled for strategic readability; all authored geometry is uniformly scaled by UNIT_WORLD_SCALE.
+    """
+    before_objects = set(bpy.context.scene.objects)
+    rng = random.Random(seed)
+    m = faction_materials()
+    yaw = math.radians(facing * 60.0)
+
+    if faction == "auren":
+        skin, cloth, metal, accent = m["human_skin"], m["auren_blue"], m["steel"], m["auren_gold"]
+        body_scale = 1.0
+        shoulder_half = 0.255
+        stance = 0.140
+        hip_half = 0.162
+        head_scale = 1.08
+        forward_bias = -0.018
+    elif faction == "brasal":
+        skin, cloth, metal, accent = m["orc_skin"], m["brasal_moss"], m["steel"], m["brasal_copper"]
+        body_scale = 1.04
+        shoulder_half = 0.305
+        stance = 0.205
+        hip_half = 0.200
+        head_scale = 1.13
+        forward_bias = -0.030
+    else:
+        raise ValueError(faction)
+
+    foot_z = 0.055
+    knee_z = 0.37
+    hip_z = 0.68
+    pelvis_top = 0.80
+    shoulder_z = 1.13
+    neck_base = 1.168
+    head_z = 1.270
+
+    # --- legs: thigh + shin, with asymmetry and readable knees ---
+    left_foot = Vector((-stance, -0.035 + forward_bias, foot_z))
+    right_foot = Vector((stance, 0.025, foot_z))
+    left_knee = Vector((-stance * 0.78, -0.015, knee_z))
+    right_knee = Vector((stance * 0.74, 0.010, knee_z + (0.015 if faction == "brasal" else 0.0)))
+    left_hip = Vector((-hip_half * 0.72, 0.0, hip_z))
+    right_hip = Vector((hip_half * 0.72, 0.0, hip_z))
+
+    _capsule_limb("VAE_Unit_ThighL", left_hip, left_knee, 0.076 * body_scale, m["leather"])
+    _capsule_limb("VAE_Unit_ShinL", left_knee, left_foot, 0.064 * body_scale, m["leather"])
+    _capsule_limb("VAE_Unit_ThighR", right_hip, right_knee, 0.076 * body_scale, m["leather"])
+    _capsule_limb("VAE_Unit_ShinR", right_knee, right_foot, 0.064 * body_scale, m["leather"])
+
+    # Small faceted boots anchor the silhouette without reading as rectangular feet.
+    _boot_mass("VAE_Unit_FootL", Vector((left_foot.x, left_foot.y - 0.005, 0.032)), body_scale, m["leather"])
+    _boot_mass("VAE_Unit_FootR", Vector((right_foot.x, right_foot.y - 0.005, 0.032)), body_scale, m["leather"])
+
+    # --- pelvis + torso: three-ring sculpted masses, never four-sided boxes ---
+    _faceted_body_mass(
+        "VAE_Unit_Pelvis", (0.0, 0.0), hip_z - 0.015, pelvis_top + 0.020,
+        hip_half * body_scale, hip_half * 0.90 * body_scale,
+        0.135 * body_scale, 0.128 * body_scale,
+        cloth if faction == "auren" else m["leather"],
+    )
+    _faceted_body_mass(
+        "VAE_Unit_Torso", (0.0, -0.002), pelvis_top, shoulder_z,
+        hip_half * 0.90 * body_scale, shoulder_half * body_scale,
+        0.128 * body_scale, 0.145 * body_scale, cloth,
+    )
+
+    # Narrow belt/collar are accents around continuous body masses, not structural boxes.
+    geo.create_branch("VAE_Unit_WaistBand", Vector((-hip_half * 0.76, -0.132, pelvis_top + 0.018)), Vector((hip_half * 0.76, -0.132, pelvis_top + 0.018)), 0.022, 0.022, m["leather"], 8)
+    geo.create_branch("VAE_Unit_Collar", Vector((-shoulder_half * 0.48, -0.112, shoulder_z - 0.040)), Vector((shoulder_half * 0.48, -0.112, shoulder_z - 0.040)), 0.026, 0.024, metal if faction == "auren" else m["leather"], 8)
+
+    # Chest language is readable at medium zoom without relying on facial detail.
+    if faction == "auren":
+        create_inset_panel("VAE_Auren_ChestStrand", (0.0, -0.145, 1.00), (0.018, 0.010, 0.145), accent)
+        # A short civic tabard continues the vertical language below the belt without
+        # becoming a robe or obscuring the leg stance.
+        tabard_pts = [
+            (-0.105, -0.153, 0.83), (0.105, -0.153, 0.83),
+            (0.082, -0.158, 0.59), (-0.082, -0.158, 0.59),
+            (-0.090, -0.128, 0.82), (0.090, -0.128, 0.82),
+            (0.070, -0.132, 0.60), (-0.070, -0.132, 0.60),
+        ]
+        geo.create_convex_hull("VAE_Auren_Tabardd", tabard_pts, cloth, 0.004)
+        # Restrained shoulder plates reinforce civic/ordered silhouette.
+        for sx in (-1, 1):
+            _shoulder_guard("VAE_Auren_Shoulder", Vector((sx * 0.235, 0.0, 1.105)), sx, body_scale, metal, broad=False)
+    else:
+        create_inset_panel("VAE_Brasal_ChestPlate", (0.045, -0.148, 1.00), (0.115, 0.010, 0.105), m["leather"])
+        # One asymmetric practical shoulder reinforcement; never spikes.
+        _shoulder_guard("VAE_Brasal_ShoulderRepair", Vector((-0.255, 0.0, 1.08)), -1.0, body_scale, metal, broad=True)
+        # Small field pouch/repair kit reinforces Brasal's practical frontier identity
+        # through silhouette rather than color alone.
+        pouch_pts = [
+            (0.165, 0.075, 0.73), (0.300, 0.075, 0.72), (0.315, 0.145, 0.74), (0.160, 0.150, 0.75),
+            (0.180, 0.070, 0.88), (0.288, 0.070, 0.87), (0.300, 0.135, 0.85), (0.175, 0.140, 0.86),
+        ]
+        geo.create_convex_hull("VAE_Brasal_FieldPouch", pouch_pts, m["leather"], 0.006)
+
+    # --- neck, head, helmet ---
+    geo.create_branch("VAE_Unit_Neck", Vector((0, 0, neck_base)), Vector((0, 0, head_z - 0.055)), 0.057 * body_scale, 0.051 * body_scale, skin, 8)
+    _head("VAE_Unit_Head", (0, 0, head_z), head_scale, skin)
+    _helmet_shell(
+        f"VAE_{'Auren' if faction == 'auren' else 'Brasal'}_Helmet",
+        (0, 0, head_z + 0.055),
+        body_scale,
+        metal,
+        broad=faction == "brasal",
+    )
+    if faction == "auren":
+        create_inset_panel("VAE_Auren_HelmetBand", (0, -0.118, head_z + 0.075), (0.095, 0.009, 0.013), accent)
+    else:
+        create_inset_panel("VAE_Brasal_HelmetRepair", (0.052, -0.124, head_z + 0.065), (0.034, 0.009, 0.040), accent)
+
+    # --- articulated arms ---
+    left_shoulder = Vector((-shoulder_half * body_scale, 0.0, shoulder_z - 0.035))
+    right_shoulder = Vector((shoulder_half * body_scale, 0.0, shoulder_z - 0.035))
+    if faction == "auren":
+        left_elbow = Vector((-0.302, -0.015, 0.965))
+        left_hand = Vector((-0.286, -0.070, 0.825))
+        right_elbow = Vector((0.290, -0.020, 0.975))
+        right_hand = Vector((0.272, -0.052, 0.850))
+    else:
+        left_elbow = Vector((-0.337, -0.010, 0.945))
+        left_hand = Vector((-0.312, -0.076, 0.805))
+        right_elbow = Vector((0.322, -0.032, 0.955))
+        right_hand = Vector((0.288, -0.058, 0.820))
+
+    _capsule_limb("VAE_Unit_UpperArmL", left_shoulder, left_elbow, 0.061 * body_scale, skin)
+    _capsule_limb("VAE_Unit_ForearmL", left_elbow, left_hand, 0.052 * body_scale, skin)
+    _capsule_limb("VAE_Unit_UpperArmR", right_shoulder, right_elbow, 0.061 * body_scale, skin)
+    _capsule_limb("VAE_Unit_ForearmR", right_elbow, right_hand, 0.052 * body_scale, skin)
+
+    # Hands are small faceted masses rather than invisible limb endpoints.
+    _hand_mass("VAE_Unit_HandL", left_hand, body_scale, skin)
+    _hand_mass("VAE_Unit_HandR", right_hand, body_scale, skin)
+
+    shield_x = -0.345 if faction == "auren" else -0.385
+    shield_z = 0.86 if faction == "auren" else 0.84
+    create_shield(faction, (shield_x * body_scale, -0.085, shield_z), 1.0)
+
+    # --- spear: readable but no longer a near-vertical canvas ruler ---
+    spear_start = right_hand + Vector((0.005, 0.055, -0.055))
+    if faction == "auren":
+        spear_end = Vector((0.455 * body_scale, 0.112, 1.455))
+    else:
+        spear_end = Vector((0.505 * body_scale, 0.145, 1.425))
+    geo.create_branch("VAE_Unit_SpearShaft", spear_start, spear_end, 0.018, 0.014, m["leather"], 7)
+    tip_points = [
+        (spear_end.x, spear_end.y, spear_end.z + 0.110),
+        (spear_end.x - 0.050, spear_end.y, spear_end.z),
+        (spear_end.x + 0.050, spear_end.y, spear_end.z),
+        (spear_end.x, spear_end.y + 0.030, spear_end.z - 0.025),
+        (spear_end.x, spear_end.y - 0.030, spear_end.z - 0.025),
+    ]
+    geo.create_convex_hull("VAE_Unit_SpearTip", tip_points, metal, 0.003)
+
+    # Strategic hierarchy: scale the complete authored unit around the board origin.
+    # This is deliberately geometry-level rather than a benchmark-only camera trick,
+    # so isolated sprites, Blender context renders and Godot composition agree.
+    authored = [o for o in bpy.context.scene.objects if o not in before_objects]
+    for obj in authored:
+        if obj.type in {"MESH", "CURVE"}:
+            obj.location *= UNIT_WORLD_SCALE
+            obj.scale *= UNIT_WORLD_SCALE
+
+    # Rotate all authored pieces around the unit origin to the six canonical facings.
+    c, s = math.cos(yaw), math.sin(yaw)
+    for obj in authored:
+        if obj.type in {"MESH", "CURVE"}:
+            x, y = obj.location.x, obj.location.y
+            obj.location.x = c * x - s * y
+            obj.location.y = s * x + c * y
+            obj.rotation_euler[2] += yaw
+
+def _render_asset(asset_id: str, family: str, seed: int, output: Path, strict: bool, extra: dict | None = None) -> None:
+    render.assert_blender_version(strict)
+    render.setup_master_camera(family)
+    render.setup_lighting()
+    render.render_png(family, output / "raw_4x" / f"{asset_id}_4x.png")
+    render.save_blend(output / "source" / f"{asset_id}.blend")
+    render.write_manifest(output / "manifests" / f"{asset_id}.json", asset_id=asset_id, seed=seed, family=family, source_script="vaelora_faction_kit.py", extra={**(extra or {}), "faction_brief": FACTION_BRIEFS.get((extra or {}).get("faction")).__dict__ if (extra or {}).get("faction") in FACTION_BRIEFS else None})
+
+
+def generate_cities(seed: int, output: Path, strict: bool) -> None:
+    for f_idx, faction in enumerate(("auren", "brasal")):
+        for stage in (1, 2, 3):
+            local_seed = city_asset_seed(seed, faction, stage)
+            render.reset_scene()
+            create_city(faction, stage, local_seed)
+            _render_asset(f"city_{faction}_stage_{stage}", "city", local_seed, output, strict, {"faction": faction, "stage": stage, "level_mapping": {1: "1-2", 2: "3-4", 3: "5-6"}[stage]})
+
+
+def generate_soldiers(seed: int, output: Path, strict: bool) -> None:
+    for f_idx, faction in enumerate(("auren", "brasal")):
+        for facing in range(6):
+            local_seed = unit_asset_seed(seed, faction, "basic_soldier", facing)
+            render.reset_scene()
+            create_basic_soldier(faction, facing, local_seed)
+            _render_asset(f"unit_{faction}_basic_soldier_idle_f{facing}", "unit", local_seed, output, strict, {"faction": faction, "facing": facing, "role": "basic_soldier", "unit_world_scale": UNIT_WORLD_SCALE})
+
+
+def generate_representative(seed: int, output: Path, strict: bool) -> None:
+    """Generate the actual issue #17 review slice: stage 2 cities and basic soldiers."""
+    for faction_index, faction in enumerate(("auren", "brasal")):
+        city_seed = city_asset_seed(seed, faction, 2)
+        render.reset_scene()
+        create_city(faction, 2, city_seed)
+        _render_asset(f"review_city_{faction}_stage_2", "city", city_seed, output, strict, {"review_slice": True, "faction": faction})
+        for facing in range(6):
+            unit_seed = unit_asset_seed(seed, faction, "basic_soldier", facing)
+            render.reset_scene()
+            create_basic_soldier(faction, facing, unit_seed)
+            _render_asset(f"review_unit_{faction}_basic_soldier_f{facing}", "unit", unit_seed, output, strict, {"review_slice": True, "faction": faction, "facing": facing, "unit_world_scale": UNIT_WORLD_SCALE})
+
+
+def parse_args(argv: list[str]) -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--asset", choices=("all", "cities", "soldiers", "representative"), default="representative")
+    parser.add_argument("--seed", type=int, default=21000)
+    parser.add_argument("--output", type=Path, default=Path("game/assets/factions/generated-v0.3.2-r2"))
+    parser.add_argument("--strict-blender-version", action="store_true")
+    return parser.parse_args(argv)
+
+
+def main() -> None:
+    argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+    args = parse_args(argv)
+    output = args.output.resolve()
+    if args.asset in {"all", "cities"}:
+        generate_cities(args.seed, output, args.strict_blender_version)
+    if args.asset in {"all", "soldiers"}:
+        generate_soldiers(args.seed, output, args.strict_blender_version)
+    if args.asset == "representative":
+        generate_representative(args.seed, output, args.strict_blender_version)
+
+
+if __name__ == "__main__":
+    main()

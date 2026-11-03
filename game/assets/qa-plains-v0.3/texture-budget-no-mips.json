@@ -1,0 +1,27 @@
+{
+  "mipmap_estimate_enabled": false,
+  "groups": {
+    "terrain": {
+      "count": 1,
+      "decoded_bytes": 131072,
+      "disk_bytes": 20881,
+      "decoded_human": "128.00 KiB",
+      "disk_human": "20.39 KiB"
+    }
+  },
+  "totals": {
+    "decoded_bytes": 131072,
+    "decoded_human": "128.00 KiB",
+    "disk_bytes": 20881,
+    "disk_human": "20.39 KiB"
+  },
+  "assets": [
+    {
+      "asset_id": "terrain_plains_00",
+      "family": "terrain",
+      "decoded_bytes": 131072,
+      "disk_bytes": 20881
+    }
+  ],
+  "note": "Planning estimate only; verify Godot imported/runtime memory on representative targets."
+}

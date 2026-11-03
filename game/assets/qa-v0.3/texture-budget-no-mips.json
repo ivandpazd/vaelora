@@ -1,0 +1,125 @@
+{
+  "mipmap_estimate_enabled": false,
+  "groups": {
+    "city": {
+      "count": 2,
+      "decoded_bytes": 1048576,
+      "disk_bytes": 73018,
+      "decoded_human": "1.00 MiB",
+      "disk_human": "71.31 KiB"
+    },
+    "terrain": {
+      "count": 1,
+      "decoded_bytes": 131072,
+      "disk_bytes": 20881,
+      "decoded_human": "128.00 KiB",
+      "disk_human": "20.39 KiB"
+    },
+    "unit": {
+      "count": 12,
+      "decoded_bytes": 1572864,
+      "disk_bytes": 95554,
+      "decoded_human": "1.50 MiB",
+      "disk_human": "93.31 KiB"
+    }
+  },
+  "totals": {
+    "decoded_bytes": 2752512,
+    "decoded_human": "2.62 MiB",
+    "disk_bytes": 189453,
+    "disk_human": "185.01 KiB"
+  },
+  "assets": [
+    {
+      "asset_id": "terrain_plains_00",
+      "family": "terrain",
+      "decoded_bytes": 131072,
+      "disk_bytes": 20881
+    },
+    {
+      "asset_id": "review_city_auren_stage_2",
+      "family": "city",
+      "decoded_bytes": 524288,
+      "disk_bytes": 34174
+    },
+    {
+      "asset_id": "review_city_brasal_stage_2",
+      "family": "city",
+      "decoded_bytes": 524288,
+      "disk_bytes": 38844
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f0",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 7951
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f1",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 5777
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f2",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 9438
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f3",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 8072
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f4",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 6194
+    },
+    {
+      "asset_id": "review_unit_auren_basic_soldier_f5",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 9376
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f0",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 8371
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f1",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 5997
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f2",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 9739
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f3",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 8522
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f4",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 6383
+    },
+    {
+      "asset_id": "review_unit_brasal_basic_soldier_f5",
+      "family": "unit",
+      "decoded_bytes": 131072,
+      "disk_bytes": 9734
+    }
+  ],
+  "note": "Planning estimate only; verify Godot imported/runtime memory on representative targets."
+}

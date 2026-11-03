@@ -1,0 +1,100 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "terrain_meadow_00",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.0,
+    "projection": "orthographic",
+    "target_z": 0.2,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      256,
+      128
+    ],
+    "logical": [
+      128,
+      64
+    ],
+    "work": [
+      512,
+      256
+    ]
+  },
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "family": "terrain",
+  "generator_version": "0.3.2-r2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      256,
+      128
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/terrain/generated-v0.3.2-r2-terrain-v21/final_2x/terrain_meadow_00_2x.png",
+    "output_sha256": "ac4082da6d2c1a6e747d51f152fe2a152045d768bb46551f21805984f3b57df9",
+    "shadow_output": null,
+    "shadow_sha256": null,
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/terrain/generated-v0.3.2-r2-terrain-v21/raw_4x/terrain_meadow_00_4x.png",
+    "source_sha256": "f31bcb296de16875deb1a427beb231fa1f688a4e071bc9bfa3dafbde4e432854"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "seed": 22010,
+  "source_script": "vaelora_artkit.py",
+  "source_sha256": {
+    "vaelora_artkit.py": "a05cf46ac3efc251f62fc7acd46bd256ec76dcf1563217e3142f793e5295e283",
+    "vaelora_composition.py": "71a785d4f5d235b3fb81d11fcdce5d71e182de5cd6bb2def3633967f8ab3e3f8",
+    "vaelora_contract.py": "b892240fa00bf07cb14f4d15eed81e628a17cd07846eb489d179e202992b334f",
+    "vaelora_geometry.py": "5c4808feabc679b536b7b7c366760eb80cd6d1f345525e850efe583ffd9d8d34",
+    "vaelora_materials.py": "fec5eeac6ebd12a1215a59e6a766eae5ef66096870d2ec571b456bed1fb3f13a",
+    "vaelora_render.py": "707c1a4e4608b5d337996bcbea041dba7547e7c738445c98fa89438e1c0d1636",
+    "vaelora_style.py": "19a28b06fd8dbd753aad5a9a57132c9d6a393905ce0e5dc4067f236ed220b692"
+  },
+  "statistics": {
+    "objects": 56,
+    "triangles_estimate": 1179,
+    "vertices": 745
+  },
+  "terrain_kind": "meadow",
+  "terrain_revision": 1,
+  "terrain_system": 2,
+  "variant": 0,
+  "visual_brief": {
+    "forbidden_read": "flat green plate",
+    "id": "meadow",
+    "macro_shape": "soft fertile undulation",
+    "material_read": "fresh green + warm soil",
+    "movement_read": "open/easy",
+    "negative_space": "front-centre kept quiet"
+  },
+  "world_bounds": {
+    "max": [
+      1.7320507764816284,
+      2.0,
+      0.3911455571651459
+    ],
+    "min": [
+      -1.7320507764816284,
+      -2.0,
+      -0.6299999952316284
+    ]
+  }
+}

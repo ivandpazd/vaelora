@@ -1,0 +1,38 @@
+{
+  "package": "vaelora-terrain-suite-v5.0-rc1-general",
+  "package_revision": 2,
+  "required_base": "Terrain v5.0-rc2 fixed",
+  "pre_delivery_fixes": [
+    "benchmark36 centred around canonical camera target",
+    "benchmark36 framing increased to 23.8",
+    "coast review forces all three semantic morphologies",
+    "four authored macro archetypes per candidate land family",
+    "forest variants use variant-specific cluster plans",
+    "installer preflights material vocabulary and geometry helpers"
+  ],
+  "host_validation": {
+    "python_compile": "PASS",
+    "test_contract": "PASS",
+    "test_terrain_suite_v5": "PASS",
+    "audit_pipeline": "PASS / 0 issues",
+    "clean_rc2_apply": "PASS",
+    "upgrade_from_previous_suite": "PASS"
+  },
+  "files": {
+    "PREDELIVERY-REVIEW.md": "5bcb08a721a1a5e8bea88298b29c2d59759d046e987f84f18fe18be8c5567829",
+    "README.md": "f4e843d449c5e17b58c933900ff4b551f80892d7b5a60d7b3b2bee392adde277",
+    "TERRAIN-SUITE-V5-ACCEPTANCE.md": "5a4b9e138850c869a16545a1ae3bb1218da75b5eb7d333bf5942170ad963fcce",
+    "TEST-TERRAIN-SUITE-V5.md": "aa44954776df623989cf9385c92d74298833a0793451ca18ef8dfde5d5bb4ad1",
+    "apply_terrain_suite_v5.py": "bd9a4503feccf827ce074cf17bb479921d5b1d4935cceab6eb8decf076219612",
+    "reference/TERRAIN-30HEX-BASELINE-ALT.png": "347b7738bbde96821da849bb011ce55d9d2af08bac2c87e864f670940029c2f0",
+    "reference/TERRAIN-30HEX-BASELINE.png": "88d565040ab13e210fe77d2ea37a2159d3007ab326632c1093f90029f0192606",
+    "reference/TERRAIN-V5-CANONICAL-DIORAMA.png": "bf9cea6f3e4107f261ad818fcacca083a6cec0c46bfa850e7ca1d64d18e07e03",
+    "reference_files/tools/art/test_contract.py": "d00780af966aee9a2de2d5a1c8a67059f056f1cfae3f4e9574e1a05a137a7276",
+    "reference_files/tools/art/test_terrain_suite_v5.py": "8ce5b18d3688af882c3f97838f047341fe10c984434e556f2bb536b1865e1d11",
+    "reference_files/tools/blender/vaelora_artkit.py": "8466971d2376c5c5419c62519a64794ec5f989d439afa421b5871941f29f7215",
+    "reference_files/tools/blender/vaelora_style.py": "5c5d4e9d5601be4a2414874b37dc8be9f12935e414361e2135296087eaccaf64",
+    "reference_files/tools/blender/vaelora_terrain_suite_spec.py": "989a4595db9501ff9caad771eea0669ef5dcc707504e54daf7473762f2ae631f",
+    "reference_files/tools/blender/vaelora_terrain_suite_v5.py": "f2668ae5d7fd27a0e6eec535248d59a239ca24c3c19640c130f707f8a7bf6018",
+    "terrain-v50rc2-to-suite-v5.patch": "b0a28c74961a473efa9b66186c4947ff3ad9cfd0cf3e318457f7cb5dc9e95410"
+  }
+}

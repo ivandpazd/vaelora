@@ -1,0 +1,111 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "review_unit_auren_basic_soldier_f3",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.08,
+    "projection": "orthographic",
+    "target_z": 0.82,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      256,
+      128
+    ],
+    "logical": [
+      128,
+      64
+    ],
+    "work": [
+      512,
+      256
+    ]
+  },
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "facing": 3,
+  "faction": "auren",
+  "faction_brief": {
+    "forbidden_shortcuts": [
+      "generic medieval castle",
+      "gold everywhere",
+      "perfect sterile grid",
+      "ornament that obscures function"
+    ],
+    "id": "auren",
+    "material_language": "warm ivory masonry, deep blue cloth/roof, restrained civic gold",
+    "planning_language": "civic order expressed through plaza, axial routes and deliberate alignment",
+    "recurring_motifs": [
+      "three-strand route knot",
+      "arch",
+      "beacon",
+      "ledger/marker",
+      "bridge/route line"
+    ],
+    "silhouette_language": "upright, clean, vertical landmarks and controlled roof hierarchy"
+  },
+  "family": "unit",
+  "generator_version": "0.3.2-r2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      256,
+      128
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/final_2x/review_unit_auren_basic_soldier_f3_2x.png",
+    "output_sha256": "a7281d42a28844dc194bd9e7f2c395f91320b852156f098812dc18e816272f6e",
+    "shadow_output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/shadows_2x/review_unit_auren_basic_soldier_f3_shadow_2x.png",
+    "shadow_sha256": "efabac970bfdc958cbd3a16055ee9686a1ba6941fe1a5be3472f0515ea64c857",
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/raw_4x/review_unit_auren_basic_soldier_f3_4x.png",
+    "source_sha256": "8549b22de48fffc872ca931ffdc9b7961abbcb47cc54c34b20e632215326ebaf"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "review_slice": true,
+  "seed": 3087829309694962475,
+  "source_script": "vaelora_faction_kit.py",
+  "source_sha256": {
+    "vaelora_composition.py": "c567c5a481b2c2cd137bb3fd601d149041b3629cefbc1f4a2376d722892921e1",
+    "vaelora_contract.py": "b892240fa00bf07cb14f4d15eed81e628a17cd07846eb489d179e202992b334f",
+    "vaelora_faction_kit.py": "6ff07adc0603c2595b0abd262ed6b8ec834f51133753cbbfffae21c1daf82fcf",
+    "vaelora_geometry.py": "a11ba016c0544443f78ca492ebe7006c6e42fe33dab818c2c85e9c5460642853",
+    "vaelora_materials.py": "d05aa4f3f6e5891588e9486e207b0082f2d951cfef0337e6e08229c6b09597b1",
+    "vaelora_render.py": "707c1a4e4608b5d337996bcbea041dba7547e7c738445c98fa89438e1c0d1636",
+    "vaelora_style.py": "95f9a52e8427c3f59c3a61d355aef1f8c530778dc20bdb274455ef7595ce6e95"
+  },
+  "statistics": {
+    "objects": 27,
+    "triangles_estimate": 634,
+    "vertices": 371
+  },
+  "unit_world_scale": 0.8,
+  "world_bounds": {
+    "max": [
+      0.3899489641189575,
+      0.15370112657546997,
+      1.2421252727508545
+    ],
+    "min": [
+      -0.4011138379573822,
+      -0.1117042601108551,
+      0.025600001215934753
+    ]
+  }
+}

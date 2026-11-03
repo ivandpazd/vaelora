@@ -1,0 +1,109 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "review_city_auren_stage_2",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.0,
+    "projection": "orthographic",
+    "target_z": 0.52,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      512,
+      256
+    ],
+    "logical": [
+      256,
+      128
+    ],
+    "work": [
+      1024,
+      512
+    ]
+  },
+  "color_management": {
+    "exposure": 0.0,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "faction": "auren",
+  "faction_brief": {
+    "forbidden_shortcuts": [
+      "generic medieval castle",
+      "gold everywhere",
+      "perfect sterile grid",
+      "ornament that obscures function"
+    ],
+    "id": "auren",
+    "material_language": "warm ivory masonry, deep blue cloth/roof, restrained civic gold",
+    "planning_language": "civic order expressed through plaza, axial routes and deliberate alignment",
+    "recurring_motifs": [
+      "three-strand route knot",
+      "arch",
+      "beacon",
+      "ledger/marker",
+      "bridge/route line"
+    ],
+    "silhouette_language": "upright, clean, vertical landmarks and controlled roof hierarchy"
+  },
+  "family": "city",
+  "generator_version": "0.3.1",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      512,
+      256
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.1/final_2x/review_city_auren_stage_2_2x.png",
+    "output_sha256": "e12772cebdbe722d4b3cea553db74b787f427df9a30ad7edde8ead221a855cb9",
+    "shadow_output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.1/shadows_2x/review_city_auren_stage_2_shadow_2x.png",
+    "shadow_sha256": "3f13118a27138139bc0146927da86884977be841f1a81b313ce12e89be7473b3",
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.1/raw_4x/review_city_auren_stage_2_4x.png",
+    "source_sha256": "26b53f0bca08d4bb0fe4a294edbc2da646c81081dc5b6afa2421ae318b3a1d76"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "review_slice": true,
+  "seed": 7746840603129817610,
+  "source_script": "vaelora_faction_kit.py",
+  "source_sha256": {
+    "vaelora_composition.py": "c188073143b4426ac294a38143314d9976559f05c7f0f092ed6e308d7708ca7a",
+    "vaelora_contract.py": "85a1a2bea41b6fac0617e293b9618be87ab87537104ff3d83be8bd3bae5aed41",
+    "vaelora_faction_kit.py": "0b113f3bbe9d688f5ae7d422507d411943bf234acfcf9b431f1b4c50899fcac9",
+    "vaelora_geometry.py": "7d6b9aea04e51909ff2960b4371ef0451b6f8157861ad70779d29ab7fc359f75",
+    "vaelora_materials.py": "295643611dc092933e11a30b0bcd099070270c46bfcab2eaf955217f24dc1578",
+    "vaelora_render.py": "9f961bc3403efca2395527d751a6df06c22fbed53a1f5c92671d8f287c19cafe",
+    "vaelora_style.py": "eed403a5ccd4ac0037dbc0a0e8a45d73a24a23528470fef067890f528e73800a"
+  },
+  "statistics": {
+    "objects": 48,
+    "triangles_estimate": 562,
+    "vertices": 385
+  },
+  "world_bounds": {
+    "max": [
+      1.0172369480133057,
+      0.8165760040283203,
+      1.2798399925231934
+    ],
+    "min": [
+      -1.0315035581588745,
+      -0.8272750973701477,
+      0.002499999478459358
+    ]
+  }
+}

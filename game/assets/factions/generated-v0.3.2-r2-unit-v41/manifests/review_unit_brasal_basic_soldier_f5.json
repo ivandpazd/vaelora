@@ -1,0 +1,112 @@
+{
+  "acceptance_state": "automated_qa_pending",
+  "art_style_id": "vaelora-sculpted-diorama-v2",
+  "asset_id": "review_unit_brasal_basic_soldier_f5",
+  "blender_version": [
+    5,
+    2,
+    3
+  ],
+  "camera": {
+    "elevation_deg": 30.0,
+    "frame_z_offset": 0.08,
+    "projection": "orthographic",
+    "target_z": 0.82,
+    "yaw_deg": 45.0
+  },
+  "canvas": {
+    "final": [
+      256,
+      128
+    ],
+    "logical": [
+      128,
+      64
+    ],
+    "work": [
+      512,
+      256
+    ]
+  },
+  "color_management": {
+    "exposure": 0.12,
+    "gamma": 1.0,
+    "view_transform": "AgX"
+  },
+  "facing": 5,
+  "faction": "brasal",
+  "faction_brief": {
+    "forbidden_shortcuts": [
+      "skull overload",
+      "spike forest",
+      "chaotic junk pile",
+      "evil-orc shorthand",
+      "red everywhere"
+    ],
+    "id": "brasal",
+    "material_language": "weathered timber, stone footing, charcoal iron, copper repair accents, restrained moss",
+    "planning_language": "adaptive work settlement organized around longhouse/workshop, yard, storage and repair",
+    "recurring_motifs": [
+      "ascending iron bars",
+      "kiln",
+      "hooked work standard",
+      "repair band",
+      "field pack/tool rack"
+    ],
+    "silhouette_language": "broad grounded roofs, practical tools, reinforced timber and low work structures"
+  },
+  "family": "unit",
+  "generator_version": "0.3.2-r2",
+  "lifecycle_state": "benchmark",
+  "manifest_schema": 3,
+  "postprocess": {
+    "final_size": [
+      256,
+      128
+    ],
+    "method": "Pillow RGBa premultiplied Image.Resampling.LANCZOS",
+    "output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/final_2x/review_unit_brasal_basic_soldier_f5_2x.png",
+    "output_sha256": "52723fe10108609e35fff9b0a3d882384cfd8862c88ec36fa1acb9ce9b2d7875",
+    "shadow_output": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/shadows_2x/review_unit_brasal_basic_soldier_f5_shadow_2x.png",
+    "shadow_sha256": "b548c197fecd1cc96d0c1dbc4f5372f445218c0f6bad38ce66e046a0cd4013bd",
+    "source": "/Users/ivandepazdelgado/Development/vaelora/game/assets/factions/generated-v0.3.2-r2-unit-v41/raw_4x/review_unit_brasal_basic_soldier_f5_4x.png",
+    "source_sha256": "7d627860043b75c4a8590c5ff6242bc78a3f6057de43edf076a37e80dd8fab35"
+  },
+  "production_blender_pin": [
+    5,
+    2,
+    3
+  ],
+  "provenance": "internally generated from Vaelora procedural source; no external models or image textures",
+  "renderer": "BLENDER_EEVEE",
+  "review_slice": true,
+  "seed": 1314727161983842038,
+  "source_script": "vaelora_faction_kit.py",
+  "source_sha256": {
+    "vaelora_composition.py": "c567c5a481b2c2cd137bb3fd601d149041b3629cefbc1f4a2376d722892921e1",
+    "vaelora_contract.py": "b892240fa00bf07cb14f4d15eed81e628a17cd07846eb489d179e202992b334f",
+    "vaelora_faction_kit.py": "6ff07adc0603c2595b0abd262ed6b8ec834f51133753cbbfffae21c1daf82fcf",
+    "vaelora_geometry.py": "a11ba016c0544443f78ca492ebe7006c6e42fe33dab818c2c85e9c5460642853",
+    "vaelora_materials.py": "d05aa4f3f6e5891588e9486e207b0082f2d951cfef0337e6e08229c6b09597b1",
+    "vaelora_render.py": "707c1a4e4608b5d337996bcbea041dba7547e7c738445c98fa89438e1c0d1636",
+    "vaelora_style.py": "95f9a52e8427c3f59c3a61d355aef1f8c530778dc20bdb274455ef7595ce6e95"
+  },
+  "statistics": {
+    "objects": 26,
+    "triangles_estimate": 626,
+    "vertices": 365
+  },
+  "unit_world_scale": 0.8,
+  "world_bounds": {
+    "max": [
+      0.34823867678642273,
+      0.3907606303691864,
+      1.2181252241134644
+    ],
+    "min": [
+      -0.3124392330646515,
+      -0.3490629196166992,
+      0.025600001215934753
+    ]
+  }
+}
